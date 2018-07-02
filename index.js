@@ -771,32 +771,35 @@ var checkHasBeenBooted = function(sponsor, ajaxReq, callback, next) {
     callback({ error: { msg: "Ship has not been booted." }, data: '' });
   });
 }
+
+var checkIsNotOwned = function(ship, ajaxReq, callback, next) {
+  readHasOwner(ship, ajaxReq, function(data) {
+    if (!data[0]) return next() 
+    callback({ error: { msg: "Ship has an owner." }, data: '' });
+  });
+}
 //
 // DO: do transactions that modify the blockchain
 //
 var doCreateGalaxy = function(galaxy, wallet, ajaxReq, callback) {
+  addr = wallet.getAddressString();
   validateGalaxy(galaxy, callback, function() {
-    validateAddress(wallet.getAddressString(), callback, function() {
+    validateAddress(addr, callback, function() {
       if (offline) return transact();
       getConstitutionOwner(ajaxReq, checkPermission);
     });
   });
   function checkPermission(data) {
-    if (data[0] != wallet.getAddressString())
+    if (data[0] != addr)
       callback({ error: { msg: "Insufficient permissions." }, data: '' });
-    getIsOwner(galaxy, address, ajaxReq, checkAvailable);
-  }
-  function checkAvailable(data) {
-    if (data[0].length > 0)
-      callback({ error: { msg: "Galaxy already owned." }, data: '' });
-    transact();
+    checkIsNotOwned(galaxy, ajaxReq, callback, transact);
   }
   function transact() {
     doTransaction(contracts.constitution,
       wallet,
       ajaxReq,
       "createGalaxy(uint8,address)",
-      [galaxy, address],
+      [galaxy, addr],
       callback
     );
   }

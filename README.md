@@ -35,30 +35,12 @@ Converts an Urbit address to a ship name
 ### Read from the blockchain
 
 
-#### `buildOwnedShips(address, ajaxReq, callback)`
-Returns an object loaded with the ships owned by the Ether address
-
- - `concli.buildOwnedShips('0x6deffb0cafdb11d175f123f6891aa64f01c24f7d', ajaxReq, function(data) {
-
-});`
-
-`data` is returned with something like
-`{
-0: {
-	name: 'zod',
-	address: 0,
-	hasBeenBooted: true
-},
-256: {
-	name: 'marzod',
-	address: 256,
-	hasBeenBooted: true
-}
-}`
+#### `buildOwnedShips(ethAddress, ajaxReq, callback)`
+Returns an object loaded with the ships owned by `address`
 
 
 #### `getSpawnCandidate(address)`
-Returns a random child ship from the Urbit ship at address
+Returns a random child ship from the Urbit ship `address`
 
 
 #### `getConstitutionOwner(ajaxReq, callback)`
@@ -66,11 +48,11 @@ Returns the Ether address of the owner of the Urbit constitution
 
 
 #### `readShipData(ship, ajaxReq, callback)`
-Returns an object with `hasBeenBooted` bool for the given ship
+Returns `hasBeenBooted` bool for `ship`
 
 
 #### `readHasOwner(ship, ajaxReq, callback)`
-Returns a bool for whether the given ship has an owner
+Returns a bool for whether `ship` has an owner
 
 
 #### `readIsOwner(ship, child, ajaxReq, callback)`
@@ -78,19 +60,19 @@ Returns a bool for whether `ship` owns `child`
 
 
 #### `readPoolAssets(poolAddress, ajaxReq, callback)`
-Returns the total Spark assets of the pool at the given Ether address
+Returns the total Spark assets of the pool at `poolAddress`
 
 
 #### `readBalance(poolAddress, ajaxReq, wallet, callback)`
-Returns the balance of Spark assets in the pool at the given Ether address held by the given wallet 
+Returns the balance of Spark assets in the pool at `poolAddress` held by the given wallet 
 
 
 #### `readParent(ship, ajaxReq, callback)`
-Returns the parent ship address of the given ship
+Returns the parent ship address of `ship`
 
 
 #### `readOwnedShips(ethAddress, ajaxReq, callback)`
-Returns the list of ships owned by the given Ether address
+Returns the list of ships owned by `ethAddress`
 
 
 #### `readIsRequestingEscapeTo(ship, sponsor, ajaxReq, callback)`
@@ -98,11 +80,11 @@ Returns a bool for whether `ship` is currently requesting an escape to `sponsor`
 
 
 #### `readKeys(ship, ajaxReq, callback)`
-Returns the keys for the given ship
+Returns the keys for `ship`
 
 
 #### `readIsSpawnProxy(ship, ethAddress, ajaxReq, callback)`
-Returns a bool for whether the given Ether address is the spawn proxy of `ship`
+Returns a bool for whether `ethAddress` is the spawn proxy of `ship`
 
 
 ### Create blockchain transactions
