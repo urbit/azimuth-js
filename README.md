@@ -1,7 +1,7 @@
 # Urbit Constitution client module
 
 
-### Validation and Formatting Functions
+## Validation and Formatting Functions
 
 
 #### `toAddress(name)`
@@ -32,7 +32,7 @@ Adds a tilde to a valid Urbit ship name
 Converts an Urbit address to a ship name
 
 
-### Read from the blockchain
+## Read from the blockchain
 
 
 #### `buildOwnedShips(ethAddress, ajaxReq, callback)`
@@ -87,7 +87,7 @@ Returns the keys for `ship`
 Returns a bool for whether `ethAddress` is the spawn proxy of `ship`
 
 
-### Create blockchain transactions
+## Create blockchain transactions
 
 Each of the `do` functions returns a signed transaction
 
