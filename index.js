@@ -506,10 +506,10 @@ var getHasBeenBooted = function(ship, ajaxReq, callback) {
   );
 }
 
-var getKey = function(ship, ajaxReq, callback) {
+var getKeys = function(ship, ajaxReq, callback) {
   readContractData(contracts.ships,
     ajaxReq,
-    "getKey(uint32)",
+    "getKeys(uint32)",
     [ship],
     ["bytes32"],
     callback
@@ -691,9 +691,9 @@ var readIsRequestingEscapeTo = function(ship, sponsor, ajaxReq, callback) {
   }
 }
 
-var readKey = function(ship, ajaxReq, callback) {
+var readKeys = function(ship, ajaxReq, callback) {
   validateShip(ship, callback, function() {
-    getKey(ship, ajaxReq, put);
+    getKeys(ship, ajaxReq, put);
   });
   function put(data) {
     callback(data[0]);
@@ -774,9 +774,9 @@ var checkHasBeenBooted = function(sponsor, ajaxReq, callback, next) {
 //
 // DO: do transactions that modify the blockchain
 //
-var doCreateGalaxy = function(galaxy, address, wallet, ajaxReq, callback) {
+var doCreateGalaxy = function(galaxy, wallet, ajaxReq, callback) {
   validateGalaxy(galaxy, callback, function() {
-    validateAddress(address, callback, function() {
+    validateAddress(wallet.getAddressString(), callback, function() {
       if (offline) return transact();
       getConstitutionOwner(ajaxReq, checkPermission);
     });
@@ -806,7 +806,7 @@ var doDeposit = function(star, poolAddress, wallet, ajaxReq, callback) {
   validateStar(star, callback, function() {
     if (offline) return transact();
       checkIsTransferProxy(star, poolAddress, ajaxReq, callback, function() {
-      checkOwnership(star, wallet, ajaxReq, callback, checkHasNotBeenBooted);
+        checkOwnership(star, wallet, ajaxReq, callback, checkHasNotBeenBooted);
       });
   });
   // star cannot be booted
@@ -844,9 +844,10 @@ var doWithdraw = function(star, poolAddress, wallet, ajaxReq, callback) {
   }
 }
 
-var doSpawn = function(ship, addr, wallet, ajaxReq, callback) {
+var doSpawn = function(ship, wallet, ajaxReq, callback) {
   var sponsor = ship % 256;
   if (ship > 65535) sponsor = ship % 65536;
+  addr = wallet.getAddressString();
   validateShip(ship, callback, function() {
     validateAddress(addr, callback, function() {
       if (offline) return transact();
@@ -862,7 +863,7 @@ var doSpawn = function(ship, addr, wallet, ajaxReq, callback) {
   }
   // user needs to be owner of sponsor or spawn proxy of sponsor
   function checkRights() {
-    getIsSpawnProxy(sponsor, wallet.getAddressString(), ajaxReq, function(data) {
+    getIsSpawnProxy(sponsor, addr, ajaxReq, function(data) {
       if (data[0]) return transact();
       checkOwnership(sponsor, wallet, ajaxReq, callback, transact);
     });
@@ -1057,13 +1058,13 @@ var doSafeTransferFrom = function(fromAddr, toAddr, ship, wallet, ajaxReq, callb
   }
 }
 
-var doCastConstitutionVote = function(galaxy, addr, vote, wallet, ajaxReq, callback) {
+var doCastConstitutionVote = function(galaxy, prop, vote, wallet, ajaxReq, callback) {
   validateGalaxy(galaxy, callback, function() {
-    validateAddress(addr, callback, function() {
+    validateAddress(prop, callback, function() {
       if (offline) return transact();
       checkOwnership(galaxy, wallet, ajaxReq, callback, function() {
         checkIsUnlocked(galaxy, ajaxReq, callback, function() {
-          getHasVotedOnConstitutionPoll(galaxy, addr, ajaxReq, checkVote);
+          getHasVotedOnConstitutionPoll(galaxy, prop, ajaxReq, checkVote);
         });
       });
     });
@@ -1077,7 +1078,7 @@ var doCastConstitutionVote = function(galaxy, addr, vote, wallet, ajaxReq, callb
       wallet,
       ajaxReq,
       "castConstitutionVote(uint8,address,bool)",
-      [galaxy, addr, vote],
+      [galaxy, prop, vote],
       callback
     );
   }
@@ -1137,7 +1138,7 @@ module.exports = {
   readParent: readParent,
   readOwnedShips: readOwnedShips,
   readIsRequestingEscapeTo: readIsRequestingEscapeTo,
-  readKey: readKey,
+  readKeys: readKeys,
   readIsSpawnProxy: readIsSpawnProxy,
   doCreateGalaxy: doCreateGalaxy,
   doDeposit: doDeposit,
