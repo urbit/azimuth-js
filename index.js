@@ -19,7 +19,8 @@ var obService = require('urbit-ob');
 var validator = require('./scripts/validator');
 
 var contract = {
-  // address: globalFuncs.urlGet('address') != null && validator.isValidAddress(globalFuncs.urlGet('address')) ? globalFuncs.urlGet('address') : '',   //  BENBEN
+  // address: globalFuncs.urlGet('address') != null && validator.isValidAddress(globalFuncs.urlGet('address')) ? globalFuncs.urlGet('address') : '',
+  address: '',
   abi: '',
   functions: [],
   selectedFunc: null
@@ -46,30 +47,20 @@ var tx = {
 
 var nonceDec;
 var gasPriceDec;
-// var offline;  //  BENBEN
 var offline = false;
 var poolAddress;
-var isEscape;
-var isSpawnProxy;
-var key;
-var balance;
-var tokenTx = {};
-var localToken = {};
-var tmp = {};
-var ownedShips = {};
-var tempOwnedShips = {};
-var ship = {};
-var parentShip = {};
+var ajaxReq;
+var wallet;
 
-var doTransaction = function(address, func, input, value) {
-  if (wallet == null) {
-	return;
+var doTransaction = function(address, wallet, ajaxReq, func, input, callback, value) {
+  if (wallet.getAddressString() == null) {
+  return;
   }
   var data = buildTransactionData(func, input);
   tx.data = data;
   tx.value = value || 0;
   tx.unit = "wei";
-  if (offline) {
+  if (!offline) {
     var estObj = {
       from: wallet.getAddressString(),
       value: ethFuncs.sanitizeHex(ethFuncs.decimalToHex(tx.value)),
@@ -81,12 +72,12 @@ var doTransaction = function(address, func, input, value) {
         // Proper input validation should prevent this.
         console.log("Gas estimation error");
       } else {
-    	// to not fall victim to inaccurate estimates, allow slightly more gas to be used.
-    	//TODO 1.8 is a bit much though. consult experts on why this can be so
+      // to not fall victim to inaccurate estimates, allow slightly more gas to be used.
+      //TODO 1.8 is a bit much though. consult experts on why this can be so
         //     unpredictable, and how to fix it.
-  		tx.gasLimit = Math.round(data.data * 1.8);
+      tx.gasLimit = Math.round(data.data * 1.8);
         try {
-          if (wallet == null)
+          if (wallet == null)   /// BENBEN
           { throw globalFuncs.errorMsgs[3]; }
           else if (!ethFuncs.validateHexString(tx.data))
           { throw globalFuncs.errorMsgs[9]; }
@@ -94,16 +85,19 @@ var doTransaction = function(address, func, input, value) {
           { throw globalFuncs.errorMsgs[8]; }
           tx.data = ethFuncs.sanitizeHex(tx.data);
           ajaxReq.getTransactionData(wallet.getAddressString(), function(data) {
-            if (data.error) $scope.notifier.danger(data.msg);
-            data = data.data;
-            tx.to = address;
-            tx.contractAddr = tx.to;
-            $scope.showRaw = false;
-            // just generate transaction with default amount and gas
-            generateTx();
+            if (data.error) {
+              callback({ error: { msg: data.msg }, data: '' });
+            } else {
+              data = data.data;
+              tx.to = address;
+              tx.contractAddr = tx.to;
+              showRaw = false;
+              // just generate transaction with default amount and gas
+              generateTx(ajaxReq, wallet, callback);
+            }
           });
         } catch (e) {
-          $scope.notifier.danger(e);
+          callback({ error: { msg: e }, data: '' });
         }
       }
     });
@@ -152,7 +146,7 @@ var generateTxOffline = function() {
   });
 }
 
-var generateTx = function() {
+var generateTx = function(ajaxReq, wallet, callback) {
   try {
     if (wallet == null) {
       throw globalFuncs.errorMsgs[3];
@@ -163,30 +157,46 @@ var generateTx = function() {
     }
     tx.data = ethFuncs.sanitizeHex(tx.data);
     ajaxReq.getTransactionData(wallet.getAddressString(), function(data) {
-      if (data.error) $scope.notifier.danger(data.msg);
+      if (data.error) callback({ error: { msg: data.msg }, data: '' });
       data = data.data;
       tx.to = tx.to == '' ? '0xCONTRACT' : tx.to;
       tx.contractAddr = tx.to == '0xCONTRACT' ? ethFuncs.getDeteministicContractAddress(wallet.getAddressString(), data.nonce) : '';
-      var txData = uiFuncs.getTxData($scope);
+      var txData = uiFuncs.getTxData(tx, wallet);
       uiFuncs.generateTx(txData, function(rawTx) {
         if (!rawTx.isError) {
-          $scope.rawTx = rawTx.rawTx;
-          $scope.signedTx = rawTx.signedTx;
-          $scope.showRaw = true;
+          callback({ error: false, rawTx: rawTx.rawTx, signedTx: rawTx.signedTx, showRaw: true})
         } else {
-          $scope.showRaw = false;
-          $scope.notifier.danger(rawTx.error);
+          callback({ error: { msg: rawTx.error }, data: '' });
         }
-        if (!$scope.$$phase) $scope.$apply();
       });
     });
   } catch (e) {
-    $scope.notifier.danger(e);
+    callback({ error: { msg: e }, data: '' });
   }
 }
 
-var readContractData = function(address, func, input, outTypes, callback) {
+var sendTx = function(signedTx, ajaxReq, callback) {
+  uiFuncs.sendTx(signedTx, function(resp) {
+    if (!resp.isError) {
+      callback( { error: false, data: { resp: resp.data, tx: tx } })
+    } else {
+      callback( { error: { msg: resp.error } } );
+    }
+  });
+}
+
+var readContractData = function(address, ajaxReq, func, input, outTypes, callback) {
   contract.address = address;
+
+  if (validator.isValidAddress(contract.address)) {
+    for (var i in ajaxReq.abiList) {
+      if (ajaxReq.abiList[i].address.toLowerCase() == contract.address.toLowerCase()) {
+        contract.abi = ajaxReq.abiList[i].abi;
+        break;
+      }
+    }
+  }
+
   var call = buildTransactionData(func, input);
   ajaxReq.getEthCall({ to: contract.address, data: call }, function(data) {
     if (!data.error) {
@@ -209,51 +219,51 @@ var buildTransactionData = function(func, input) {
 //
 //// VALIDATE: validate input data
 //
-var validateShip = function(ship, next) {
+var validateShip = function(ship, callback, next) {
   if (ship < 0 || ship > 4294967295)
-    return $scope.notifier.danger("Ship " + ship + " not a galaxy, star or planet.");
+    callback({ error: { msg: "Ship " + ship + " not a galaxy, star or planet." }, data: '' });
   return next();
 }
 
-var validateParent = function(ship, next) {
+var validateParent = function(ship, callback, next) {
   if (ship < 0 || ship > 65535)
-    return $scope.notifier.danger("Ship " + ship + " not a galaxy or star.");
+    callback({ error: { msg: "Ship " + ship + " not a galaxy or star." }, data: '' });
   return next();
 }
 
-var validateChild = function(ship, next) {
+var validateChild = function(ship, callback, next) {
   if (ship < 256 || ship > 4294967295)
-    return $scope.notifier.danger("Ship " + ship + " not a star or planet.");
+    callback({ error: { msg: "Ship " + ship + " not a star or planet." }, data: '' });
   return next();
 }
 
-var validateGalaxy = function(galaxy, next) {
+var validateGalaxy = function(galaxy, callback, next) {
   if (galaxy < 0 || galaxy > 255)
-    return $scope.notifier.danger("Ship " + galaxy + " not a galaxy.");
+    callback({ error: { msg: "Ship " + galaxy + " not a galaxy." }, data: '' });
   return next();
 }
 
-var validateStar = function(star, next) {
+var validateStar = function(star, callback, next) {
   if (star < 256 || star > 65535)
-    return $scope.notifier.danger("Ship " + star + " not a star.");
+    callback({ error: { msg: "Ship " + star + " not a star." }, data: '' });
   return next();
 }
 
-var validateAddress = function(address, next) {
+var validateAddress = function(address, callback, next) {
   if (!ethFuncs.validateEtherAddress(address))
-    return $scope.notifier.danger(address + " is not a valid Ethereum address.");
+    callback({ error: { msg: address + " is not a valid Ethereum address." }, data: '' });
   return next();
 }
 
-var validateTimestamp = function(timestamp, next) {
+var validateTimestamp = function(timestamp, callback, next) {
   if (timestamp < 0 || timestamp > 4200000000)
-    return $scope.notifier.danger("Weird timestamp: " + timestamp);
+    callback({ error: { msg: "Weird timestamp: " + timestamp }, data: '' });
   return next();
 }
 
-var validateBytes32 = function(bytes, next) {
+var validateBytes32 = function(bytes, callback, next) {
   if (bytes.length > 32)
-    return $scope.notifier.danger("Input too long: " + bytes);
+    callback({ error: { msg: "Input too long: " + bytes }, data: '' });
   return next();
 }
 //
@@ -307,10 +317,10 @@ var formatShipName = function(ship) {
   }
 }
 
-var buildOwnedShips = function(address) {
+var buildOwnedShips = function(address, ajaxReq, callback) {
   tmp = {}
   // zero out struct?
-  getOwnedShips(address, function(data) {
+  getOwnedShips(address, ajaxReq, function(data) {
     // if no ships returns, just zero this out, otherwise, wait until all 
     // ships have loaded
     if (data[0].length < 1) {
@@ -319,35 +329,31 @@ var buildOwnedShips = function(address) {
     var x = data[0]
     for (var i in x) {
       if (i == x.length - 1) {
-    // transfer shiplist once built
-    buildShipData(x[i], true);
+        // transfer shiplist once built
+        buildShipData(x[i], ajaxReq, true, callback);
       } else {
-    // transfer shiplist once built
-    buildShipData(x[i], false);
+        // transfer shiplist once built
+        buildShipData(x[i], ajaxReq, false, callback);
       }
     }
   });
 }
 
-var buildShipData = function(address, terminate) {
+var buildShipData = function(address, ajaxReq, terminate, callback) {
   function put(data) {
     tmp[address] = {};
     tmp[address]['name'] = '~' + toShipName(address);
-    tmp[address]['address'] = address;
+    tmp[address]['address'] = address['c'][0];
     tmp[address]['hasBeenBooted'] = data[0];
     if (terminate) {
-      tempOwnedShips = tmp;
-      if (!angular.equals(ownedShips, tempOwnedShips)) {
-    	// assign
-        angular.copy(tempOwnedShips, ownedShips);
-      }
+      callback(tmp);
     }
   }
-  getHasBeenBooted(address, put);
+  getHasBeenBooted(address, ajaxReq, put);
 }
 
-var setPoolAddress = function(address) {
-  poolAddress = address;
+var toAddress = function(name) {
+  return obService.toAddress(name);
 }
 
 var toShipName = function(address) {
@@ -390,8 +396,9 @@ var generateShipList = function(shipListString, cb) {
 //
 // GET: read contract data, pass the result to callback
 //
-var getConstitutionOwner = function(callback) {
+var getConstitutionOwner = function(ajaxReq, callback) {
   readContractData(contracts.constitution,
+    ajaxReq,
     "owner()",
     [],
     ["address"],
@@ -399,8 +406,9 @@ var getConstitutionOwner = function(callback) {
   );
 }
 
-var getVotesAddress = function(callback) {
+var getVotesAddress = function(ajaxReq, callback) {
   readContractData(contracts.constitution,
+    ajaxReq,
     "votes()",
     [],
     ["address"],
@@ -408,8 +416,9 @@ var getVotesAddress = function(callback) {
   );
 }
 
-var getCanEscapeTo = function(ship, sponsor, callback) {
+var getCanEscapeTo = function(ship, sponsor, ajaxReq, callback) {
   readContractData(contracts.constitution,
+    ajaxReq,
     "canEscapeTo(uint32,uint32)",
     [ship, sponsor],
     ["bool"],
@@ -417,8 +426,9 @@ var getCanEscapeTo = function(ship, sponsor, callback) {
   );
 }
 
-var getShipsOwner = function(callback) {
+var getShipsOwner = function(ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "owner()",
     [],
     ["address"],
@@ -426,8 +436,9 @@ var getShipsOwner = function(callback) {
   );
 }
 
-var getOwnedShips = function(address, callback) {
+var getOwnedShips = function(address, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "getOwnedShipsByAddress(address)",
     [address],
     ["uint32[]"],
@@ -435,8 +446,9 @@ var getOwnedShips = function(address, callback) {
   );
 }
 
-var getOwner = function(ship, callback) {
+var getOwner = function(ship, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "getOwner(uint32)",
     [ship],
     ["address"],
@@ -444,8 +456,9 @@ var getOwner = function(ship, callback) {
   );
 }
 
-var getIsOwner = function(ship, address, callback) {
+var getIsOwner = function(ship, address, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "isOwner(uint32,address)",
     [ship, address],
     ["bool"],
@@ -453,8 +466,9 @@ var getIsOwner = function(ship, address, callback) {
   );
 }
 
-var getIsActive = function(ship, callback) {
+var getIsActive = function(ship, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "isActive(uint32)",
     [ship],
     ["bool"],
@@ -462,8 +476,9 @@ var getIsActive = function(ship, callback) {
   );
 }
 
-var getSponsor = function(ship, callback) {
+var getSponsor = function(ship, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "getSponsor(uint32)",
     [ship],
     ["uint32"],
@@ -471,8 +486,9 @@ var getSponsor = function(ship, callback) {
   );
 }
 
-var getIsRequestingEscapeTo = function(ship, sponsor, callback) {
+var getIsRequestingEscapeTo = function(ship, sponsor, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "isRequestingEscapeTo(uint32,uint32)",
     [ship, sponsor],
     ["bool"],
@@ -480,8 +496,9 @@ var getIsRequestingEscapeTo = function(ship, sponsor, callback) {
   );
 }
 
-var getHasBeenBooted = function(ship, callback) {
+var getHasBeenBooted = function(ship, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "hasBeenBooted(uint32)",
     [ship],
     ["bool"],
@@ -489,8 +506,9 @@ var getHasBeenBooted = function(ship, callback) {
   );
 }
 
-var getKey = function(ship, callback) {
+var getKey = function(ship, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "getKey(uint32)",
     [ship],
     ["bytes32"],
@@ -498,8 +516,9 @@ var getKey = function(ship, callback) {
   );
 }
 
-var getIsTransferProxy = function(ship, address, callback) {
+var getIsTransferProxy = function(ship, address, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "isTransferProxy(uint32,address)",
     [ship, address],
     ["bool"],
@@ -507,8 +526,9 @@ var getIsTransferProxy = function(ship, address, callback) {
   );
 }
 
-var getIsSpawnProxy = function(ship, address, callback) {
+var getIsSpawnProxy = function(ship, address, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "isSpawnProxy(uint32,address)",
     [ship, address],
     ["bool"],
@@ -516,8 +536,9 @@ var getIsSpawnProxy = function(ship, address, callback) {
   );
 }
 
-var getEscapeRequest = function(ship, callback) {
+var getEscapeRequest = function(ship, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "getEscapeRequest(uint32)",
     [ship],
     ["uint32"],
@@ -525,8 +546,9 @@ var getEscapeRequest = function(ship, callback) {
   );
 }
 
-var getTransferringFor = function(address, callback) {
+var getTransferringFor = function(address, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "getTransferringFor(address)",
     [address],
     ["uint32[]"],
@@ -534,8 +556,9 @@ var getTransferringFor = function(address, callback) {
   );
 }
 
-var getSpawningFor = function(address, callback) {
+var getSpawningFor = function(address, ajaxReq, callback) {
   readContractData(contracts.ships,
+    ajaxReq,
     "getSpawningFor(address)",
     [address],
     ["uint32[]"],
@@ -543,8 +566,9 @@ var getSpawningFor = function(address, callback) {
   );
 }
 
-var getPoolAssets = function(callback) {
+var getPoolAssets = function(poolAddress, ajaxReq, callback) {
   readContractData(poolAddress,
+    ajaxReq,
     "getAllAssets()",
     [],
     ["uint16[]"],
@@ -552,8 +576,9 @@ var getPoolAssets = function(callback) {
   );
 }
 
-var getSparkBalance = function(callback) {
+var getSparkBalance = function(poolAddress, ajaxReq, wallet, callback) {
   readContractData(poolAddress,
+    ajaxReq,
     "balanceOf(address)",
     [wallet.getAddressString()],
     ["uint256"],
@@ -561,8 +586,9 @@ var getSparkBalance = function(callback) {
   );
 }
 
-var getHasVotedOnConstitutionPoll = function(galaxy, address, callback) {
+var getHasVotedOnConstitutionPoll = function(galaxy, address, ajaxReq, callback) {
   readContractData(contracts.polls,
+    ajaxReq,
     "hasVotedOnConstitutionPoll(uint8,address)",
     [galaxy, address],
     ["bool"],
@@ -570,8 +596,9 @@ var getHasVotedOnConstitutionPoll = function(galaxy, address, callback) {
   );
 }
 
-var getDocumentHasAchievedMajority = function(proposal, callback) {
+var getDocumentHasAchievedMajority = function(proposal, ajaxReq, callback) {
   readContractData(contracts.polls,
+    ajaxReq,
     "documentHasAchievedMajority(bytes32)",
     [proposal],
     ["bool"],
@@ -579,8 +606,9 @@ var getDocumentHasAchievedMajority = function(proposal, callback) {
   );
 }
 
-var getHasVotedOnDocumentPoll = function(galaxy, proposal, callback) {
+var getHasVotedOnDocumentPoll = function(galaxy, proposal, ajaxReq, callback) {
   readContractData(contracts.polls,
+    ajaxReq,
     "hasVotedOnDocumentPoll(uint8,bytes32)",
     [galaxy, proposal],
     ["bool"],
@@ -590,108 +618,103 @@ var getHasVotedOnDocumentPoll = function(galaxy, proposal, callback) {
 //
 // READ: fill fields with requested data
 //
-var readShipData = function(ship) {
-  validateShip(ship, function() {
-    getHasBeenBooted(ship, put);
+var readShipData = function(ship, ajaxReq, callback) {
+  validateShip(ship, callback, function() {
+    getHasBeenBooted(ship, ajaxReq, put);
   });
   function put(data) {
-    ownedShips[ship]['hasBeenBooted'] = data[0];
+    callback({ ship: ship, hasBeenBooted: data[0] });
   }
 }
 
-var readOwnedShips = function(addr) {
+var readOwnedShips = function(addr, ajaxReq, callback) {
   if (!addr) {
     return;
   }
-  getOwnedShips(addr, function(data) {
+  getOwnedShips(addr, ajaxReq, function(data) {
     var res = "";
     for (var i in data[0]) {
       res = res + data[0][i] + "\n";
     }
-    ownedShips = generateShipList(res);
+    callback(generateShipList(res));
   });
 }
 
-var readHasOwner = function(ship) {
-  validateShip(ship, function() {
-    getOwner(ship, put);
+var readHasOwner = function(ship, ajaxReq, callback) {
+  validateShip(ship, callback, function() {
+    getOwner(ship, ajaxReq, put);
   });
   function put(data) {
-    return data[0] == '0x0000000000000000000000000000000000000000' ? false : true;
+    callback(data[0] == '0x0000000000000000000000000000000000000000' ? false : true);
   }
 }
 
-var readIsOwner = function(ship, addr) {
-  validateShip(ship, function() {
-    validateAddress(addr, function() {
-      getIsOwner(ship, addr, put);
+var readIsOwner = function(ship, addr, ajaxReq, callback) {
+  validateShip(ship, callback, function() {
+    validateAddress(addr, callbac, function() {
+      getIsOwner(ship, addr, ajaxReq, put);
     });
   });
   function put(data) {
-    return data[0];
+    callback(data[0]);
   }
 }
 
-var readPoolAssets = function() {
-  getPoolAssets(put);
+var readPoolAssets = function(poolAddress, ajaxReq, callback) {
+  getPoolAssets(poolAddress, ajaxReq, put);
   function put(data) {
     var t = [];
     for (var i = 0; i < data[0].length; i++) {
       t.push(formatShipName(toShipName(data[0][i].toFixed(0))));
     }
-    poolAssets = t;
-    if (poolAssets.length > 0) {
-      ship = poolAssets[0];
-    } else {
-      // trigger an error?
-    }
+    callback(t);
   };
 }
 
-var readParent = function(ship) {
-  validateChild(ship, function() {
-    getSponsor(ship, put);
+var readParent = function(ship, ajaxReq, callback) {
+  validateChild(ship, callback, function() {
+    getSponsor(ship, ajaxReq, put);
   });
   function put(data) {
-    parentShip = data[0];
+    callback(data[0]);
   }
 }
 
-var readIsRequestingEscapeTo = function(ship, sponsor) {
-  validateChild(ship, function() {
-    validateParent(sponsor, function () {
-      getIsRequestingEscapeTo(ship, sponsor, put);
+var readIsRequestingEscapeTo = function(ship, sponsor, ajaxReq, callback) {
+  validateChild(ship, callback, function() {
+    validateParent(sponsor, callback, function () {
+      getIsRequestingEscapeTo(ship, sponsor, ajaxReq, put);
     });
   });
   function put(data) {
-    isEscape = data[0];
+    callback(data[0]);
   }
 }
 
-var readKey = function(ship) {
-  validateShip(ship, function() {
-    getKey(ship, put);
+var readKey = function(ship, ajaxReq, callback) {
+  validateShip(ship, callback, function() {
+    getKey(ship, ajaxReq, put);
   });
   function put(data) {
-    key = data[0];
+    callback(data[0]);
   }
 }
 
-var readIsSpawnProxy = function(ship, addr) {
-  validateParent(ship, function() {
-    validateAddress(addr, function () {
-      getIsSpawnProxy(ship, addr, put);
+var readIsSpawnProxy = function(ship, addr, ajaxReq, callback) {
+  validateParent(ship, callback, function() {
+    validateAddress(addr, callback, function () {
+      getIsSpawnProxy(ship, addr, ajaxReq, put);
     });
   });
   function put(data) {
-    isSpawnProxy = data[0];
+    callback(data[0]);
   }
 }
 
-var readBalance = function() {
+var readBalance = function(poolAddress, ajaxReq, wallet, callback) {
   if (poolAddress) {
-    getSparkBalance(function(data) {
-      balance = data[0] / oneSpark;
+    getSparkBalance(poolAddress, ajaxReq, wallet, function(data) {
+      callback(data[0] / oneSpark);
     });
   } else {
     // throw an error here
@@ -700,289 +723,323 @@ var readBalance = function() {
 //
 // CHECK: verify if conditions for a transaction are met
 //
-var checkOwnership = function(ship, next) {
-  getIsOwner(ship, wallet.getAddressString(), function(data) {
+var checkOwnership = function(ship, wallet, ajaxReq, callback, next) {
+  getIsOwner(ship, wallet.getAddressString(), ajaxReq, function(data) {
     if (data[0]) return next();
-    $scope.notifier.danger("Not your ship. " + ship);
+    callback({ error: { msg: "Not your ship. " + ship }, data: '' });
   });
 }
 
-var checkIsTransferProxy = function(ship, addr, next) {
-  getIsTransferProxy(ship, addr, function(data) {
+var checkIsTransferProxy = function(ship, addr, ajaxReq, callback, next) {
+  getIsTransferProxy(ship, addr, ajaxReq, function(data) {
     if (data[0]) return next();
-    $scope.notifier.danger("Ship is not transferable by " + addr);
+    callback({ error: { msg: "Ship is not transferable by " + addr }, data: '' });
   });
 }
 
-var checkIsUnlocked = function(ship, next) {
-  getIsActive(ship, function(data) {
+var checkIsUnlocked = function(ship, ajaxReq, callback, next) {
+  getIsActive(ship, ajaxReq, function(data) {
     if (data[0]) return next();
-    $scope.notifier.danger("Ship is not active.");
+    callback({ error: { msg: "Ship is not active." }, data: '' });
   });
 }
 
-var checkIsLatent = function(ship, next) {
-  getIsActive(ship, function(data) {
+var checkIsLatent = function(ship, ajaxReq, callback, next) {
+  getIsActive(ship, ajaxReq, function(data) {
     if (!data[0]) return next();
-    $scope.notifier.danger("Ship is active.");
+    callback({ error: { msg: "Ship is active." }, data: '' });
   });
 }
 
-var checkCanEscapeTo = function(ship, sponsor, next) {
-  getCanEscapeTo(ship, sponsor, function(data) {
+var checkCanEscapeTo = function(ship, sponsor, ajaxReq, callback, next) {
+  getCanEscapeTo(ship, sponsor, ajaxReq, function(data) {
     if (data[0]) return next();
-    $scope.notifier.danger("Ship " + ship + " cannot escape to ship " + sponsor + ".");
+    callback({ error: { msg: "Ship " + ship + " cannot escape to ship " + sponsor + "." }, data: '' });
   });
 }
 
-var checkEscape = function(ship, sponsor, next) {
-  getIsRequestingEscapeTo(ship, sponsor, function(data) {
+var checkEscape = function(ship, sponsor, ajaxReq, callback, next) {
+  getIsRequestingEscapeTo(ship, sponsor, ajaxReq, function(data) {
     if (data[0]) return next();
-    $scope.notifier.danger("Escape doesn't match.");
+    callback({ error: { msg: "Escape doesn't match." }, data: '' });
   });
 }
 
-var checkHasBeenBooted = function(sponsor, next) {
-  getHasBeenBooted(sponsor, function(data) {
+var checkHasBeenBooted = function(sponsor, ajaxReq, callback, next) {
+  getHasBeenBooted(sponsor, ajaxReq, function(data) {
     if (data[0]) return next() 
-    $scope.notifier.danger("Ship has not been booted.");
+    callback({ error: { msg: "Ship has not been booted." }, data: '' });
   });
 }
 //
 // DO: do transactions that modify the blockchain
 //
-var doCreateGalaxy = function(galaxy, address) {
-  validateGalaxy(galaxy, function() {
-    validateAddress(address, function() {
+var doCreateGalaxy = function(galaxy, address, wallet, ajaxReq, callback) {
+  validateGalaxy(galaxy, callback, function() {
+    validateAddress(address, callback, function() {
       if (offline) return transact();
-      getConstitutionOwner(checkPermission);
+      getConstitutionOwner(ajaxReq, checkPermission);
     });
   });
   function checkPermission(data) {
-  	console.log("HERE");
     if (data[0] != wallet.getAddressString())
-      return $scope.notifier.danger("Insufficient permissions.");
-    getIsOwner(galaxy, address, checkAvailable);
+      callback({ error: { msg: "Insufficient permissions." }, data: '' });
+    getIsOwner(galaxy, address, ajaxReq, checkAvailable);
   }
   function checkAvailable(data) {
     if (data[0].length > 0)
-      return $scope.notifier.danger("Galaxy already owned.");
+      callback({ error: { msg: "Galaxy already owned." }, data: '' });
     transact();
   }
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "createGalaxy(uint8,address)",
-      [galaxy, address]
+      [galaxy, address],
+      callback
     );
   }
 }
 
-var doDeposit = function(star) {
-  validateStar(star, function() {
+var doDeposit = function(star, poolAddress, wallet, ajaxReq, callback) {
+  validateStar(star, callback, function() {
     if (offline) return transact();
-      checkIsTransferProxy(star, $rootScope.poolAddress, function() {
-    	checkOwnership(star, checkHasNotBeenBooted);
+      checkIsTransferProxy(star, poolAddress, ajaxReq, callback, function() {
+      checkOwnership(star, wallet, ajaxReq, callback, checkHasNotBeenBooted);
       });
   });
   // star cannot be booted
   function checkHasNotBeenBooted() {
-    getHasBeenBooted(star, function(data) {
+    getHasBeenBooted(star, ajaxReq, function(data) {
       if (data[0])
-    	return $scope.notifier.danger("Ship has been booted.");
+        callback({ error: { msg: "Ship has been booted." }, data: '' });
       transact();
     });
   }
   function transact() {
     // will this bork if you enter a new pool address on the deposit screen?
-    doTransaction($rootScope.poolAddress,
+    doTransaction(poolAddress,
+      wallet,
+      ajaxReq,
       "deposit(uint16)",
-      [star]
+      [star],
+      callback
     );
   }
 }
 
-var doWithdraw = function(star) {
-  validateStar(star, function() {
+var doWithdraw = function(star, poolAddress, wallet, ajaxReq, callback) {
+  validateStar(star, callback, function() {
     return transact();
   });
   function transact() {
-    doTransaction($rootScope.poolAddress,
+    doTransaction(poolAddress,
+      wallet,
+      ajaxReq,
       "withdraw(uint16)",
-      [star]
+      [star],
+      callback
     );
   }
 }
 
-var doSpawn = function(ship, addr) {
+var doSpawn = function(ship, addr, wallet, ajaxReq, callback) {
   var sponsor = ship % 256;
   if (ship > 65535) sponsor = ship % 65536;
-  validateShip(ship, function() {
-    validateAddress(addr, function() {
+  validateShip(ship, callback, function() {
+    validateAddress(addr, callback, function() {
       if (offline) return transact();
-      checkIsLatent(ship, function() {
-        checkHasBeenBooted(sponsor, checkParent);
+      checkIsLatent(ship, ajaxReq, callback, function() {
+        checkHasBeenBooted(sponsor, ajaxReq, callback, checkParent);
       });
     });
   });
   // ship needs to be galaxy, or its parent needs to be living
   function checkParent() {
     if (ship < 256) return checkRights();
-    checkIsUnlocked(sponsor, checkRights);
+    checkIsUnlocked(sponsor, ajaxReq, callback, checkRights);
   }
   // user needs to be owner of sponsor or spawn proxy of sponsor
   function checkRights() {
-    getIsSpawnProxy(sponsor, wallet.getAddressString(),
-    function(data) {
+    getIsSpawnProxy(sponsor, wallet.getAddressString(), ajaxReq, function(data) {
       if (data[0]) return transact();
-      checkOwnership(sponsor, transact);
+      checkOwnership(sponsor, wallet, ajaxReq, callback, transact);
     });
   }
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "spawn(uint32,address)",
-      [ship, addr]
+      [ship, addr],
+      callback
     );
   }
 }
 
-var doSetSpawnProxy = function(ship, addr) {
-  validateParent(ship, function() {
-    validateAddress(addr, function() {
+var doSetSpawnProxy = function(ship, addr, wallet, ajaxReq, callback) {
+  validateParent(ship, callback, function() {
+    validateAddress(addr, callback, function() {
       if (offline) return transact();
-      checkOwnership(ship, function() {
-        checkIsUnlocked(ship, transact);
+      checkOwnership(ship, wallet, ajaxReq, callback, function() {
+        checkIsUnlocked(ship, ajaxReq, callback, transact);
       });
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "setSpawnProxy(uint16,address)",
-      [ship, addr]
+      [ship, addr],
+      callback
     );
   }
 }
 
-var doConfigureKeys = function(ship, encryptionKey, authenticationKey, discontinuous) {
-  validateShip(ship, function() {
-    validateBytes32(encryptionKey, function() {
-      validateBytes32(authenticationKey, function() {
+var doConfigureKeys = function(ship, encryptionKey, authenticationKey, discontinuous, wallet, ajaxReq, callback) {
+  validateShip(ship, callback, function() {
+    validateBytes32(encryptionKey, callback, function() {
+      validateBytes32(authenticationKey, callback, function() {
         if (offline) return transact();
-        checkOwnership(ship, function() {
-          checkIsUnlocked(ship, transact);
+        checkOwnership(ship, wallet, ajaxReq, callback, function() {
+          checkIsUnlocked(ship, ajaxReq, callback, transact);
         });
       });
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "configureKeys(uint32,bytes32,bytes32,bool)",
-      [ship, encryptionKey, authenticationKey, discontinuous]
+      [ship, encryptionKey, authenticationKey, discontinuous],
+      callback
     );
   }
 }
 
-var doTransferShip = function(ship, addr, reset) {
-  validateShip(ship, function() {
-    validateAddress(addr, function() {
+var doTransferShip = function(ship, addr, reset, wallet, ajaxReq, callback) {
+  validateShip(ship, callback, function() {
+    validateAddress(addr, callback, function() {
       if (offline) return transact();
-      checkOwnership(ship, transact);
+      checkOwnership(ship, wallet, ajaxReq, callback, transact);
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "transferShip(uint32,address,bool)",
-      [ship, addr, reset]
+      [ship, addr, reset],
+      callback
     );
   }
 }
 
-var doSetTransferProxy = function(ship, addr) {
-  validateShip(ship, function() {
-    validateAddress(addr, function() {
+var doSetTransferProxy = function(ship, addr, wallet, ajaxReq, callback) {
+  validateShip(ship, callback, function() {
+    validateAddress(addr, callback, function() {
       if (offline) return transact();
-      checkOwnership(ship, transact);
+      checkOwnership(ship, wallet, ajaxReq, callback, transact);
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "setTransferProxy(uint32,address)",
-      [ship, addr]
+      [ship, addr],
+      callback
     );
   }
 }
 
-var doEscape = function(ship, sponsor) {
-  validateChild(ship, function() {
-    validateParent(sponsor, function() {
+var doEscape = function(ship, sponsor, wallet, ajaxReq, callback) {
+  validateChild(ship, callback, function() {
+    validateParent(sponsor, callback, function() {
       if (offline) return transact();
-      checkOwnership(ship, function() {
-        checkHasBeenBooted(sponsor, function() {
-          checkCanEscapeTo(ship, sponsor, transact);
+      checkOwnership(ship, wallet, ajaxReq, callback, function() {
+        checkHasBeenBooted(sponsor, callback, function() {
+          checkCanEscapeTo(ship, sponsor, ajaxReq, callback, transact);
         });
       });
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "escape(uint32,uint32)",
-      [ship, sponsor]
+      [ship, sponsor],
+      callback
     );
   }
 }
 
-var doAdopt = function(sponsor, escapee) {
-  validateParent(sponsor, function() {
-    validateChild(escapee, function () {
+var doAdopt = function(sponsor, escapee, wallet, ajaxReq, callback) {
+  validateParent(sponsor, callback, function() {
+    validateChild(escapee, callback, function () {
       if (offline) return transact();
-      checkOwnership(escapee, function() {
-        checkEscape(escapee, sponsor, transact);
+      checkOwnership(escapee, wallet, ajaxReq, callback, function() {
+        checkEscape(escapee, sponsor, ajaxReq, callback, transact);
       });
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "adopt(uint32,uint32)",
-      [sponsor, escapee]
+      [sponsor, escapee],
+      callback
     );
   }
 }
 
-var doReject = function(sponsor, escapee) {
-  validateParent(sponsor, function() {
-    validateChild(escapee, function () {
+var doReject = function(sponsor, escapee, wallet, ajaxReq, callback) {
+  validateParent(sponsor, callback, function() {
+    validateChild(escapee, callback, function () {
       if (offline) return transact();
-      checkOwnership(escapee, function() {
-        checkEscape(escapee, sponsor, transact);
+      checkOwnership(escapee, wallet, ajaxReq, callback, function() {
+        checkEscape(escapee, sponsor, ajaxReq, callback, transact);
       });
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "reject(uint32,uint32)",
-      [sponsor, escapee]
+      [sponsor, escapee],
+      callback
     );
   }
 }
 
-var doApprove = function(address, ship) {
-  validateAddress(address, function () {
-    validateShip(ship, function () {
+var doApprove = function(address, ship, wallet, ajaxReq, callback) {
+  validateAddress(address, callback, function () {
+    validateShip(ship, callback, function () {
       if (offline) return transact();
-      checkOwnership(ship, transact);
+      checkOwnership(ship, wallet, ajaxReq, callback, transact);
     });
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "approve(address,uint256)",
-      [address, ship]
+      [address, ship],
+      callback
     );
   }
 }
 
-var doSafeTransferFrom = function(fromAddr, toAddr, ship) {
-  validateAddress(fromAddr, function () {
-    validateAddress(toAddr, function () {
-      validateShip(ship, function () {
+var doSafeTransferFrom = function(fromAddr, toAddr, ship, wallet, ajaxReq, callback) {
+  validateAddress(fromAddr, callback, function () {
+    validateAddress(toAddr, callback, function () {
+      validateShip(ship, callback, function () {
         if (offline) return transact();
         // TODO: add check to validate that the caller has been approved to initiate transfer
         transact();
@@ -991,41 +1048,47 @@ var doSafeTransferFrom = function(fromAddr, toAddr, ship) {
   });
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "safeTransferFrom(address,address,uint256)",
-      [fromAddr, toAddr, ship]
+      [fromAddr, toAddr, ship],
+      callback
     );
   }
 }
 
-var doCastConstitutionVote = function(galaxy, addr, vote) {
-  validateGalaxy(galaxy, function() {
-    validateAddress(addr, function() {
+var doCastConstitutionVote = function(galaxy, addr, vote, wallet, ajaxReq, callback) {
+  validateGalaxy(galaxy, callback, function() {
+    validateAddress(addr, callback, function() {
       if (offline) return transact();
-      checkOwnership(galaxy, function() {
-        checkIsUnlocked(galaxy, function() {
-          getHasVotedOnConstitutionPoll(galaxy, addr, checkVote);
+      checkOwnership(galaxy, wallet, ajaxReq, callback, function() {
+        checkIsUnlocked(galaxy, ajaxReq, callback, function() {
+          getHasVotedOnConstitutionPoll(galaxy, addr, ajaxReq, checkVote);
         });
       });
     });
   });
   function checkVote(data) {
     if (!data[0]) return transact();
-    $scope.notifier.danger("Vote already registered.");
+    callback({ error: { msg: "Vote already registered." }, data: '' });
   }
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "castConstitutionVote(uint8,address,bool)",
-      [galaxy, addr, vote]
+      [galaxy, addr, vote],
+      callback
     );
   }
 }
 
-var doCastDocumentVote = function(galaxy, prop, vote) {
+var doCastDocumentVote = function(galaxy, prop, vote, wallet, ajaxReq, callback) {
   validateGalaxy(galaxy, function() {
     validateBytes32(prop, function() {
       if (offline) return transact();
-      checkOwnership(galaxy, function() {
-        checkIsUnlocked(galaxy, function() {
+      checkOwnership(galaxy, wallet, ajaxReq, function() {
+        checkIsUnlocked(galaxy, ajaxReq, callback, function() {
           getDocumentHasAchievedMajority(prop, checkMajority);
         });
       });
@@ -1033,31 +1096,63 @@ var doCastDocumentVote = function(galaxy, prop, vote) {
   });
   function checkMajority(data) {
     if (!data[0]) return getHasVotedOnDocumentPoll(galaxy, prop, checkVote);
-    return $scope.notifier.danger("Document already has majority.");
+    return callback({ error: { msg: "Document already has majority." }, data: '' });
   }
   function checkVote(data) {
     if (!data[0]) return transact();
-    $scope.notifier.danger("Vote already registered.");
+    callback({ error: { msg: "Vote already registered." }, data: '' });
   }
   function transact() {
     doTransaction(contracts.constitution,
+      wallet,
+      ajaxReq,
       "castDocumentVote(uint8,bytes32,bool)",
-      [galaxy, prop, vote]
+      [galaxy, prop, vote],
+      callback
     );
   }
 }
 
 module.exports = {
-  wallet: wallet,
-  ajaxReq: ajaxReq,
   offline: offline,
+  poolAddress: poolAddress,
+  ajaxReq: ajaxReq,
+  wallet: wallet,
+  validator: validator,
+  toAddress: toAddress,
+  valGalaxy: valGalaxy,
+  valStar: valStar,
   valShip: valShip,
   valAddress: valAddress,
   formatShipName: formatShipName,
   toShipName: toShipName,
+  buildOwnedShips: buildOwnedShips,
   getSpawnCandidate: getSpawnCandidate,
   getConstitutionOwner: getConstitutionOwner,
-  doCreateGalaxy: doCreateGalaxy
+  readShipData: readShipData,
+  readHasOwner: readHasOwner,
+  readIsOwner: readIsOwner,
+  readPoolAssets: readPoolAssets,
+  readBalance: readBalance,
+  readParent: readParent,
+  readOwnedShips: readOwnedShips,
+  readIsRequestingEscapeTo: readIsRequestingEscapeTo,
+  readKey: readKey,
+  readIsSpawnProxy: readIsSpawnProxy,
+  doCreateGalaxy: doCreateGalaxy,
+  doDeposit: doDeposit,
+  doWithdraw: doWithdraw,
+  doSpawn: doSpawn,
+  doSetSpawnProxy: doSetSpawnProxy,
+  doConfigureKeys: doConfigureKeys,
+  doTransferShip: doTransferShip,
+  doSetTransferProxy: doSetTransferProxy,
+  doEscape: doEscape,
+  doAdopt: doAdopt,
+  doReject: doReject,
+  doApprove: doApprove,
+  doSafeTransferFrom: doSafeTransferFrom,
+  doCastConstitutionVote: doCastConstitutionVote,
+  doCastDocumentVote: doCastDocumentVote,
+  sendTx: sendTx
 }
-
-require('make-runnable');

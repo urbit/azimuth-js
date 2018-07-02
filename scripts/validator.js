@@ -1,6 +1,10 @@
 'use strict';
 var validator = function() {}
 
+var ethFuncs = require('./ethFuncs');
+var ethUtil = require('ethereumjs-util');
+var globalFuncs = require('./globalFuncs');
+
 validator.isValidAddress = function(address) {
     if (address && address == "0x0000000000000000000000000000000000000000") return false;
     if (address)
