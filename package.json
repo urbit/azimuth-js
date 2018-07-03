@@ -1,6 +1,6 @@
 {
   "name": "urbit-constitution-client",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Interact with the Urbit constitution",
   "repository": "https://github.com/bencalder/urbit-constitution-client",
   "main": "index.js",
