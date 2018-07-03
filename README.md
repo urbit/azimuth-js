@@ -35,7 +35,7 @@ Converts an Urbit address to a ship name
 ## Read from the blockchain
 
 
-#### `buildOwnedShips(ethAddress, ajaxReq, callback)`
+#### `buildOwnedShips(ethAddress, callback)`
 Returns an object loaded with the ships owned by `address`
 
 
@@ -43,47 +43,47 @@ Returns an object loaded with the ships owned by `address`
 Returns a random child ship from the Urbit ship `address`
 
 
-#### `getConstitutionOwner(ajaxReq, callback)`
+#### `getConstitutionOwner(callback)`
 Returns the Ether address of the owner of the Urbit constitution
 
 
-#### `readShipData(ship, ajaxReq, callback)`
+#### `readShipData(ship, callback)`
 Returns `hasBeenBooted` bool for `ship`
 
 
-#### `readHasOwner(ship, ajaxReq, callback)`
+#### `readHasOwner(ship, callback)`
 Returns a bool for whether `ship` has an owner
 
 
-#### `readIsOwner(ship, child, ajaxReq, callback)`
+#### `readIsOwner(ship, child, callback)`
 Returns a bool for whether `ship` owns `child`
 
 
-#### `readPoolAssets(poolAddress, ajaxReq, callback)`
+#### `readPoolAssets(poolAddress, callback)`
 Returns the total Spark assets of the pool at `poolAddress`
 
 
-#### `readBalance(poolAddress, ajaxReq, wallet, callback)`
+#### `readBalance(poolAddress, callback)`
 Returns the balance of Spark assets in the pool at `poolAddress` held by the given wallet 
 
 
-#### `readParent(ship, ajaxReq, callback)`
+#### `readParent(ship, callback)`
 Returns the parent ship address of `ship`
 
 
-#### `readOwnedShips(ethAddress, ajaxReq, callback)`
+#### `readOwnedShips(ethAddress, callback)`
 Returns the list of ships owned by `ethAddress`
 
 
-#### `readIsRequestingEscapeTo(ship, sponsor, ajaxReq, callback)`
+#### `readIsRequestingEscapeTo(ship, sponsor, callback)`
 Returns a bool for whether `ship` is currently requesting an escape to `sponsor`
 
 
-#### `readKeys(ship, ajaxReq, callback)`
+#### `readKeys(ship, callback)`
 Returns the keys for `ship`
 
 
-#### `readIsSpawnProxy(ship, ethAddress, ajaxReq, callback)`
+#### `readIsSpawnProxy(ship, ethAddress, callback)`
 Returns a bool for whether `ethAddress` is the spawn proxy of `ship`
 
 
@@ -92,66 +92,66 @@ Returns a bool for whether `ethAddress` is the spawn proxy of `ship`
 Each of the `do` functions returns a signed transaction
 
 
-#### `doCreateGalaxy(galaxy, wallet, ajaxReq, callback)`
+#### `doCreateGalaxy(galaxy, callback)`
 Create `galaxy`
 
 
-#### `doDeposit(star, poolAddress, wallet, ajaxReq, callback)`
+#### `doDeposit(star, poolAddress, callback)`
 Deposit `star` into the pool
 
 
-#### `doWithdraw(star, poolAddress, wallet, ajaxReq, callback)`
+#### `doWithdraw(star, poolAddress, callback)`
 Withdraw `star` from the pool
 
 
-#### `doSpawn(ship, wallet, ajaxReq, callback)`
+#### `doSpawn(ship, callback)`
 Spawn `ship`
 
 
-#### `doSetSpawnProxy(ship, ethAddress, wallet, ajaxReq, callback)`
+#### `doSetSpawnProxy(ship, ethAddress, callback)`
 Set `ethAddress` as the spawn proxy of `ship`
 
 
-#### `doConfigureKeys(ship, encryptionKey, authenticationKey, discontinuous, wallet, ajaxReq, callback)`
+#### `doConfigureKeys(ship, encryptionKey, authenticationKey, discontinuous, callback)`
 Set `encryptionKey` and `authenticationKey` as the keys for `ship`. bool `discontinuous` optionally increments the continuity number of `ship`
 
 
-#### `doTransferShip(ship, ethAddress, reset, wallet, ajaxReq, callback)`
+#### `doTransferShip(ship, ethAddress, reset, callback)`
 Transfer `ship` to `ethAddress`. bool `reset` optionally clears the keys and breaks continuity
 
 
-#### `doSetTransferProxy(ship, ethAddress, wallet, ajaxReq, callback)`
+#### `doSetTransferProxy(ship, ethAddress, callback)`
 Set `ethAddress` as the transfer proxy for `ship`
 
 
-#### `doEscape(ship, sponsor, wallet, ajaxReq, callback)`
+#### `doEscape(ship, sponsor, callback)`
 Escape `ship` to `sponsor`
 
 
-#### `doAdopt(sponsor, escapee, wallet, ajaxReq, callback)`
+#### `doAdopt(sponsor, escapee, callback)`
 `sponsor` accepts `escapee`
 
 
-#### `doReject(sponsor, escapee, wallet, ajaxReq, callback)`
+#### `doReject(sponsor, escapee, callback)`
 `sponsor` rejects `escapee`
 
 
-#### `doApprove(ethAddress, ship, wallet, ajaxReq, callback)`
+#### `doApprove(ethAddress, ship, callback)`
 Approve `ethAddress` to transfer `ship`
 
 
-#### `doSafeTransferFrom(fromAddress, toAddress, ship, wallet, ajaxReq, callback)`
+#### `doSafeTransferFrom(fromAddress, toAddress, ship, callback)`
 Conduct a safe transfer of `ship` from `fromAddress` to `toAddress`
 
 
-#### `doCastConstitutionVote(galaxy, prop, vote, wallet, ajaxReq, callback)`
+#### `doCastConstitutionVote(galaxy, prop, vote, callback)`
 Cast `vote` from `galaxy` on constitution proposal at `prop`
 
 
-#### `doCastDocumentVote(galaxy, prop, vote, wallet, ajaxReq, callback)`
+#### `doCastDocumentVote(galaxy, prop, vote, callback)`
 Cast `vote` from `galaxy` on document proposal at `prop`
 
-#### `sendTx(signedTx, ajaxReq, callback)`
+#### `sendTx(signedTx, callback)`
 Submit `signedTx` to the blockchain
 
 

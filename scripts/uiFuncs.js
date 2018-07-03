@@ -1,17 +1,17 @@
 'use strict';
 var uiFuncs = function() {}
-uiFuncs.getTxData = function($scope) {
+uiFuncs.getTxData = function(tx, wallet) {
     return {
-        to: $scope.tx.to,
-        value: $scope.tx.value,
-        unit: $scope.tx.unit,
-        gasLimit: $scope.tx.gasLimit,
-        data: $scope.tx.data,
-        from: $scope.wallet.getAddressString(),
-        privKey: $scope.wallet.privKey ? $scope.wallet.getPrivateKeyString() : '',
-        path: $scope.wallet.getPath(),
-        hwType: $scope.wallet.getHWType(),
-        hwTransport: $scope.wallet.getHWTransport()
+        to: tx.to,
+        value: tx.value,
+        unit: tx.unit,
+        gasLimit: tx.gasLimit,
+        data: tx.data,
+        from: wallet.getAddressString(),
+        privKey: wallet.privKey ? wallet.getPrivateKeyString() : '',
+        path: wallet.getPath(),
+        hwType: wallet.getHWType(),
+        hwTransport: wallet.getHWTransport()
     };
 }
 uiFuncs.isTxDataValid = function(txData) {
