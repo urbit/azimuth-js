@@ -1,6 +1,5 @@
 # Urbit Constitution client module
 
-
 ## Validation and Formatting Functions
 
 
@@ -153,6 +152,24 @@ Cast `vote` from `galaxy` on document proposal at `prop`
 
 #### `sendTx(signedTx, callback)`
 Submit `signedTx` to the blockchain
+
+## Development
+
+### Testnet
+In order to test the functionality of the Wallet, you'll need a testnet running the 
+Urbit constitution.
+1. Clone [the constitution](https://github.com/urbit/constitution)
+2. `cd` into the repo and `npm install`
+3. `npm install -g ganache-cli`
+3. Run a local `ganache` node, boot using the following command to ensure a matching seed:  
+   `ganache-cli -m "benefit crew supreme gesture quantum web media hazard theory mercy wing kitten"`
+4. Run `truffle deploy` from the constitution's directory to deploy to your local node.
+
+### Useful addresses
+Constitution owner (is allowed to create galaxies): `0x6deffb0cafdb11d175f123f6891aa64f01c24f7d`
+
+Test pool: `0x0724ee9912836c2563eee031a739dda6dd775333`
+
 
 
 Find out more: https://urbit.org  
