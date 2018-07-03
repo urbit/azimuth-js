@@ -180,7 +180,6 @@ var sendTx = function(signedTx, callback) {
 
 var readContractData = function(address, func, input, outTypes, callback) {
   contract.address = address;
-  console.log('LOG 2: ' + address);
   if (validator.isValidAddress(contract.address)) {
     for (var i in ajaxReq.abiList) {
       if (ajaxReq.abiList[i].address.toLowerCase() == contract.address.toLowerCase()) {
@@ -189,7 +188,6 @@ var readContractData = function(address, func, input, outTypes, callback) {
       }
     }
   }
-
   var call = buildTransactionData(func, input);
   ajaxReq.getEthCall({ to: contract.address, data: call }, function(data) {
     if (!data.error) {
@@ -677,7 +675,6 @@ var readIsSpawnProxy = function(ship, addr, callback) {
 }
 
 var readBalance = function(poolAddress, callback) {
-  console.log('LOG 3: ' + poolAddress);
   if (poolAddress) {
     getSparkBalance(poolAddress, function(data) {
       callback(data[0] / oneSpark);
