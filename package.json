@@ -1,8 +1,11 @@
 {
-  "name": "urbit-constitution-client",
+  "name": "constitution-js",
   "version": "0.1.7",
   "description": "Interact with the Urbit constitution",
-  "repository": "https://github.com/bencalder/urbit-constitution-client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/urbit/constitution-js.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec"
@@ -26,5 +29,12 @@
     "utf8": "^2.1.2"
   },
   "author": "~mirfet-hocbyt",
-  "license": "ISC"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/urbit/constitution-js/issues"
+  },
+  "homepage": "https://github.com/urbit/constitution-js#readme",
+  "directories": {
+    "test": "test"
+  }
 }
