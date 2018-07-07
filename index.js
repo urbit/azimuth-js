@@ -614,7 +614,7 @@ var readHasOwner = function(ship, callback) {
 
 var readIsOwner = function(ship, addr, callback) {
   validateShip(ship, callback, function() {
-    validateAddress(addr, callbac, function() {
+    validateAddress(addr, callback, function() {
       getIsOwner(ship, addr, put);
     });
   });
