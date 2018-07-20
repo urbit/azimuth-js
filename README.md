@@ -4,13 +4,13 @@
 
 ## Install
 
-#### `npm install urbit-constitution-client --save`
+`npm install constitution-js --save`
 
 
 
 ## Test
 
-#### `npm test`
+`npm test`
 
 
 
@@ -43,97 +43,99 @@ Each Urbit ship also has a unique human-readable name that's determined from its
 
 
 
-## Validation and Formatting Functions
+## Functions
 
 
-#### `toAddress(shipName)`
+### Validation and Formatting
+
+`toAddress(shipName)`
 Converts an Urbit ship name to its address
 
 
-#### `toShipName(shipAddress)`
+`toShipName(shipAddress)`
 Converts an Urbit address to its ship name
 
 
-#### `valGalaxy(galaxyAddress)`
+`valGalaxy(galaxyAddress)`
 Validates an Urbit galaxy address
 
 
-#### `valStar(starAddress)`
+`valStar(starAddress)`
 Validates an Urbit star address
 
 
-#### `valShip(shipAddress)`
+`valShip(shipAddress)`
 Validates an Urbit ship address
 
 
-#### `valAddress(ethAddress)`
+`valAddress(ethAddress)`
 Validates an Ether address
 
 
-#### `formatShipName(shipName)`
+`formatShipName(shipName)`
 Adds a tilde to a valid Urbit ship name
 
 
-#### `getSpawnCandidate(shipAddress)`
+`getSpawnCandidate(shipAddress)`
 Returns the address of a random spawn candidate from the Urbit ship `address`. This call does NOT guarantee availability of the returned address.
 
 
 
-## Read Functions
+### Read 
 
 Read Urbit ship data stored on the blockchain
 
 
-#### `buildOwnedShips(ethAddress, callback)`
+`buildOwnedShips(ethAddress, callback)`
 Returns an object loaded with the ships owned by `ethAddress`
 
 
-#### `getConstitutionOwner(callback)`
+`getConstitutionOwner(callback)`
 Returns the Ether address of the owner of the Urbit constitution
 
 
-#### `readShipData(shipAddress, callback)`
+`readShipData(shipAddress, callback)`
 Returns `hasBeenBooted` bool for ship with `shipAddress`
 
 
-#### `readHasOwner(shipAddress, callback)`
+`readHasOwner(shipAddress, callback)`
 Returns a bool for whether ship with `shipAddress` has an owner
 
 
-#### `readIsOwner(shipAddress, ethAddress, callback)`
+`readIsOwner(shipAddress, ethAddress, callback)`
 Returns `true` if `ethAddress` owns the ship at `shipAddress`
 
 
-#### `readPoolAssets(poolAddress, callback)`
+`readPoolAssets(poolAddress, callback)`
 Returns the total Spark assets of the pool at `poolAddress`
 
 
-#### `readBalance(poolAddress, callback)`
+`readBalance(poolAddress, callback)`
 Returns the balance of Spark assets in the pool at `poolAddress` held by the given wallet 
 
 
-#### `readParent(shipAddress, callback)`
+`readParent(shipAddress, callback)`
 Returns the parent ship address of `shipAddress`
 
 
-#### `readOwnedShips(ethAddress, callback)`
+`readOwnedShips(ethAddress, callback)`
 Returns the list of ships owned by `ethAddress`
 
 
-#### `readIsRequestingEscapeTo(shipAddress, sponsorAddress, callback)`
+`readIsRequestingEscapeTo(shipAddress, sponsorAddress, callback)`
 Returns a bool for whether `shipAddress` is currently requesting an escape to `sponsorAddress`
 
 
-#### `readKeys(shipAddress, callback)`
+`readKeys(shipAddress, callback)`
 Returns the keys for ship at `shipAddress`
 
 
-#### `readIsSpawnProxy(shipAddress, ethAddress, callback)`
+`readIsSpawnProxy(shipAddress, ethAddress, callback)`
 Returns a bool for whether `ethAddress` is the spawn proxy of `shipAddress`
 
 
 
-## Transaction Functions
+### Transactions
 
 The callback in each of these functions returns an object in this format:
 ```
@@ -156,71 +158,71 @@ The callback in each of these functions returns an object in this format:
 
 
 
-#### `doCreateGalaxy(galaxy, callback)`
+`doCreateGalaxy(galaxy, callback)`
 Create `galaxy`
 
 
-#### `doDeposit(star, poolAddress, callback)`
+`doDeposit(star, poolAddress, callback)`
 Deposit `star` into the pool at `poolAddress`
 
 
-#### `doWithdraw(star, poolAddress, callback)`
+`doWithdraw(star, poolAddress, callback)`
 Withdraw `star` from the pool at `poolAddress`
 
 
-#### `doSpawn(shipAddress, callback)`
+`doSpawn(shipAddress, callback)`
 Spawn ship `shipAddress`
 
 
-#### `doSetSpawnProxy(shipAddress, ethAddress, callback)`
+`doSetSpawnProxy(shipAddress, ethAddress, callback)`
 Set `ethAddress` as the spawn proxy of `shipAddress`
 
 
-#### `doConfigureKeys(shipAddress, encryptionKey, authenticationKey, discontinuous, callback)`
+`doConfigureKeys(shipAddress, encryptionKey, authenticationKey, discontinuous, callback)`
 Set `encryptionKey` and `authenticationKey` as the keys for `shipAddress`. bool `discontinuous` optionally increments the continuity number of `shipAddress`
 
 
-#### `doTransferShip(shipAddress, ethAddress, reset, callback)`
+`doTransferShip(shipAddress, ethAddress, reset, callback)`
 Transfer `shipAddress` to `ethAddress`. bool `reset` optionally clears the keys and breaks continuity
 
 
-#### `doSetTransferProxy(shipAddress, ethAddress, callback)`
+`doSetTransferProxy(shipAddress, ethAddress, callback)`
 Set `ethAddress` as the transfer proxy for `shipAddress`
 
 
-#### `doEscape(shipAddress, sponsorAddress, callback)`
+`doEscape(shipAddress, sponsorAddress, callback)`
 Escape `shipAddress` to `sponsorAddress`
 
 
-#### `doAdopt(sponsorAddress, escapeeAddress, callback)`
+`doAdopt(sponsorAddress, escapeeAddress, callback)`
 `sponsorAddress` adopts `escapeeAddress`
 
 
-#### `doReject(sponsorAddress, escapeeAddress, callback)`
+`doReject(sponsorAddress, escapeeAddress, callback)`
 `sponsorAddress` rejects `escapeeAddress`
 
 
-#### `doApprove(ethAddress, shipAddress, callback)`
+`doApprove(ethAddress, shipAddress, callback)`
 Approve `ethAddress` to transfer `shipAddress`
 
 
-#### `doSafeTransferFrom(fromEthAddress, toEthAddress, shipAddress, callback)`
+`doSafeTransferFrom(fromEthAddress, toEthAddress, shipAddress, callback)`
 Conduct a safe transfer of `shipAddress` from `fromEthAddress` to `toEthAddress`
 
 
-#### `doCastConstitutionVote(galaxy, prop, vote, callback)`
+`doCastConstitutionVote(galaxy, prop, vote, callback)`
 Cast `vote` from `galaxy` on constitution proposal at `prop`
 
 
-#### `doCastDocumentVote(galaxy, prop, vote, callback)`
+`doCastDocumentVote(galaxy, prop, vote, callback)`
 Cast `vote` from `galaxy` on document proposal at `prop`
 
 
 
 
-## Send signed transactions
+### Send
 
-#### `sendTx(signedTx, callback)`
+`sendTx(signedTx, callback)`
 Submit `signedTx` to the blockchain. The object returned in the callback is in this format:
 ```
 { 
