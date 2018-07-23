@@ -46,6 +46,13 @@ Each Urbit ship also has a unique human-readable name that's determined from its
 ## Functions
 
 
+### Wallet Setup
+
+`buildWalletsFromMnemonic(mnemonic)`
+
+Derives keys from a mnemonic phrase and establishes an active wallet
+
+
 ### Validation and Formatting
 
 `toAddress(shipName)`
@@ -94,7 +101,7 @@ Returns the address of a random spawn candidate from the Urbit ship `address`. T
 Read Urbit ship data stored on the blockchain
 
 
-`buildOwnedShips(ethAddress, callback)`
+`buildOwnedShips(ethAddress)`
 
 Returns an object loaded with the ships owned by `ethAddress`
 
@@ -287,7 +294,14 @@ Submit `signedTx` to the blockchain. The object returned in the callback is in t
 
 ### Get a random spawn candidate for a ship you own and then spawn it 
 
-#### 1. Call `getSpawnCandidate` passing in the Urbit address of a ship you own 
+#### 1. Call `buildWalletsFromMnemonic` with the dev mnemonic to establish an active wallet
+```
+node -e 'require("./index").buildWalletsFromMnemonic("benefit crew supreme gesture quantum web media hazard theory mercy wing kitten",console.log)'
+```
+#### Returned string
+`0x6deffb0cafdb11d175f123f6891aa64f01c24f7d`
+
+#### 2. Call `getSpawnCandidate` passing in the Urbit address of a ship you own 
 ```
 node -pe 'require("./index").getSpawnCandidate(256)'
 ```
@@ -300,7 +314,7 @@ This function is a random number generator, so returned values will vary
 
 
 
-#### 2. Call `doSpawn` with the returned spawn candidate address
+#### 3. Call `doSpawn` with the returned spawn candidate address
 `node -e 'require("./index").doSpawn(791085312,console.log)'`
 #### Returned object
 ```
@@ -322,7 +336,7 @@ This function is a random number generator, so returned values will vary
 ```
 
 
-#### 3. Call `sendTx` with the `signedTx` value from the returned object
+#### 4. Call `sendTx` with the `signedTx` value from the returned object
 ```
 node -e 'require("./index").sendTx("0xf8aa148504e3b29200830446c694098b6cb45da68c31c751d9df211cbe3056c356d180b844a0d3253f000000000000000000000000000000000000000000000000000000002f2701000000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d25a0f216335c74c4e7151feaa1afb83bf5d08cfc72eab336268e5edd4ffae6ca3f55a068ffbb95cd3eb20b2aaf83960df96e1ff6ff3ddce2d68ca4fd762de8fcd350cd",console.log)'
 ```
@@ -348,7 +362,7 @@ node -e 'require("./index").sendTx("0xf8aa148504e3b29200830446c694098b6cb45da68c
 ```
 
 
-#### 4. Call `buildOwnedShips` to see your newly spawned ship
+#### 5. Call `buildOwnedShips` to see your newly spawned ship
 ```
 node -e 'require("./index").buildOwnedShips("0x6deffb0cafdb11d175f123f6891aa64f01c24f7d",console.log)'
 ```

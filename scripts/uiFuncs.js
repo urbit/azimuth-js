@@ -1,7 +1,6 @@
 'use strict';
 var uiFuncs = function() {}
 uiFuncs.BigNumber = null;
-uiFuncs.wallet = null;
 uiFuncs.ajaxReq = null;
 uiFuncs.ethFuncs = null;
 uiFuncs.etherUnits = null;
@@ -15,11 +14,11 @@ uiFuncs.getTxData = function(tx, wallet) {
         unit: tx.unit,
         gasLimit: tx.gasLimit,
         data: tx.data,
-        from: this.wallet.getAddressString(),
-        privKey: this.wallet.privKey ? this.wallet.getPrivateKeyString() : '',
-        path: this.wallet.getPath(),
-        hwType: this.wallet.getHWType(),
-        hwTransport: this.wallet.getHWTransport()
+        from: wallet.addressString(),
+        privKey: wallet.privKey ? wallet.getPrivateKeyString() : '',
+        path: undefined, // wallet.getPath(),
+        hwType: undefined, //wallet.getHWType(),
+        hwTransport: undefined //wallet.getHWTransport()
     };
 };
 

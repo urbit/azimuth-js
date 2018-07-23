@@ -1,6 +1,6 @@
 'use strict';
 
-// urbit constitution client module
+// urbit constitution-js
 
 var BigNumber = require('bignumber.js');
 var ethTx = require('ethereumjs-tx');
@@ -9,17 +9,15 @@ var ethUtil = require('ethereumjs-util');
 var request = require('request');
 var utf8 = require('utf8');
 var crypto = require('crypto');
+var bip39 = require('bip39');
+var hdkey = require('hdkey');
 
 var uiFuncs = require('./scripts/uiFuncs');
 var ethFuncs = require('./scripts/ethFuncs');
 var validator = require('./scripts/validator');
 var utils = require('./scripts/solidity/utils');
 var ajaxReq = require('./scripts/ajaxReq');
-var wallet = require('./scripts/wallet');
-
-wallet.ethUtil = ethUtil;
-wallet.pubKey = "0x07a5bb85bee2dff7ca9059eed9fcd3fb19e9c279e34efa07977b89f8eabcb762acd1e717298dd9db00eacc749b3ba9576795c5e19956f2385a00fd3cc2a6fda4";
-wallet.privKey = "a44de2416ee6beb2f323fab48b432925c9785808d33a6ca6d7ba00b45e9370c3";
+var Wallet = require('./scripts/Wallet');
 
 utils.BigNumber = BigNumber;
 utils.sha3 = ethUtil.sha3;
@@ -29,7 +27,6 @@ ethUtil.solidityCoder = require('./scripts/solidity/coder');
 ethUtil.solidityUtils = utils;
 
 uiFuncs.BigNumber = BigNumber;
-uiFuncs.wallet = wallet;
 uiFuncs.ajaxReq = ajaxReq;
 uiFuncs.ethFuncs = ethFuncs;
 uiFuncs.ethFuncs.etherUnits = utils;
@@ -63,6 +60,9 @@ var contracts = {
   constitution: "0x098b6cb45da68c31c751d9df211cbe3056c356d1"
 };
 
+var wallets = [];
+var activeWallet;
+
 var oneSpark = 1000000000000000000;
 
 var tx = {
@@ -80,10 +80,33 @@ var gasPriceDec;
 var offline = false;
 var rawTx;
 var poolAddress;
-var tmp;
+var ownedShips;
+
+var buildWalletsFromMnemonic = function(mnemonic, callback) {
+    var masterKeys = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
+    var str;
+    var addr;
+    var privKey;
+    var path;
+
+    for (var i = 0; i < 10; i++) {
+      path = "m/44'/60'/0'/0/" + i;
+      privKey = masterKeys.derive(path).privateKey;
+      addr = '0x' + ethUtil.privateToAddress(privKey).toString('hex');
+      if (i === 0) {
+        activeWallet = new Wallet(privKey, addr);
+        wallets.push(activeWallet);
+      } else { wallets.push(new Wallet(privKey, addr)); }
+    }
+
+    activeWallet = wallets[0];
+    if (activeWallet.addressString().length < 1) {
+      callback('build wallets failed');
+    } else { callback(activeWallet.addressString()); }
+};
 
 var doTransaction = function(address, func, input, callback, value) {
-  if (wallet.getAddressString() == null) {
+  if (activeWallet.addressString() == null) {
     return;
   }
   var data = buildTransactionData(func, input);
@@ -92,7 +115,7 @@ var doTransaction = function(address, func, input, callback, value) {
   tx.unit = "wei";
   if (!offline) {
     var estObj = {
-      from: wallet.getAddressString(),
+      from: activeWallet.addressString(),
       value: ethFuncs.sanitizeHex(ethFuncs.decimalToHex(tx.value)),
       data: ethFuncs.sanitizeHex(data),
     }
@@ -107,14 +130,14 @@ var doTransaction = function(address, func, input, callback, value) {
         //     unpredictable, and how to fix it.
       tx.gasLimit = Math.round(data.data * 1.8);
         try {
-          if (wallet == null)
+          if (activeWallet == null)
           { throw validator.errorMsgs[3]; }
           else if (!ethFuncs.validateHexString(tx.data))
           { throw validator.errorMsgs[9]; }
           else if (!validator.isNumeric(tx.gasLimit) || parseFloat(tx.gasLimit) <= 0)
           { throw validator.errorMsgs[8]; }
           tx.data = ethFuncs.sanitizeHex(tx.data);
-          ajaxReq.getTransactionData(wallet.getAddressString(), function(data) {
+          ajaxReq.getTransactionData(activeWallet.addressString(), function(data) {
             if (data.error) {
               callback({ error: { msg: data.msg }, data: '' });
             } else {
@@ -177,7 +200,7 @@ var generateTxOffline = function() {
 
 var generateTx = function(callback) {
   try {
-    if (wallet == null) {
+    if (activeWallet == null) {
       throw validator.errorMsgs[3];
     } else if (!ethFuncs.validateHexString(tx.data)) {
        throw validator.errorMsgs[9];
@@ -185,12 +208,12 @@ var generateTx = function(callback) {
       throw validator.errorMsgs[8];
     }
     tx.data = ethFuncs.sanitizeHex(tx.data);
-    ajaxReq.getTransactionData(wallet.getAddressString(), function(data) {
+    ajaxReq.getTransactionData(activeWallet.addressString(), function(data) {
       if (data.error) callback({ error: { msg: data.msg }, data: '' });
       data = data.data;
       tx.to = tx.to == '' ? '0xCONTRACT' : tx.to;
-      tx.contractAddr = tx.to == '0xCONTRACT' ? ethFuncs.getDeteministicContractAddress(wallet.getAddressString(), data.nonce) : '';
-      var txData = uiFuncs.getTxData(tx, wallet);
+      tx.contractAddr = tx.to == '0xCONTRACT' ? ethFuncs.getDeteministicContractAddress(activeWallet.addressString(), data.nonce) : '';
+      var txData = uiFuncs.getTxData(tx, activeWallet);
       uiFuncs.generateTx(txData, function(rawTx) {
         if (!rawTx.isError) {
           callback({ error: false, rawTx: rawTx.rawTx, signedTx: rawTx.signedTx, showRaw: true})
@@ -339,7 +362,7 @@ var formatShipName = function(shipName) {
 };
 
 var buildOwnedShips = function(address, callback) {
-  tmp = {}
+  ownedShips = {}
   // zero out struct?
   getOwnedShips(address, function(data) {
     // if no ships returns, just zero this out, otherwise, wait until all 
@@ -347,7 +370,7 @@ var buildOwnedShips = function(address, callback) {
     if (data[0].length < 1) {
       ownedShips = {};
     }
-    var x = data[0]
+    var x = data[0];
     for (var i in x) {
       if (i == x.length - 1) {
         // transfer shiplist once built
@@ -362,12 +385,12 @@ var buildOwnedShips = function(address, callback) {
 
 var buildShipData = function(address, terminate, callback) {
   function put(data) {
-    tmp[address] = {};
-    tmp[address]['name'] = '~' + toShipName(address);
-    tmp[address]['address'] = address['c'][0];
-    tmp[address]['hasBeenBooted'] = data[0];
+    ownedShips[address] = {};
+    ownedShips[address]['name'] = '~' + toShipName(address);
+    ownedShips[address]['address'] = address['c'][0];
+    ownedShips[address]['hasBeenBooted'] = data[0];
     if (terminate) {
-      callback(tmp);
+      callback(ownedShips);
     }
   }
   getHasBeenBooted(address, put);
@@ -582,7 +605,7 @@ var getPoolAssets = function(poolAddress, callback) {
 var getSparkBalance = function(poolAddress, callback) {
   readContractData(poolAddress,
     "balanceOf(address)",
-    [wallet.getAddressString()],
+    [activeWallet.addressString()],
     ["uint256"],
     callback
   );
@@ -723,7 +746,7 @@ var readBalance = function(poolAddress, callback) {
 // CHECK: verify if conditions for a transaction are met
 //
 var checkOwnership = function(shipAddress, callback, next) {
-  getIsOwner(shipAddress, wallet.getAddressString(), function(data) {
+  getIsOwner(shipAddress, activeWallet.addressString(), function(data) {
     if (data[0]) return next();
     callback({ error: { msg: "Not your ship. " + shipAddress }, data: '' });
   });
@@ -781,7 +804,7 @@ var checkIsNotOwned = function(shipAddress, callback, next) {
 // DO: do transactions that modify the blockchain
 //
 var doCreateGalaxy = function(galaxy, callback) {
-  var ethAddress = wallet.getAddressString();
+  var ethAddress = activeWallet.addressString();
   validateGalaxy(galaxy, callback, function() {
     validateAddress(ethAddress, callback, function() {
       if (offline) return transact();
@@ -843,7 +866,7 @@ var doWithdraw = function(star, poolAddress, callback) {
 var doSpawn = function(shipAddress, callback) {
   var sponsorAddress = shipAddress % 256;
   if (shipAddress > 65535) sponsorAddress = shipAddress % 65536;
-  var ethAddress = wallet.getAddressString();
+  var ethAddress = activeWallet.addressString();
   validateShip(shipAddress, callback, function() {
     validateAddress(ethAddress, callback, function() {
       if (offline) return transact();
@@ -1090,9 +1113,8 @@ module.exports = {
   offline: offline,
   poolAddress: poolAddress,
   contracts: contracts,
-  ajaxReq: ajaxReq,
-  wallet: wallet,
-  validator: validator,
+  buildWalletsFromMnemonic: buildWalletsFromMnemonic,
+  wallets: wallets,
   toAddress: toAddress,
   valGalaxy: valGalaxy,
   valStar: valStar,

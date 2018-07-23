@@ -3,10 +3,6 @@
 var expect = require('chai').expect;
 var urbitConCli = require('../index');
 
-var randomIntWithInterval = function(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
 describe('#formatShipName', function() {
   var emptyShipName = '';
   var oneCharacterShipName = 'z';
@@ -66,12 +62,23 @@ describe('#create a galaxy and retrieve owned ships', function() {
   var galaxyAddress;
   var shipArr;
   var signedTx = '';
-  var ethAddress = urbitConCli.wallet.getAddressString();
+  var ethAddress;
+
+  it('build wallets with mnemonic', function(done) {
+    var mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
+    urbitConCli.buildWalletsFromMnemonic(mnemonic, function(data) {
+      ethAddress = data;
+      done();
+    });
+  });
 
   it('retrieve owned ships', function(done) {
+    function randomIntWithInterval(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    };
     urbitConCli.buildOwnedShips(ethAddress, function(data) {
       if (!data['error']) {
-        shipArr = Object.keys(data)
+        shipArr = Object.keys(data);
         var makeRandomGalaxy = function() {
           galaxyAddress = randomIntWithInterval(2,255);
           if (shipArr.indexOf(galaxyAddress) > -1) {
@@ -103,25 +110,25 @@ describe('#create a galaxy and retrieve owned ships', function() {
   it('retrieve owned ships to verify new galaxy exists', function(done) {
     urbitConCli.buildOwnedShips(ethAddress, function(data) {
       if (!data['error']) {
-        var keyArr = Object.keys(data)
-        var idx = keyArr.indexOf(galaxyAddress.toString())
+        var keyArr = Object.keys(data);
+        var idx = keyArr.indexOf(galaxyAddress.toString());
         if (idx > -1) { done(); }
       }
     });
   });
 });
 
-describe('#Spawn a star, set transfer proxy to the pool, deposit, read balance, withdraw', function() {
+describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balance, withdraw', function() {
 
-  var starAddress = urbitConCli.getSpawnCandidate(0);
-  var starNameFormatted = urbitConCli.formatShipName(urbitConCli.toShipName(starAddress));
   urbitConCli.poolAddress = urbitConCli.contracts['pool'];
   var signedTx = '';
-  var ethAddress = urbitConCli.wallet.getAddressString();
+  var ethAddress;
   var sparksBalance = 0;
   var poolAssets = 0;
+  var starAddress;
 
   it('read the starting balance of Sparks held by the wallet', function(done) {
+    ethAddress = urbitConCli.wallets[0].addressString();
     urbitConCli.readBalance(urbitConCli.poolAddress, function(data) {
       if (!data['error']) {
         sparksBalance = data;
@@ -139,93 +146,102 @@ describe('#Spawn a star, set transfer proxy to the pool, deposit, read balance, 
     });
   });
 
-  it('spawn the star', function(done) {
-    this.timeout(5000);
-    urbitConCli.doSpawn(starAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
-        done();
-      }
+  var tests = [
+    { arg: urbitConCli.getSpawnCandidate(0) },
+    { arg: urbitConCli.getSpawnCandidate(0) }
+  ];
+
+  tests.forEach(function(test) {
+
+    it('spawn the star', function(done) {
+      this.timeout(5000);
+      starAddress = test.arg;
+      urbitConCli.doSpawn(starAddress, function(data) {
+        if (!data['error']) {
+          signedTx = data['signedTx'];
+          done();
+        }
+      });
+    });
+
+    it('send the signed tx', function(done) {
+      urbitConCli.sendTx(signedTx, function(data) {
+        if (!data['error']) {
+          var signedTx = '';
+          done();
+        }
+      });
+    });
+
+    it('retrieve owned ships to verify new star', function(done) {
+      urbitConCli.buildOwnedShips(ethAddress, function(data) {
+        if (!data['error']) {
+          var keyArr = Object.keys(data);
+          var idx = keyArr.indexOf(starAddress.toString());
+          if (idx > -1) { done(); }
+        }
+      });
+    });
+
+    it('set the pool contract as the transfer proxy for the new star', function(done) {
+      urbitConCli.doSetTransferProxy(starAddress, urbitConCli.poolAddress, function(data) {
+        if (!data['error']) {
+          signedTx = data['signedTx'];
+          done();
+        }
+      });
+    });
+
+    it('send the signed tx', function(done) {
+      urbitConCli.sendTx(signedTx, function(data) {
+        if (!data['error']) {
+          var signedTx = '';
+          done();
+        }
+      });
+    });
+
+    it('deposit the star', function(done) {
+      urbitConCli.doDeposit(starAddress, urbitConCli.poolAddress, function(data) {
+        if (!data['error']) {
+          signedTx = data['signedTx'];
+          done();
+        }
+      });
+    });
+
+    it('send the signed tx', function(done) {
+      urbitConCli.sendTx(signedTx, function(data) {
+        if (!data['error']) {
+          var signedTx = '';
+          done();
+        }
+      });
+    });
+
+    it('retrieve owned ships to verify star has been deposited', function(done) {
+      urbitConCli.buildOwnedShips(ethAddress, function(data) {
+        if (!data['error']) {
+          var keyArr = Object.keys(data);
+          var idx = keyArr.indexOf(starAddress.toString());
+          if (idx === -1) { done(); }
+        }
+      });
+    });
+
+    it('verify the new balance of Sparks held by the wallet is 1 more than above', function(done) {
+      urbitConCli.readBalance(urbitConCli.poolAddress, function(data) {
+        if (!data['error']) {
+          if (data === sparksBalance + 1 || data === sparksBalance + 2) { done(); } 
+        }
+      });
     });
   });
 
-  it('send the signed tx', function(done) {
-    urbitConCli.sendTx(signedTx, function(data) {
-      if (!data['error']) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('retrieve owned ships to verify new star', function(done) {
-    urbitConCli.buildOwnedShips(ethAddress, function(data) {
-      if (!data['error']) {
-        var keyArr = Object.keys(data)
-        var idx = keyArr.indexOf(starAddress.toString())
-        if (idx > 0) { done(); }
-      }
-    });
-  });
-
-  it('set the pool contract as the transfer proxy for the new star', function(done) {
-    urbitConCli.doSetTransferProxy(starAddress, urbitConCli.poolAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    urbitConCli.sendTx(signedTx, function(data) {
-      if (!data['error']) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('deposit the star', function(done) {
-    urbitConCli.doDeposit(starAddress, urbitConCli.poolAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    urbitConCli.sendTx(signedTx, function(data) {
-      if (!data['error']) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('retrieve owned ships to verify star has been deposited', function(done) {
-    urbitConCli.buildOwnedShips(ethAddress, function(data) {
-      if (!data['error']) {
-        var keyArr = Object.keys(data)
-        var idx = keyArr.indexOf(starAddress.toString())
-        if (idx === -1) { done(); }
-      }
-    });
-  });
-
-  it('verify the new balance of Sparks held by the wallet is 1 more than above', function(done) {
-    urbitConCli.readBalance(urbitConCli.poolAddress, function(data) {
-      if (!data['error']) {
-        if (sparksBalance + 1 === data) { done(); }
-      }
-    });
-  });
-
-  it('verify pool assets are 1 more than above', function(done) {
+  it('verify pool assets are 2 more than above', function(done) {
     urbitConCli.readPoolAssets(urbitConCli.poolAddress, function(data) {
       if (!data['error']) {
-        if (poolAssets + 1 === data.length) { done(); }
+        if (data.length === poolAssets + 2) { done(); }
       }
     });
   });
@@ -251,9 +267,9 @@ describe('#Spawn a star, set transfer proxy to the pool, deposit, read balance, 
   it('retrieve owned ships to verify star is back', function(done) {
     urbitConCli.buildOwnedShips(ethAddress, function(data) {
       if (!data['error']) {
-        var keyArr = Object.keys(data)
-        var idx = keyArr.indexOf(starAddress.toString())
-        if (idx > 0) { done(); }
+        var keyArr = Object.keys(data);
+        var idx = keyArr.indexOf(starAddress.toString());
+        if (idx > -1) { done(); }
       }
     });
   });
