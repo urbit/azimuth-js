@@ -49,6 +49,7 @@ var buildWalletsFromMnemonic = function(mnemonic, cb) {
 };
 
 var signTransaction = function(encodedABI, contractAddress, cb) {
+
   if (!offline) {
     var tx = {
         from: web3.eth.defaultAccount,
@@ -61,7 +62,7 @@ var signTransaction = function(encodedABI, contractAddress, cb) {
       tx['gas'] = Math.round(gas * 1.8);
       web3.eth.accounts.signTransaction(tx, '0x' + privateKeyMaster)
       .then((signed) => {
-        cb(signed.rawTransaction);
+        cb({ error: false, rawTx: signed.rawTransaction });
       }).catch((err) => console.log(err));
     }).catch((err) => console.log(err));
   }
@@ -70,7 +71,7 @@ var signTransaction = function(encodedABI, contractAddress, cb) {
 var sendTransaction = function(signedTx, cb) {
   var tran = web3.eth.sendSignedTransaction(signedTx);
   tran.on('transactionHash', hash => {
-    cb(hash);
+    cb({ error: false, txHash: hash });
   });
   tran.on('error', console.error);
   // tran.on('confirmation', (confirmationNumber, receipt) => {

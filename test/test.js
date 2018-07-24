@@ -95,7 +95,7 @@ describe('#create a galaxy and retrieve owned ships', function() {
   it('create a signed tx that creates a galaxy', function(done) {
     urbitConCli.doCreateGalaxy(galaxyAddress, function(data) {
       if (!data['error']) {
-        signedTx = data;
+        signedTx = data['rawTx'];
         done();
       }
     });
@@ -158,7 +158,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
       starAddress = test.arg;
       urbitConCli.doSpawn(starAddress, function(data) {
         if (!data['error']) {
-          signedTx = data;
+          signedTx = data['rawTx'];
           done();
         }
       });
@@ -186,7 +186,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     it('set the pool contract as the transfer proxy for the new star', function(done) {
       urbitConCli.doSetTransferProxy(starAddress, poolAddress, function(data) {
         if (!data['error']) {
-          signedTx = data;
+          signedTx = data['rawTx'];
           done();
         }
       });
@@ -204,7 +204,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     it('deposit the star', function(done) {
       urbitConCli.doDeposit(starAddress, poolAddress, function(data) {
         if (!data['error']) {
-          signedTx = data;
+          signedTx = data['rawTx'];
           done();
         }
       });
@@ -249,7 +249,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   it('withdraw the star from the pool', function(done) {
     urbitConCli.doWithdraw(starAddress, poolAddress, function(data) {
       if (!data['error']) {
-        signedTx = data;
+        signedTx = data['rawTx'];
         done();
       }
     });

@@ -48,7 +48,7 @@ Each Urbit ship also has a unique human-readable name that's determined from its
 
 ### Wallet Setup
 
-`buildWalletsFromMnemonic(mnemonic)`
+`buildWalletsFromMnemonic(mnemonic, callback)`
 
 Derives keys from a mnemonic phrase and establishes an active wallet
 
@@ -101,7 +101,7 @@ Returns the address of a random spawn candidate from the Urbit ship `address`. T
 Read Urbit ship data stored on the blockchain
 
 
-`buildOwnedShips(ethAddress)`
+`buildOwnedShips(ethAddress, callback)`
 
 Returns an object loaded with the ships owned by `ethAddress`
 
@@ -168,18 +168,7 @@ The callback in each of these functions returns an object in this format:
 ```
 { 
   error: false,
-  rawTx: 
-    '{
-  	  "nonce":"0x14",
-  	  "gasPrice":"0x04e3b29200",
-  	  "gasLimit":"0x0446c6",
-  	  "to":"0x098b6cb45da68c31c751d9df211cbe3056c356d1",
-  	  "value":"0x00",
-  	  "data":"0xa0d3253f000000000000000000000000000000000000000000000000000000002f2701000000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d",
-  	  "chainId":1
-    }',
-  signedTx: '0xf8aa148504e3b29200830446c694098b6cb45da68c31c751d9df211cbe3056c356d180b844a0d3253f000000000000000000000000000000000000000000000000000000002f2701000000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d25a0f216335c74c4e7151feaa1afb83bf5d08cfc72eab336268e5edd4ffae6ca3f55a068ffbb95cd3eb20b2aaf83960df96e1ff6ff3ddce2d68ca4fd762de8fcd350cd',
-  showRaw: true 
+  "rawTx": "0xf8af1b8504a817c8008304adf594098b6cb45da68c31c751d9df211cbe3056c356d180b844a0d3253f00000000000000000000000000000000000000000000000000000000000068000000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d8602c998f5ebf0a0945c612de30dcc2b793de464c46ae8bc28b9ee9164d7bdce0da581b28870b08b9f7cf9215845da3108fb9141f3c2e76d6e8ffdef1c12c5e23a4f2250aa454fba"
 }
 ```
 
@@ -270,29 +259,14 @@ Submit `signedTx` to the blockchain. The object returned in the callback is in t
 ```
 { 
   error: false,
-  data: 
-    {
-      resp: '0x5b32667f0ce0032007dba91c1011942a3140f826c69a6c689632caa91321c7b0',
-   	  tx: 
-        { 
-      	  gasLimit: '',
-          data: '',
-          to: '',
-          unit: 'ether',
-          value: 0,
-          nonce: null,
-          gasPrice: null 
-    	} 
-    } 
+  txHash: '0xb6b61dc7e59a39dc141e8971e29f86175ef9e9ba0fc4ea2948351c4aa009a8e1'
 }
 ```
 
 
 
 
-## Command Line Example
-
-### Get a random spawn candidate for a ship you own and then spawn it 
+## Command Line Examples
 
 #### 1. Call `buildWalletsFromMnemonic` with the dev mnemonic to establish an active wallet
 ```
@@ -314,55 +288,15 @@ This function is a random number generator, so returned values will vary
 
 
 
-#### 3. Call `doSpawn` with the returned spawn candidate address
-`node -e 'require("./index").doSpawn(791085312,console.log)'`
+#### 3. Call `getConstitutionOwner`
+`node -e 'require("./index").getConstitutionOwner(console.log)`
 #### Returned object
 ```
-{ 
-  error: false,
-  rawTx: 
-    '{
-  	  "nonce":"0x14",
-  	  "gasPrice":"0x04e3b29200",
-  	  "gasLimit":"0x0446c6",
-  	  "to":"0x098b6cb45da68c31c751d9df211cbe3056c356d1",
-  	  "value":"0x00",
-  	  "data":"0xa0d3253f000000000000000000000000000000000000000000000000000000002f2701000000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d",
-  	  "chainId":1
-    }',
-  signedTx: '0xf8aa148504e3b29200830446c694098b6cb45da68c31c751d9df211cbe3056c356d180b844a0d3253f000000000000000000000000000000000000000000000000000000002f2701000000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d25a0f216335c74c4e7151feaa1afb83bf5d08cfc72eab336268e5edd4ffae6ca3f55a068ffbb95cd3eb20b2aaf83960df96e1ff6ff3ddce2d68ca4fd762de8fcd350cd',
-  showRaw: true 
-}
+null '0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d'
 ```
 
 
-#### 4. Call `sendTx` with the `signedTx` value from the returned object
-```
-node -e 'require("./index").sendTx("0xf8aa148504e3b29200830446c694098b6cb45da68c31c751d9df211cbe3056c356d180b844a0d3253f000000000000000000000000000000000000000000000000000000002f2701000000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d25a0f216335c74c4e7151feaa1afb83bf5d08cfc72eab336268e5edd4ffae6ca3f55a068ffbb95cd3eb20b2aaf83960df96e1ff6ff3ddce2d68ca4fd762de8fcd350cd",console.log)'
-```
-#### Returned object
-```
-{ 
-  error: false,
-  data: 
-    {
-      resp: '0x5b32667f0ce0032007dba91c1011942a3140f826c69a6c689632caa91321c7b0',
-   	  tx: 
-        { 
-      	  gasLimit: '',
-          data: '',
-          to: '',
-          unit: 'ether',
-          value: 0,
-          nonce: null,
-          gasPrice: null 
-    	} 
-    } 
-}
-```
-
-
-#### 5. Call `buildOwnedShips` to see your newly spawned ship
+#### 4. Call `buildOwnedShips` with the address from #1 to see your ships
 ```
 node -e 'require("./index").buildOwnedShips("0x6deffb0cafdb11d175f123f6891aa64f01c24f7d",console.log)'
 ```
