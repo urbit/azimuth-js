@@ -48,7 +48,7 @@ Each Urbit ship also has a unique human-readable name that's determined from its
 
 ### Wallet Setup
 
-`buildWalletsFromMnemonic(mnemonic, callback)`
+`buildWalletsFromMnemonic(mnemonic)`
 
 Derives keys from a mnemonic phrase and establishes an active wallet
 
@@ -101,7 +101,7 @@ Returns the address of a random spawn candidate from the Urbit ship `address`. T
 Read Urbit ship data stored on the blockchain
 
 
-`buildOwnedShips(ethAddress, callback)`
+`buildOwnedShips(ethAddress)`
 
 Returns an object loaded with the ships owned by `ethAddress`
 
@@ -315,9 +315,7 @@ This function is a random number generator, so returned values will vary
 
 
 #### 3. Call `doSpawn` with the returned spawn candidate address
-```
-node -e 'require("./index").doSpawn(791085312,console.log)'
-```
+`node -e 'require("./index").doSpawn(791085312,console.log)'`
 #### Returned object
 ```
 { 
