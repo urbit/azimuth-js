@@ -67,8 +67,10 @@ describe('#create a galaxy and retrieve owned ships', function() {
   it('build wallets with mnemonic', function(done) {
     var mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
     urbitConCli.buildWalletsFromMnemonic(mnemonic, function(data) {
-      ethAddress = data;
-      done();
+      if (!data['error']) { 
+        ethAddress = data;
+        done(); 
+      }
     });
   });
 
@@ -79,13 +81,13 @@ describe('#create a galaxy and retrieve owned ships', function() {
     urbitConCli.buildOwnedShips(ethAddress, function(data) {
       if (!data['error']) {
         shipArr = Object.keys(data);
-        var makeRandomGalaxy = function() {
+        var makeRandomGalaxyAddress = function() {
           galaxyAddress = randomIntWithInterval(2,255);
           if (shipArr.indexOf(galaxyAddress) > -1) {
-            makeRandomGalaxy();
+            makeRandomGalaxyAddress();
           } else { done(); }
         }
-        makeRandomGalaxy();
+        makeRandomGalaxyAddress();
       }
     });
   });
@@ -93,14 +95,14 @@ describe('#create a galaxy and retrieve owned ships', function() {
   it('create a signed tx that creates a galaxy', function(done) {
     urbitConCli.doCreateGalaxy(galaxyAddress, function(data) {
       if (!data['error']) {
-        signedTx = data['signedTx'];
+        signedTx = data;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    urbitConCli.sendTx(signedTx, function(data) {
+    urbitConCli.sendTransaction(signedTx, function(data) {
       if (!data['error']) {
         done();
       }
@@ -120,16 +122,15 @@ describe('#create a galaxy and retrieve owned ships', function() {
 
 describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balance, withdraw', function() {
 
-  urbitConCli.poolAddress = urbitConCli.contracts['pool'];
+  var poolAddress = urbitConCli.contractDetails.pool['address'];
   var signedTx = '';
-  var ethAddress;
+  var ethAddress = "0x6deffb0cafdb11d175f123f6891aa64f01c24f7d";
   var sparksBalance = 0;
   var poolAssets = 0;
   var starAddress;
 
   it('read the starting balance of Sparks held by the wallet', function(done) {
-    ethAddress = urbitConCli.wallets[0].addressString();
-    urbitConCli.readBalance(urbitConCli.poolAddress, function(data) {
+    urbitConCli.readBalance(ethAddress, function(data) {
       if (!data['error']) {
         sparksBalance = data;
         done();
@@ -138,7 +139,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   });
 
   it('read the starting pool assets', function(done) {
-    urbitConCli.readPoolAssets(urbitConCli.poolAddress, function(data) {
+    urbitConCli.readPoolAssets(function(data) {
       if (!data['error']) {
         poolAssets = data.length;
         done();
@@ -154,18 +155,17 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   tests.forEach(function(test) {
 
     it('spawn the star', function(done) {
-      this.timeout(5000);
       starAddress = test.arg;
       urbitConCli.doSpawn(starAddress, function(data) {
         if (!data['error']) {
-          signedTx = data['signedTx'];
+          signedTx = data;
           done();
         }
       });
     });
 
     it('send the signed tx', function(done) {
-      urbitConCli.sendTx(signedTx, function(data) {
+      urbitConCli.sendTransaction(signedTx, function(data) {
         if (!data['error']) {
           var signedTx = '';
           done();
@@ -178,22 +178,22 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
         if (!data['error']) {
           var keyArr = Object.keys(data);
           var idx = keyArr.indexOf(starAddress.toString());
-          if (idx > -1) { done(); }
+          if (idx > -1) { done(); } 
         }
       });
     });
 
     it('set the pool contract as the transfer proxy for the new star', function(done) {
-      urbitConCli.doSetTransferProxy(starAddress, urbitConCli.poolAddress, function(data) {
+      urbitConCli.doSetTransferProxy(starAddress, poolAddress, function(data) {
         if (!data['error']) {
-          signedTx = data['signedTx'];
+          signedTx = data;
           done();
         }
       });
     });
 
     it('send the signed tx', function(done) {
-      urbitConCli.sendTx(signedTx, function(data) {
+      urbitConCli.sendTransaction(signedTx, function(data) {
         if (!data['error']) {
           var signedTx = '';
           done();
@@ -202,16 +202,16 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('deposit the star', function(done) {
-      urbitConCli.doDeposit(starAddress, urbitConCli.poolAddress, function(data) {
+      urbitConCli.doDeposit(starAddress, poolAddress, function(data) {
         if (!data['error']) {
-          signedTx = data['signedTx'];
+          signedTx = data;
           done();
         }
       });
     });
 
     it('send the signed tx', function(done) {
-      urbitConCli.sendTx(signedTx, function(data) {
+      urbitConCli.sendTransaction(signedTx, function(data) {
         if (!data['error']) {
           var signedTx = '';
           done();
@@ -230,7 +230,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('verify the new balance of Sparks held by the wallet is 1 more than above', function(done) {
-      urbitConCli.readBalance(urbitConCli.poolAddress, function(data) {
+      urbitConCli.readBalance(ethAddress, function(data) {
         if (!data['error']) {
           if (data === sparksBalance + 1 || data === sparksBalance + 2) { done(); } 
         }
@@ -239,7 +239,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   });
 
   it('verify pool assets are 2 more than above', function(done) {
-    urbitConCli.readPoolAssets(urbitConCli.poolAddress, function(data) {
+    urbitConCli.readPoolAssets(function(data) {
       if (!data['error']) {
         if (data.length === poolAssets + 2) { done(); }
       }
@@ -247,16 +247,16 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   });
 
   it('withdraw the star from the pool', function(done) {
-    urbitConCli.doWithdraw(starAddress, urbitConCli.poolAddress, function(data) {
+    urbitConCli.doWithdraw(starAddress, poolAddress, function(data) {
       if (!data['error']) {
-        signedTx = data['signedTx'];
+        signedTx = data;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    urbitConCli.sendTx(signedTx, function(data) {
+    urbitConCli.sendTransaction(signedTx, function(data) {
       if (!data['error']) {
         var signedTx = '';
         done();
