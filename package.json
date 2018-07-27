@@ -1,6 +1,6 @@
 {
   "name": "constitution-js",
-  "version": "0.1.85",
+  "version": "0.1.86",
   "description": "Interact with the Urbit constitution",
   "repository": {
     "type": "git",

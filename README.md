@@ -253,7 +253,7 @@ Cast `vote` from `galaxy` on document proposal at `prop`
 
 ### Send
 
-`sendTx(signedTx, callback)`
+`sendTransaction(signedTx, callback)`
 
 Submit `signedTx` to the blockchain. The object returned in the callback is in this format:
 ```
@@ -294,6 +294,8 @@ This function is a random number generator, so returned values will vary
 ```
 null '0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d'
 ```
+
+This function (and all other `get` functions) returns two objects: `error` and `result`
 
 
 #### 4. Call `buildOwnedShips` with the address from #1 to see your ships

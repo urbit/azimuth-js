@@ -49,7 +49,6 @@ var buildWalletsFromMnemonic = function(mnemonic, cb) {
 };
 
 var signTransaction = function(encodedABI, contractAddress, cb) {
-
   if (!offline) {
     var tx = {
         from: web3.eth.defaultAccount,
@@ -63,8 +62,8 @@ var signTransaction = function(encodedABI, contractAddress, cb) {
       web3.eth.accounts.signTransaction(tx, '0x' + privateKeyMaster)
       .then((signed) => {
         cb({ error: false, rawTx: signed.rawTransaction });
-      }).catch((err) => console.log(err));
-    }).catch((err) => console.log(err));
+      }).catch( cb({ error: { msg: "Sign transaction error" }, data: '' }) );
+    }).catch( cb({ error: { msg: "Estimate gas error" }, data: '' }) );
   }
 };
 
@@ -260,7 +259,7 @@ var getSpawnCandidate = function(shipAddress) {
   if (shipAddress > -1 && shipAddress < minStarAddress) {
     candidate = ((Math.floor(Math.random() * maxGalaxyAddress) + 1) * minStarAddress + shipAddress);
     return candidate;
-  } else if (shipAddress > maxGalaxyAddress && address < 65536) {
+  } else if (shipAddress > maxGalaxyAddress && address < (maxStarAddress + 1)) {
     candidate = ((Math.floor(Math.random() * maxStarAddress) + 1) * (maxStarAddress + 1) + shipAddress);
     return candidate;
   } else {
@@ -390,9 +389,9 @@ var readOwnedShips = function(ethAddress, cb) {
   if (!ethAddress) { return; }
   getOwnedShips(ethAddress, function(err, res) {
     if (!err) {
-      var res = "";
-      for (var i in data[0]) {
-        res = res + data[0][i] + "\n";
+      var str = "";
+      for (var i = 0; i < res.length; i++) {
+        str = str + res[i] + "\n";
       }
       cb(generateShipList(res));
     } else { cb({ error: { msg: "Error retrieving owned ships" }, data: '' }); }
@@ -418,7 +417,7 @@ var readIsOwner = function(shipAddress, ethAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb(data);
+      cb(res);
     } else { cb({ error: { msg: "Error retrieving isOwner" }, data: '' }); }
   }
 };
@@ -558,9 +557,11 @@ var checkHasBeenBooted = function(sponsorAddress, cb, next) {
 };
 
 var checkIsNotOwned = function(shipAddress, cb, next) {
-  readHasOwner(shipAddress, function(data) {
-    if (!data) return next() 
-    cb({ error: { msg: "Ship has an owner." }, data: '' });
+  readHasOwner(shipAddress, function(err, res) {
+    if (!err) {
+      if (!res) return next() 
+      cb({ error: { msg: "Ship has an owner." }, data: '' });
+    } else { cb({ error: { msg: "Error retrieving hasOwner" }, data: '' }); }
   });
 };
 //
