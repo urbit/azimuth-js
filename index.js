@@ -18,7 +18,6 @@ const oneSpark = 1000000000000000000;
 var web3;
 var contracts;
 var privateKey;
-var defaultAccountSet = false;
 var offline = false;
 //
 //// CONFIG: setup and configure web3
@@ -41,7 +40,6 @@ var setPrivateKey = function(hd, path, cb) {
     if (!err) { 
       web3.eth.defaultAccount = res[0];
       privateKey = hd.derive(path + '/0').privateKey.toString('hex');
-      defaultAccountSet = true;
       cb({ error: false, data: web3.eth.defaultAccount });
     } cb({ error: { msg: "Error setting private key" }, data: '' });
   });
@@ -155,37 +153,6 @@ var formatShipName = function(shipName) {
   } else {
     return shipName;
   }
-};
-
-var buildOwnedShips = function(address, cb) {
-  var ownedShips = {}
-  var shipsAcquired = function() {
-    if (ownedShips.length < 1) { cb({ error: { msg: address + "does not own any ships." }, data: '' }); } 
-    else { cb(ownedShips); }
-  }
-  getOwnedShips(address, function(err, res) {
-    if (!err) {
-      if (res.length < 1) { shipsAcquired(); }
-      var counter = 0;
-      var getBootedData = function() {
-        getHasBeenBooted(res[counter], function(err, bootedResult) {
-          var shipAddress = res[counter];
-          if (!err) {
-            ownedShips[shipAddress] = {};
-            ownedShips[shipAddress]['name'] = '~' + toShipName(shipAddress);
-            ownedShips[shipAddress]['address'] = shipAddress;
-            ownedShips[shipAddress]['hasBeenBooted'] = bootedResult;
-            if (counter === res.length - 1) { shipsAcquired(); }
-            else { 
-              counter++;
-              getBootedData();
-            }
-          } else { cb({ error: { msg: "Error retrieving booted status." }, data: '' }); }
-        });
-      }
-      getBootedData();
-    } else { cb({ error: { msg: "Error retrieving ships." }, data: '' }); }
-  });
 };
 
 var toAddress = function(shipName) {
@@ -335,14 +302,62 @@ var readShipData = function(shipAddress, cb) {
 
 var readOwnedShips = function(ethAddress, cb) {
   if (!ethAddress) { return; }
-  getOwnedShips(ethAddress, function(err, res) {
-    if (!err) {
-      var str = "";
-      for (var i = 0; i < res.length; i++) {
-        str = str + res[i] + "\n";
-      }
-      cb(generateShipList(res));
-    } else { cb({ error: { msg: "Error retrieving owned ships" }, data: '' }); }
+  validateAddress(ethAddress, cb, function() {
+    getOwnedShips(ethAddress, function(err, res) {
+      if (!err) {
+        var str = "";
+        for (var i = 0; i < res.length; i++) {
+          str = str + res[i] + "\n";
+        }
+        cb(generateShipList(res));
+      } else { cb({ error: { msg: "Error retrieving owned ships" }, data: '' }); }
+    });
+  });
+};
+
+var readOwnedShipsStatus = function(ethAddress, cb) {
+  if (!ethAddress) { return; }
+  validateAddress(ethAddress, cb, function() {
+    var ownedShips = {}
+    var shipsAcquired = function() {
+      if (ownedShips.length < 1) { cb({ error: { msg: ethAddress + "does not own any ships." }, data: '' }); } 
+      else { cb(ownedShips); }
+    }
+    getOwnedShips(ethAddress, function(err, res) {
+      if (!err) {
+        if (res.length < 1) { shipsAcquired(); }
+        var counter = 0;
+        var getBootedData = function() {
+          getHasBeenBooted(res[counter], function(err, bootedResult) {
+            var shipAddress = res[counter];
+            if (!err) {
+              ownedShips[shipAddress] = {};
+              ownedShips[shipAddress]['name'] = '~' + toShipName(shipAddress);
+              ownedShips[shipAddress]['address'] = shipAddress;
+              ownedShips[shipAddress]['hasBeenBooted'] = bootedResult;
+              if (counter === res.length - 1) { shipsAcquired(); }
+              else { 
+                counter++;
+                getBootedData();
+              }
+            } else { cb({ error: { msg: "Error retrieving booted status." }, data: '' }); }
+          });
+        }
+        getBootedData();
+      } else { cb({ error: { msg: "Error retrieving ships." }, data: '' }); }
+    });
+  });
+};
+
+var readTransferringFor = function(ethAddress, cb) {
+  if (!ethAddress) { return; }
+  validateAddress(ethAddress, cb, function() {
+    getTransferringFor(ethAddress, put);
+    function put(err, res) {
+      if (!err) {
+        cb(res);
+      } else { cb({ error: { msg: "Error retrieving transferringFor" }, data: '' }); }
+    }
   });
 };
 
@@ -851,30 +866,29 @@ module.exports = {
   setServerUrl: setServerUrl,
   setPoolAddress: setPoolAddress,
   setPrivateKey: setPrivateKey,
-  defaultAccountSet: defaultAccountSet,
   minShipAddress: minShipAddress,
   maxGalaxyAddress: maxGalaxyAddress,
   minStarAddress: minStarAddress,
   maxStarAddress: maxStarAddress,
   maxStarAddress: maxStarAddress,
   contractDetails: contractDetails,
-  toAddress: toAddress,
   valGalaxy: valGalaxy,
   valStar: valStar,
   valShip: valShip,
   valAddress: valAddress,
   formatShipName: formatShipName,
+  toAddress: toAddress,
   toShipName: toShipName,
-  buildOwnedShips: buildOwnedShips,
   getSpawnCandidate: getSpawnCandidate,
-  getConstitutionOwner: getConstitutionOwner,
   readShipData: readShipData,
+  readTransferringFor: readTransferringFor,
   readHasOwner: readHasOwner,
   readIsOwner: readIsOwner,
   readPoolAssets: readPoolAssets,
   readBalance: readBalance,
   readSponsor: readSponsor,
   readOwnedShips: readOwnedShips,
+  readOwnedShipsStatus: readOwnedShipsStatus,
   readIsRequestingEscapeTo: readIsRequestingEscapeTo,
   readKeys: readKeys,
   readIsSpawnProxy: readIsSpawnProxy,

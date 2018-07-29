@@ -87,7 +87,7 @@ describe('#create a galaxy and retrieve owned ships', function() {
     function randomIntWithInterval(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
     };
-    constitution.buildOwnedShips(ethAddress, function(data) {
+    constitution.readOwnedShipsStatus(ethAddress, function(data) {
       if (!data['error']) {
         shipArr = Object.keys(data);
         var makeRandomGalaxyAddress = function() {
@@ -120,7 +120,7 @@ describe('#create a galaxy and retrieve owned ships', function() {
   });
 
   it('retrieve owned ships to verify new galaxy exists', function(done) {
-    constitution.buildOwnedShips(ethAddress, function(data) {
+    constitution.readOwnedShipsStatus(ethAddress, function(data) {
       if (!data['error']) {
         var keyArr = Object.keys(data);
         var idx = keyArr.indexOf(galaxyAddress.toString());
@@ -182,7 +182,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('retrieve owned ships to verify new star', function(done) {
-      constitution.buildOwnedShips(ethAddress, function(data) {
+      constitution.readOwnedShipsStatus(ethAddress, function(data) {
         if (!data['error']) {
           var keyArr = Object.keys(data);
           var idx = keyArr.indexOf(starAddress.toString());
@@ -228,7 +228,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('retrieve owned ships to verify star has been deposited', function(done) {
-      constitution.buildOwnedShips(ethAddress, function(data) {
+      constitution.readOwnedShipsStatus(ethAddress, function(data) {
         if (!data['error']) {
           var keyArr = Object.keys(data);
           var idx = keyArr.indexOf(starAddress.toString());
@@ -273,7 +273,7 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   });
 
   it('retrieve owned ships to verify star is back', function(done) {
-    constitution.buildOwnedShips(ethAddress, function(data) {
+    constitution.readOwnedShipsStatus(ethAddress, function(data) {
       if (!data['error']) {
         var keyArr = Object.keys(data);
         var idx = keyArr.indexOf(starAddress.toString());
