@@ -4,24 +4,8 @@
 
 var Web3 = require('web3');
 var ethUtil = require('ethereumjs-util');
-var bip39 = require('bip39');
-var hdkey = require('hdkey');
 var obService = require('urbit-ob');
-
-const contractDetails = require('./scripts/contractDetails');
-
-var web3;
-const serverURL = "http://localhost:8545";
-
-if (typeof web3 !== 'undefined') { web3 = new Web3(web3.currentProvider); } 
-else { web3 = new Web3(new Web3.providers.HttpProvider(serverURL)); }
-
-const contracts = {
-  constitution: new web3.eth.Contract(contractDetails.constitution['abi'],contractDetails.constitution['address']),
-  ships:        new web3.eth.Contract(contractDetails.ships['abi'],contractDetails.ships['address']),
-  polls:        new web3.eth.Contract(contractDetails.polls['abi'],contractDetails.polls['address']),
-  pool:         new web3.eth.Contract(contractDetails.pool['abi'],contractDetails.pool['address'])
-};
+var contractDetails = require('./scripts/contractDetails');
 
 const minShipAddress = 0;
 const maxGalaxyAddress = 255;
@@ -31,107 +15,71 @@ const maxShipAddress = 4294967295;
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 const oneSpark = 1000000000000000000;
 
+var web3;
+var contracts;
+var privateKey;
+var defaultAccountSet = false;
 var offline = false;
-var privateKeyMaster;
+//
+//// CONFIG: setup and configure web3
+//
+var setServerUrl = function(serverURL) {
+  if (typeof web3 !== 'undefined') { web3 = new Web3(web3.currentProvider); } 
+  else { web3 = new Web3(new Web3.providers.HttpProvider(serverURL)); }
 
-var buildWalletsFromMnemonic = function(mnemonic, cb) {
-  var masterKeys = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
-  web3.eth.accounts.privateKeyToAccount(masterKeys.privateKey.toString('hex'));
+  contracts = {
+    constitution: new web3.eth.Contract(contractDetails.constitution['abi'],contractDetails.constitution['address']),
+    ships:        new web3.eth.Contract(contractDetails.ships['abi'],contractDetails.ships['address']),
+    polls:        new web3.eth.Contract(contractDetails.polls['abi'],contractDetails.polls['address']),
+    pool:         new web3.eth.Contract(contractDetails.pool['abi'],contractDetails.pool['address'])
+  };
+};
+
+var setPrivateKey = function(hd, path, cb) {
+  web3.eth.accounts.privateKeyToAccount(hd.privateKey.toString('hex'));
   web3.eth.getAccounts(function(err, res) {
     if (!err) { 
       web3.eth.defaultAccount = res[0];
-      var path = "m/44'/60'/0'/0/" + 0;
-      var privKey = masterKeys.derive(path).privateKey;
-      privateKeyMaster = privKey.toString('hex'); 
-      cb(web3.eth.defaultAccount);
-    }
+      privateKey = hd.derive(path + '/0').privateKey.toString('hex');
+      defaultAccountSet = true;
+      cb({ error: false, data: web3.eth.defaultAccount });
+    } cb({ error: { msg: "Error setting private key" }, data: '' });
   });
 };
 
-var signTransaction = function(encodedABI, contractAddress, cb) {
-  if (!offline) {
-    var tx = {
-        from: web3.eth.defaultAccount,
-        to: contractAddress,
-        value: 0x0,
-        data: encodedABI,
-      }; 
-    web3.eth.estimateGas(tx)
-    .then((gas) => {
-      tx['gas'] = Math.round(gas * 1.8);
-      web3.eth.accounts.signTransaction(tx, '0x' + privateKeyMaster)
-      .then((signed) => {
-        cb({ error: false, rawTx: signed.rawTransaction });
-      }).catch( cb({ error: { msg: "Sign transaction error" }, data: '' }) );
-    }).catch( cb({ error: { msg: "Estimate gas error" }, data: '' }) );
-  }
-};
-
-var sendTransaction = function(signedTx, cb) {
-  var tran = web3.eth.sendSignedTransaction(signedTx);
-  tran.on('transactionHash', hash => {
-    cb({ error: false, txHash: hash });
-  });
-  tran.on('error', console.error);
-  // tran.on('confirmation', (confirmationNumber, receipt) => {
-  //   console.log('confirmation: ' + confirmationNumber);
-  // });
-
-  // tran.on('receipt', receipt => {
-  //   console.log(receipt);
-};
-
-var generateTxOffline = function(cb) {
-  if (!validateEtherAddress(tx.to)) {
-    cb(validator.errorMsgs[5]);
-    return;
-  }
-  var txData = // uiFuncs.getTxData();
-  txData.isOffline = true;
-  txData.nonce = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(nonceDec));
-  txData.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(gasPriceDec));
-  if (tokenTx.id != 'ether') {
-    txData.data = // $scope.tokenObjs[tokenTx.id].getData(tx.to, tx.value).data;
-    txData.to = // $scope.tokenObjs[tokenTx.id].getContractAddress();
-    txData.value = '0x00';
-  }
-  uiFuncs.generateTx(txData, function(rawTx) {
-    if (!rawTx.isError) {
-      cb({ error: false, rawTx: rawTx.rawTx, signedTx: rawTx.signedTx, showRaw: true})
-    } else {
-      cb({ error: { msg: rawTx.error }, data: '' });
-    }
-  });
+var setPoolAddress = function(poolAddress) {
+  contracts['pool'] = new web3.eth.Contract(contractDetails.pool['abi'],poolAddress);
+  contractDetails.pool['address'] = poolAddress;
 };
 //
 //// VALIDATE: validate input data
 //
 var validateShip = function(ship, cb, next) {
-  if (ship < minShipAddress || ship > maxShipAddress)
+  if (ship < minShipAddress || ship > maxShipAddress || ship % 1 !== 0)
     cb({ error: { msg: "Ship " + ship + " not a galaxy, star or planet." }, data: '' });
   return next();
 };
 
 var validateParent = function(ship, cb, next) {
-  if (ship < minShipAddress || ship > maxStarAddress)
+  if (ship < minShipAddress || ship > maxStarAddress || ship % 1 !== 0)
     cb({ error: { msg: "Ship " + ship + " not a galaxy or star." }, data: '' });
   return next();
 };
 
 var validateChild = function(ship, cb, next) {
-  if (ship < minStarAddress || ship > maxShipAddress)
+  if (ship < minStarAddress || ship > maxShipAddress || ship % 1 !== 0)
     cb({ error: { msg: "Ship " + ship + " not a star or planet." }, data: '' });
   return next();
 };
 
 var validateGalaxy = function(galaxy, cb, next) {
-  if (galaxy < minShipAddress || galaxy > maxGalaxyAddress)
+  if (galaxy < minShipAddress || galaxy > maxGalaxyAddress || galaxy % 1 !== 0)
     cb({ error: { msg: "Ship " + galaxy + " not a galaxy." }, data: '' });
   return next();
 };
 
 var validateStar = function(star, cb, next) {
-  if (star < minStarAddress || star > maxStarAddress)
+  if (star < minStarAddress || star > maxStarAddress || star % 1 !== 0)
     cb({ error: { msg: "Ship " + star + " not a star." }, data: '' });
   return next();
 };
@@ -162,31 +110,31 @@ var isChecksumAddress = function(address) {
 // UI Validators
 //
 var valGalaxy = function(galaxyAddress) {
-  if (galaxyAddress < 0 || galaxyAddress > 255 || typeof galaxyAddress !== 'number') {
-    return true;
-  } else {
+  if (galaxyAddress < minShipAddress || galaxyAddress > maxGalaxyAddress || typeof galaxyAddress !== 'number' || galaxyAddress % 1 !== 0) {
     return false;
+  } else {
+    return true;
   }
 };
 
 var valStar = function(starAddress) {
-  if (starAddress < 256 || starAddress > 65535 || typeof starAddress !== 'number') {
-    return true;
-  } else {
+  if (starAddress < minStarAddress || starAddress > maxStarAddress || typeof starAddress !== 'number' || starAddress % 1 !== 0) {
     return false;
+  } else {
+    return true;
   }
 };
 
 var valShip = function(shipAddress) {
-  if (shipAddress < 0 || shipAddress > 4294967295 || typeof shipAddress !== 'number') {
-    return true;
-  } else {
+  if (shipAddress < minShipAddress || shipAddress > maxShipAddress || typeof shipAddress !== 'number' || shipAddress % 1 !== 0) {
     return false;
+  } else {
+    return true;
   }
 };
 
 var valAddress = function(ethAddress) {
-  if (!validateEtherAddress(ethAddress)) {
+  if (validateEtherAddress(ethAddress)) {
     return true;
   } else {
     return false;
@@ -259,7 +207,7 @@ var getSpawnCandidate = function(shipAddress) {
   if (shipAddress > -1 && shipAddress < minStarAddress) {
     candidate = ((Math.floor(Math.random() * maxGalaxyAddress) + 1) * minStarAddress + shipAddress);
     return candidate;
-  } else if (shipAddress > maxGalaxyAddress && address < (maxStarAddress + 1)) {
+  } else if (shipAddress > maxGalaxyAddress && shipAddress < (maxStarAddress + 1)) {
     candidate = ((Math.floor(Math.random() * maxStarAddress) + 1) * (maxStarAddress + 1) + shipAddress);
     return candidate;
   } else {
@@ -486,7 +434,7 @@ var readIsSpawnProxy = function(shipAddress, ethAddress, cb) {
 var readBalance = function(ethAddress, cb) {
   getSparkBalance(ethAddress, function(err, res) {
     if (!err) {
-      cb(res / oneSpark);
+      cb((res / oneSpark) / 65536);
     } else { cb({ error: { msg: "Error retrieving spark balance" }, data: '' }); }
   });
 };
@@ -567,8 +515,7 @@ var checkIsNotOwned = function(shipAddress, cb, next) {
 //
 // DO: do transactions that modify the blockchain
 //
-var doCreateGalaxy = function(galaxy, cb) {
-  var ethAddress = web3.eth.defaultAccount;
+var doCreateGalaxy = function(galaxy, ethAddress, cb) {
   validateGalaxy(galaxy, cb, function() {
     validateAddress(ethAddress, cb, function() {
       if (offline) return transact();
@@ -577,13 +524,13 @@ var doCreateGalaxy = function(galaxy, cb) {
   });
   function checkPermission(err, res) {
     if (!err) {
-      if (res !== ethAddress) { cb({ error: { msg: "Insufficient permissions." }, data: '' }); }
+      if (res !== ethUtil.toChecksumAddress(ethAddress)) { cb({ error: { msg: "Insufficient permissions." }, data: '' }); }
       else { checkIsNotOwned(galaxy, cb, transact); }
     }
   }
   function transact() {
     signTransaction(contracts['constitution'].methods.createGalaxy(galaxy, ethAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -603,7 +550,7 @@ var doDeposit = function(star, poolAddress, cb) {
   }
   function transact() {
     signTransaction(contracts['pool'].methods.deposit(star).encodeABI(),
-                    contractDetails['pool']['address'],
+                    contractDetails.pool['address'],
                     cb);
   }
 };
@@ -614,15 +561,14 @@ var doWithdraw = function(star, poolAddress, cb) {
   });
   function transact() {
     signTransaction(contracts['pool'].methods.withdraw(star).encodeABI(),
-                    contractDetails['pool']['address'],
+                    contractDetails.pool['address'],
                     cb);
   }
 };
 
-var doSpawn = function(shipAddress, cb) {
+var doSpawn = function(shipAddress, ethAddress, cb) {
   var sponsorAddress = shipAddress % minStarAddress;
-  if (shipAddress > maxStarAddress) sponsorAddress = shipAddress % (minStarAddress + 1);
-  var ethAddress = web3.eth.defaultAccount;
+  if (shipAddress > maxStarAddress) sponsorAddress = shipAddress % (maxStarAddress + 1);
   validateShip(shipAddress, cb, function() {
     validateAddress(ethAddress, cb, function() {
       if (offline) return transact();
@@ -645,7 +591,7 @@ var doSpawn = function(shipAddress, cb) {
   }
   function transact() {
     signTransaction(contracts['constitution'].methods.spawn(shipAddress, ethAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -661,15 +607,18 @@ var doSetSpawnProxy = function(shipAddress, ethAddress, cb) {
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.setSpawnProxy(shipAddress, ethAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
 
-var doConfigureKeys = function(shipAddress, encryptionKey, authenticationKey, discontinuous, cb) {
+var doConfigureKeys = function(shipAddress, encryptionKey, authenticationKey, cryptoSuiteVersion, discontinuous, cb) {
+  var encryp32 = web3.utils.fromAscii(encryptionKey);
+  var authent32 = web3.utils.fromAscii(authenticationKey);
   validateShip(shipAddress, cb, function() {
-    validateBytes32(encryptionKey, cb, function() {
-      validateBytes32(authenticationKey, cb, function() {
+    validateBytes32(encryp32, cb, function() {
+      validateBytes32(authent32, cb, function() {
+        // TODO: add validation for cryptoSuiteVersion
         if (offline) return transact();
         checkOwnership(shipAddress, cb, function() {
           checkIsUnlocked(shipAddress, cb, transact);
@@ -678,8 +627,8 @@ var doConfigureKeys = function(shipAddress, encryptionKey, authenticationKey, di
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.configureKeys(shipAddress, encryptionKey, authenticationKey, discontinuous).encodeABI(),
-                    contractDetails['constitution']['address'],
+    signTransaction(contracts['constitution'].methods.configureKeys(shipAddress, encryp32, authent32, cryptoSuiteVersion, discontinuous).encodeABI(),
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -693,7 +642,7 @@ var doTransferShip = function(shipAddress, ethAddress, reset, cb) {
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.transferShip(shipAddress, ethAddress, reset).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -707,7 +656,7 @@ var doSetTransferProxy = function(shipAddress, ethAddress, cb) {
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.setTransferProxy(shipAddress, ethAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -725,7 +674,7 @@ var doEscape = function(shipAddress, sponsorAddress, cb) {
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.escape(shipAddress, sponsorAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -741,7 +690,7 @@ var doAdopt = function(sponsorAddress, escapeeAddress, cb) {
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.adopt(sponsorAddress, escapeeAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -757,7 +706,7 @@ var doReject = function(sponsorAddress, escapeeAddress, cb) {
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.reject(sponsorAddress, escapeeAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -771,7 +720,7 @@ var doApprove = function(ethAddress, shipAddress, cb) {
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.approve(ethAddress, shipAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -788,7 +737,7 @@ var doSafeTransferFrom = function(fromEthAddress, toEthAddress, shipAddress, cb)
   });
   function transact() {
     signTransaction(contracts['constitution'].methods.safeTransferFrom(fromEthAddress, toEthAddress, shipAddress).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -812,7 +761,7 @@ var doCastConstitutionVote = function(galaxy, prop, vote, cb) {
   }
   function transact() {
     signTransaction(contracts['constitution'].methods.castConstitutionVote(galaxy, prop, vote).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
@@ -842,14 +791,72 @@ var doCastDocumentVote = function(galaxy, prop, vote, cb) {
   }
   function transact() {
     signTransaction(contracts['constitution'].methods.castDocumentVote(galaxy, prop, vote).encodeABI(),
-                    contractDetails['constitution']['address'],
+                    contractDetails.constitution['address'],
                     cb);
   }
 };
 
+var signTransaction = function(encodedABI, contractAddress, cb) {
+  if (!offline) {
+    var tx = {
+        from: web3.eth.defaultAccount,
+        to: contractAddress,
+        value: 0x0,
+        data: encodedABI,
+      }; 
+    web3.eth.estimateGas(tx)
+    .then((gas) => {
+      tx['gas'] = Math.round(gas * 1.8);
+      web3.eth.accounts.signTransaction(tx, '0x' + privateKey)
+      .then((signed) => {
+        cb({ error: false, signedTx: signed.rawTransaction, rawTx: JSON.stringify(tx) });
+      }).catch((err) => { cb({ error: { msg: "Sign transaction error" }, data: err }) });
+    }).catch((err) => { cb({ error: { msg: "Estimate gas error" }, data: err }) });
+  }
+};
+
+var sendTransaction = function(signedTx, cb) {
+  var tx = web3.eth.sendSignedTransaction(signedTx);
+  tx.on('transactionHash', hash => {
+    cb({ error: false, txHash: hash });
+  });
+  tx.on('error', cb({ error: { msg: console.error }, data: '' }));
+};
+
+var generateTxOffline = function(cb) {
+  if (!validateEtherAddress(tx.to)) {
+    cb(validator.errorMsgs[5]);
+    return;
+  }
+  var txData = // uiFuncs.getTxData();
+  txData.isOffline = true;
+  txData.nonce = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(nonceDec));
+  txData.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(gasPriceDec));
+  if (tokenTx.id != 'ether') {
+    txData.data = // $scope.tokenObjs[tokenTx.id].getData(tx.to, tx.value).data;
+    txData.to = // $scope.tokenObjs[tokenTx.id].getContractAddress();
+    txData.value = '0x00';
+  }
+  uiFuncs.generateTx(txData, function(rawTx) {
+    if (!rawTx.isError) {
+      cb({ error: false, rawTx: rawTx.rawTx, signedTx: rawTx.signedTx, showRaw: true})
+    } else {
+      cb({ error: { msg: rawTx.error }, data: '' });
+    }
+  });
+};
+
 module.exports = {
   offline: offline,
-  buildWalletsFromMnemonic: buildWalletsFromMnemonic,
+  setServerUrl: setServerUrl,
+  setPoolAddress: setPoolAddress,
+  setPrivateKey: setPrivateKey,
+  defaultAccountSet: defaultAccountSet,
+  minShipAddress: minShipAddress,
+  maxGalaxyAddress: maxGalaxyAddress,
+  minStarAddress: minStarAddress,
+  maxStarAddress: maxStarAddress,
+  maxStarAddress: maxStarAddress,
   contractDetails: contractDetails,
   toAddress: toAddress,
   valGalaxy: valGalaxy,

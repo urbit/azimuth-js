@@ -1,6 +1,6 @@
 {
   "name": "constitution-js",
-  "version": "0.1.86",
+  "version": "0.1.87",
   "description": "Interact with the Urbit constitution",
   "repository": {
     "type": "git",
@@ -17,13 +17,13 @@
     "contract"
   ],
   "devDependencies": {
+    "bip39": "^2.5.0",
     "chai": "^4.1.2",
+    "hdkey": "^1.0.0",
     "mocha": "^5.2.0"
   },
   "dependencies": {
-    "bip39": "^2.5.0",
     "ethereumjs-util": "^5.1.2",
-    "hdkey": "^1.0.0",
     "urbit-ob": "1.0.0",
     "web3": "^1.0.0-beta.34"
   },
