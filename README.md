@@ -200,14 +200,14 @@ The callback in each of these functions returns an object in this format:
 
 
 
-`doCreateGalaxy(galaxy, callback)`
+`doCreateGalaxy(galaxy, ethAddress, callback)`
 
-Create `galaxy`
+Create galaxy `galaxy` and give it to address `ethAddress`
 
 
 `doDeposit(star, poolAddress, callback)`
 
-Deposit `star` into the pool at `poolAddress`
+Deposit ship `star` into the pool at `poolAddress`
 
 
 `doWithdraw(star, poolAddress, callback)`
@@ -215,9 +215,9 @@ Deposit `star` into the pool at `poolAddress`
 Withdraw `star` from the pool at `poolAddress`
 
 
-`doSpawn(shipAddress, callback)`
+`doSpawn(shipAddress, ethAddress, callback)`
 
-Spawn ship `shipAddress`
+Spawn ship `shipAddress` and give it to address `ethAddress`
 
 
 `doSetSpawnProxy(shipAddress, ethAddress, callback)`
@@ -310,7 +310,7 @@ var idx = 0;
 constitution.setPrivateKey(masterKey, path, idx,console.log)
 ```
 #### Returned object
-`
+```
 {
   error: false,
   data: 0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d
