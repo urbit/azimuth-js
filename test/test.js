@@ -73,7 +73,7 @@ describe('#create a galaxy and retrieve owned ships', function() {
     constitution.setServerUrl(serverURL);
     var mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
     var masterKeys = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
-    constitution.setPrivateKey(masterKeys, path, function(res) {
+    constitution.setPrivateKey(masterKeys, path, 0, function(res) {
       if (!res['error']) {
         if (res.data === '0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d') {
           ethAddress = res.data;
@@ -289,7 +289,7 @@ describe('#Spawn a star, configure keys, spawn two planets from it', function() 
   var planetAddress;
 
   it('spawn a star', function(done) {
-    starAddress = constitution.getSpawnCandidate(0)
+    starAddress = constitution.getSpawnCandidate(0);
     constitution.doSpawn(starAddress, ethAddress, function(data) {
       if (!data['error']) {
         signedTx = data['signedTx'];
@@ -349,6 +349,96 @@ describe('#Spawn a star, configure keys, spawn two planets from it', function() 
           done();
         }
       });
+    });
+  });
+});
+
+describe('#spawn star, approve transfer to other account, switch account, complete safe transfer', function() {
+
+  var otherAccount = "0xD53208cf45fC9bd7938B200BFf8814A26146688f";
+  var starAddress;
+  var path = "m/44'/60'/0'/0";
+
+  it('spawn a star', function(done) {
+    starAddress = constitution.getSpawnCandidate(0);
+    constitution.doSpawn(starAddress, ethAddress, function(data) {
+      if (!data['error']) {
+        signedTx = data['signedTx'];
+        done();
+      }
+    });
+  });
+
+  it('send the signed tx', function(done) {
+    constitution.sendTransaction(signedTx, function(data) {
+      if (!data['error']) {
+        var signedTx = '';
+        done();
+      }
+    });
+  });
+
+  it('approve transfer', function(done) {
+    constitution.doApprove(otherAccount, starAddress, function(data) {
+      if (!data['error']) {
+        signedTx = data['signedTx'];
+        done();
+      }
+    });
+  });
+
+  it('send the signed tx', function(done) {
+    constitution.sendTransaction(signedTx, function(data) {
+      if (!data['error']) {
+        var signedTx = '';
+        done();
+      }
+    });
+  });
+
+  it('retrieve pending transfers', function(done) {
+    constitution.readTransferringFor(otherAccount, function(data) {
+      if (!data['error']) {
+        done();
+      }
+    });
+  });
+
+  it('switch account', function(done) {
+    constitution.setDefaultAccountWithPathAndIndex(path, 1, function(res) {
+      if (!res['error']) {
+        if (res.data === otherAccount) {
+          done();
+        }
+      }
+    });
+  });
+
+  it('do transfer', function(done) {
+    constitution.doSafeTransferFrom(ethAddress, otherAccount, starAddress, function(data) {
+      if (!data['error']) {
+        signedTx = data['signedTx'];
+        done();
+      }
+    });
+  });
+
+  it('send the signed tx', function(done) {
+    constitution.sendTransaction(signedTx, function(data) {
+      if (!data['error']) {
+        var signedTx = '';
+        done();
+      }
+    });
+  });
+
+  it('retrieve owned ships to verify transferred star exists in list', function(done) {
+    constitution.readOwnedShipsStatus(otherAccount, function(data) {
+      if (!data['error']) {
+        var keyArr = Object.keys(data);
+        var idx = keyArr.indexOf(starAddress.toString());
+        if (idx > -1) { done(); } 
+      }
     });
   });
 });

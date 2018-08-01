@@ -14,10 +14,12 @@ const maxStarAddress = 65535;
 const maxShipAddress = 4294967295;
 const emptyAddress = '0x0000000000000000000000000000000000000000';
 const oneSpark = 1000000000000000000;
+const planetsPerSpark = 65536;
 
 var web3;
 var contracts;
 var privateKey;
+var hdKey;
 var offline = false;
 //
 //// CONFIG: setup and configure web3
@@ -27,27 +29,32 @@ var setServerUrl = function(serverURL) {
   else { web3 = new Web3(new Web3.providers.HttpProvider(serverURL)); }
 
   contracts = {
-    constitution: new web3.eth.Contract(contractDetails.constitution['abi'],contractDetails.constitution['address']),
-    ships:        new web3.eth.Contract(contractDetails.ships['abi'],contractDetails.ships['address']),
-    polls:        new web3.eth.Contract(contractDetails.polls['abi'],contractDetails.polls['address']),
-    pool:         new web3.eth.Contract(contractDetails.pool['abi'],contractDetails.pool['address'])
+    constitution: new web3.eth.Contract(contractDetails.constitution['abi'], contractDetails.constitution['address']),
+    ships: new web3.eth.Contract(contractDetails.ships['abi'], contractDetails.ships['address']),
+    polls: new web3.eth.Contract(contractDetails.polls['abi'], contractDetails.polls['address']),
+    pool: new web3.eth.Contract(contractDetails.pool['abi'], contractDetails.pool['address'])
   };
 };
 
-var setPrivateKey = function(hd, path, cb) {
-  web3.eth.accounts.privateKeyToAccount(hd.privateKey.toString('hex'));
+var setPrivateKey = function(hd, path, idx, cb) {
+  hdKey = hd;
+  web3.eth.accounts.privateKeyToAccount(hdKey.privateKey.toString('hex'));
+  setDefaultAccountWithPathAndIndex(path, idx, cb);
+};
+
+var setDefaultAccountWithPathAndIndex = function(path, idx, cb) {
   web3.eth.getAccounts(function(err, res) {
-    if (!err) { 
-      web3.eth.defaultAccount = res[0];
-      privateKey = hd.derive(path + '/0').privateKey.toString('hex');
+    if (!err) {
+      web3.eth.defaultAccount = res[idx];
+      privateKey = hdKey.derive(path + '/' + idx).privateKey.toString('hex');
       cb({ error: false, data: web3.eth.defaultAccount });
-    } cb({ error: { msg: "Error setting private key" }, data: '' });
+    } else { cb({ error: { msg: "Error setting private key" }, data: '' }); }
   });
 };
 
 var setPoolAddress = function(poolAddress) {
-  contracts['pool'] = new web3.eth.Contract(contractDetails.pool['abi'],poolAddress);
   contractDetails.pool['address'] = poolAddress;
+  contracts['pool'] = new web3.eth.Contract(contractDetails.pool['abi'], contractDetails.pool['address']);
 };
 //
 //// VALIDATE: validate input data
@@ -385,6 +392,17 @@ var readIsOwner = function(shipAddress, ethAddress, cb) {
   }
 };
 
+var readSponsor = function(shipAddress, cb) {
+  validateChild(shipAddress, cb, function() {
+    getSponsor(shipAddress, put);
+  });
+  function put(err, res) {
+    if (!err) {
+      cb(res);
+    } else { cb({ error: { msg: "Error retrieving sponsor" }, data: '' }); }
+  }
+};
+
 var readPoolAssets = function(cb) {
   getPoolAssets(put);
   function put(err, res) {
@@ -395,17 +413,6 @@ var readPoolAssets = function(cb) {
       }
       cb(t);
     } else { cb({ error: { msg: "Error retrieving pool assets" }, data: '' }); }
-  }
-};
-
-var readSponsor = function(shipAddress, cb) {
-  validateChild(shipAddress, cb, function() {
-    getSponsor(shipAddress, put);
-  });
-  function put(err, res) {
-    if (!err) {
-      cb(res);
-    } else { cb({ error: { msg: "Error retrieving sponsor" }, data: '' }); }
   }
 };
 
@@ -449,7 +456,7 @@ var readIsSpawnProxy = function(shipAddress, ethAddress, cb) {
 var readBalance = function(ethAddress, cb) {
   getSparkBalance(ethAddress, function(err, res) {
     if (!err) {
-      cb((res / oneSpark) / 65536);
+      cb((res / oneSpark) / planetsPerSpark);
     } else { cb({ error: { msg: "Error retrieving spark balance" }, data: '' }); }
   });
 };
@@ -824,7 +831,7 @@ var signTransaction = function(encodedABI, contractAddress, cb) {
       tx['gas'] = Math.round(gas * 1.8);
       web3.eth.accounts.signTransaction(tx, '0x' + privateKey)
       .then((signed) => {
-        cb({ error: false, signedTx: signed.rawTransaction, rawTx: JSON.stringify(tx) });
+        cb({ error: false, signedTx: signed.rawTransaction, rawTx: tx });
       }).catch((err) => { cb({ error: { msg: "Sign transaction error" }, data: err }) });
     }).catch((err) => { cb({ error: { msg: "Estimate gas error" }, data: err }) });
   }
@@ -866,6 +873,7 @@ module.exports = {
   setServerUrl: setServerUrl,
   setPoolAddress: setPoolAddress,
   setPrivateKey: setPrivateKey,
+  setDefaultAccountWithPathAndIndex: setDefaultAccountWithPathAndIndex,
   minShipAddress: minShipAddress,
   maxGalaxyAddress: maxGalaxyAddress,
   minStarAddress: minStarAddress,
