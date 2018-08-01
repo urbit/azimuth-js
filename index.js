@@ -215,7 +215,7 @@ var getVotesAddress = function(cb) {
 };
 
 var getCanEscapeTo = function(ship, sponsor, cb) {
-  contracts['constitution'].methods.canEscapeTo(ship,sponsor).call(cb);
+  contracts['constitution'].methods.canEscapeTo(ship, sponsor).call(cb);
 };
 
 var getShipsOwner = function(cb) {
@@ -231,7 +231,7 @@ var getOwner = function(ship, cb) {
 };
 
 var getIsOwner = function(shipAddress, ethAddress, cb) {
-  contracts['ships'].methods.isOwner(shipAddress,ethAddress).call(cb);
+  contracts['ships'].methods.isOwner(shipAddress, ethAddress).call(cb);
 };
 
 var getIsActive = function(ship, cb) {
@@ -243,7 +243,7 @@ var getSponsor = function(ship, cb) {
 };
 
 var getIsRequestingEscapeTo = function(ship, sponsor, cb) {
-  contracts['ships'].methods.isRequestingEscapeTo(ship,sponsor).call(cb);
+  contracts['ships'].methods.isRequestingEscapeTo(ship, sponsor).call(cb);
 };
 
 var getHasBeenBooted = function(ship, cb) {
@@ -255,11 +255,11 @@ var getKeys = function(ship, cb) {
 };
 
 var getIsTransferProxy = function(ship, address, cb) {
-  contracts['ships'].methods.isTransferProxy(ship,address).call(cb);
+  contracts['ships'].methods.isTransferProxy(ship, address).call(cb);
 };
 
 var getIsSpawnProxy = function(ship, address, cb) {
-  contracts['ships'].methods.isSpawnProxy(ship,address).call(cb);
+  contracts['ships'].methods.isSpawnProxy(ship, address).call(cb);
 };
 
 var getEscapeRequest = function(ship, cb) {
@@ -283,7 +283,7 @@ var getSparkBalance = function(ethAddress, cb) {
 };
 
 var getHasVotedOnConstitutionPoll = function(galaxy, address, cb) {
-  contracts['polls'].methods.hasVotedOnConstitutionPoll(galaxy,address).call(cb);
+  contracts['polls'].methods.hasVotedOnConstitutionPoll(galaxy, address).call(cb);
 };
 
 var getDocumentHasAchievedMajority = function(proposal, cb) {
@@ -291,7 +291,7 @@ var getDocumentHasAchievedMajority = function(proposal, cb) {
 };
 
 var getHasVotedOnDocumentPoll = function(galaxy, proposal, cb) {
-  contracts['polls'].methods.hasVotedOnDocumentPoll(galaxy,proposal).call(cb);
+  contracts['polls'].methods.hasVotedOnDocumentPoll(galaxy, proposal).call(cb);
 };
 //
 // READ: fill fields with requested data
@@ -302,7 +302,7 @@ var readShipData = function(shipAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb({ ship: shipAddress, hasBeenBooted: res });
+      cb({ error: false, ship: { address: shipAddress, hasBeenBooted: res } });
     } else { cb({ error: { msg: "Error retrieving hasBeenBooted" }, data: '' }); }
   }
 };
@@ -316,7 +316,7 @@ var readOwnedShips = function(ethAddress, cb) {
         for (var i = 0; i < res.length; i++) {
           str = str + res[i] + "\n";
         }
-        cb(generateShipList(res));
+        cb({ error: false, data: generateShipList(res)});
       } else { cb({ error: { msg: "Error retrieving owned ships" }, data: '' }); }
     });
   });
@@ -328,7 +328,7 @@ var readOwnedShipsStatus = function(ethAddress, cb) {
     var ownedShips = {}
     var shipsAcquired = function() {
       if (ownedShips.length < 1) { cb({ error: { msg: ethAddress + "does not own any ships." }, data: '' }); } 
-      else { cb(ownedShips); }
+      else { cb({ error: false, data: ownedShips }); }
     }
     getOwnedShips(ethAddress, function(err, res) {
       if (!err) {
@@ -362,7 +362,7 @@ var readTransferringFor = function(ethAddress, cb) {
     getTransferringFor(ethAddress, put);
     function put(err, res) {
       if (!err) {
-        cb(res);
+        cb({ error: false, data: res});
       } else { cb({ error: { msg: "Error retrieving transferringFor" }, data: '' }); }
     }
   });
@@ -374,7 +374,8 @@ var readHasOwner = function(shipAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb(res === emptyAddress ? false : true);
+      var ownedStatus = res === emptyAddress ? false : true
+      cb({ error: false, data: ownedStatus });
     } else { cb({ error: { msg: "Error retrieving owner" }, data: '' }); }
   }
 };
@@ -387,7 +388,7 @@ var readIsOwner = function(shipAddress, ethAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb(res);
+      cb({ error: false, data: res });
     } else { cb({ error: { msg: "Error retrieving isOwner" }, data: '' }); }
   }
 };
@@ -398,7 +399,7 @@ var readSponsor = function(shipAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb(res);
+      cb({ error: false, data: res });
     } else { cb({ error: { msg: "Error retrieving sponsor" }, data: '' }); }
   }
 };
@@ -411,7 +412,7 @@ var readPoolAssets = function(cb) {
       for (var i = 0; i < res.length; i++) {
         t.push(formatShipName(toShipName(res[i])));
       }
-      cb(t);
+      cb({ error: false, data: t });
     } else { cb({ error: { msg: "Error retrieving pool assets" }, data: '' }); }
   }
 };
@@ -424,7 +425,7 @@ var readIsRequestingEscapeTo = function(shipAddress, sponsorAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb(res);
+      cb({ error: false, data: res });
     } else { cb({ error: { msg: "Error retrieving isRequestingEscapeTo" }, data: '' }); }
   }
 };
@@ -435,7 +436,7 @@ var readKeys = function(shipAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb(res);
+      cb({ error: false, data: res });
     } else { cb({ error: { msg: "Error retrieving keys" }, data: '' }); }
   }
 };
@@ -448,7 +449,7 @@ var readIsSpawnProxy = function(shipAddress, ethAddress, cb) {
   });
   function put(err, res) {
     if (!err) {
-      cb(res);
+      cb({ error: false, data: res });
     } else { cb({ error: { msg: "Error retrieving spawn proxy" }, data: '' }); }
   }
 };
@@ -456,7 +457,7 @@ var readIsSpawnProxy = function(shipAddress, ethAddress, cb) {
 var readBalance = function(ethAddress, cb) {
   getSparkBalance(ethAddress, function(err, res) {
     if (!err) {
-      cb((res / oneSpark) / planetsPerSpark);
+      cb({ error: false, data: (res / oneSpark) / planetsPerSpark });
     } else { cb({ error: { msg: "Error retrieving spark balance" }, data: '' }); }
   });
 };
@@ -527,9 +528,9 @@ var checkHasBeenBooted = function(sponsorAddress, cb, next) {
 };
 
 var checkIsNotOwned = function(shipAddress, cb, next) {
-  readHasOwner(shipAddress, function(err, res) {
+  getOwner(shipAddress, function(err, res) {
     if (!err) {
-      if (!res) return next() 
+      if (res === emptyAddress) return next() 
       cb({ error: { msg: "Ship has an owner." }, data: '' });
     } else { cb({ error: { msg: "Error retrieving hasOwner" }, data: '' }); }
   });

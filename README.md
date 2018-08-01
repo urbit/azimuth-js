@@ -307,9 +307,13 @@ var masterKey = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
 var path = "m/44'/60'/0'/0";
 var idx = 0;
 
-constitution.setPrivateKey(masterKey, path, idx,console.log)
+constitution.setPrivateKey(masterKey, path, idx, function(res) {
+  if (!res.error) {
+    console.log(res);
+  }
+});
 ```
-#### Returned object
+#### Logged object
 ```
 {
   error: false,
@@ -331,37 +335,44 @@ This function is a random number generator, so returned values will vary
 
 #### 3. Call `readSponsor`
 ```
-constitution.readSponsor(256, function(data) {
-  if (!data['error']) {
-    console.log(data);
+constitution.readSponsor(256, function(res) {
+  if (!res.error) {
+    console.log(res);
   }
 });
 ```
 #### Logged value
 ```
-0
+{
+  error: false,
+  data: 0
+}
 ```
 
 
 #### 4. Call `readOwnedShipsStatus` with the address from #1 to see your ships
 ```
-constitution.readOwnedShipsStatus('0x6deffb0cafdb11d175f123f6891aa64f01c24f7d', function(data) {
-  if (!data['error']) {
-    console.log(data);
+constitution.readOwnedShipsStatus('0x6deffb0cafdb11d175f123f6891aa64f01c24f7d', function(res) {
+  if (!res.error) {
+    console.log(res);
   }
 });
 ```
 #### Logged object
 ```
 {
-  '0': { name: '~zod', address: 0, hasBeenBooted: true },
-  '1': { name: '~nec', address: 1, hasBeenBooted: false },
-  '22': { name: '~lup', address: 22, hasBeenBooted: false },
-  '256': { name: '~marzod', address: 256, hasBeenBooted: true },
-  '512': { name: '~binzod', address: 512, hasBeenBooted: false },
-  '65792': { name: '~wicdev-wisryt', address: 65792, hasBeenBooted: false },
-  '131328': { name: '~panret-tocsel', address: 131328, hasBeenBooted: false },
-  '791085312': { name: '~fadnyd-worsef', address: 791085312, hasBeenBooted: false }
+  error: false,
+  data:
+    {
+      '0': { name: '~zod', address: 0, hasBeenBooted: true },
+      '1': { name: '~nec', address: 1, hasBeenBooted: false },
+      '22': { name: '~lup', address: 22, hasBeenBooted: false },
+      '256': { name: '~marzod', address: 256, hasBeenBooted: true },
+      '512': { name: '~binzod', address: 512, hasBeenBooted: false },
+      '65792': { name: '~wicdev-wisryt', address: 65792, hasBeenBooted: false },
+      '131328': { name: '~panret-tocsel', address: 131328, hasBeenBooted: false },
+      '791085312': { name: '~fadnyd-worsef', address: 791085312, hasBeenBooted: false }
+    }
 }
 ```
 

@@ -73,8 +73,9 @@ describe('#create a galaxy and retrieve owned ships', function() {
     constitution.setServerUrl(serverURL);
     var mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
     var masterKeys = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
+    console.log()
     constitution.setPrivateKey(masterKeys, path, 0, function(res) {
-      if (!res['error']) {
+      if (!res.error) {
         if (res.data === '0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d') {
           ethAddress = res.data;
           done();
@@ -87,9 +88,9 @@ describe('#create a galaxy and retrieve owned ships', function() {
     function randomIntWithInterval(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
     };
-    constitution.readOwnedShipsStatus(ethAddress, function(data) {
-      if (!data['error']) {
-        shipArr = Object.keys(data);
+    constitution.readOwnedShipsStatus(ethAddress, function(res) {
+      if (!res.error) {
+        shipArr = Object.keys(res.data);
         var makeRandomGalaxyAddress = function() {
           galaxyAddress = randomIntWithInterval(2,255);
           if (shipArr.indexOf(galaxyAddress) > -1) {
@@ -102,17 +103,17 @@ describe('#create a galaxy and retrieve owned ships', function() {
   });
 
   it('create a signed tx that creates a galaxy', function(done) {
-    constitution.doCreateGalaxy(galaxyAddress, ethAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
+    constitution.doCreateGalaxy(galaxyAddress, ethAddress, function(res) {
+      if (!res.error) {
+        signedTx = res.signedTx;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(data) {
-      if (!data['error']) {
+    constitution.sendTransaction(signedTx, function(res) {
+      if (!res.error) {
         var signedTx = '';
         done();
       }
@@ -120,9 +121,9 @@ describe('#create a galaxy and retrieve owned ships', function() {
   });
 
   it('retrieve owned ships to verify new galaxy exists', function(done) {
-    constitution.readOwnedShipsStatus(ethAddress, function(data) {
-      if (!data['error']) {
-        var keyArr = Object.keys(data);
+    constitution.readOwnedShipsStatus(ethAddress, function(res) {
+      if (!res.error) {
+        var keyArr = Object.keys(res.data);
         var idx = keyArr.indexOf(galaxyAddress.toString());
         if (idx > -1) { done(); }
       }
@@ -138,18 +139,18 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   var starAddress;
 
   it('read the starting balance of Sparks held by the wallet', function(done) {
-    constitution.readBalance(ethAddress, function(data) {
-      if (!data['error']) {
-        sparksBalance = data;
+    constitution.readBalance(ethAddress, function(res) {
+      if (!res.error) {
+        sparksBalance = res.data;
         done();
       }
     });
   });
 
   it('read the starting pool assets', function(done) {
-    constitution.readPoolAssets(function(data) {
-      if (!data['error']) {
-        poolAssets = data.length;
+    constitution.readPoolAssets(function(res) {
+      if (!res.error) {
+        poolAssets = res.data.length;
         done();
       }
     });
@@ -164,17 +165,17 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
 
     it('spawn the star', function(done) {
       starAddress = test.arg;
-      constitution.doSpawn(starAddress, ethAddress, function(data) {
-        if (!data['error']) {
-          signedTx = data['signedTx'];
+      constitution.doSpawn(starAddress, ethAddress, function(res) {
+        if (!res.error) {
+          signedTx = res.signedTx;
           done();
         }
       });
     });
 
     it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(data) {
-        if (!data['error']) {
+      constitution.sendTransaction(signedTx, function(res) {
+        if (!res.error) {
           var signedTx = '';
           done();
         }
@@ -182,9 +183,9 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('retrieve owned ships to verify new star', function(done) {
-      constitution.readOwnedShipsStatus(ethAddress, function(data) {
-        if (!data['error']) {
-          var keyArr = Object.keys(data);
+      constitution.readOwnedShipsStatus(ethAddress, function(res) {
+        if (!res.error) {
+          var keyArr = Object.keys(res.data);
           var idx = keyArr.indexOf(starAddress.toString());
           if (idx > -1) { done(); } 
         }
@@ -192,17 +193,17 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('set the pool contract as the transfer proxy for the new star', function(done) {
-      constitution.doSetTransferProxy(starAddress, poolAddress, function(data) {
-        if (!data['error']) {
-          signedTx = data['signedTx'];
+      constitution.doSetTransferProxy(starAddress, poolAddress, function(res) {
+        if (!res.error) {
+          signedTx = res.signedTx;
           done();
         }
       });
     });
 
     it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(data) {
-        if (!data['error']) {
+      constitution.sendTransaction(signedTx, function(res) {
+        if (!res.error) {
           var signedTx = '';
           done();
         }
@@ -210,17 +211,17 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('deposit the star', function(done) {
-      constitution.doDeposit(starAddress, poolAddress, function(data) {
-        if (!data['error']) {
-          signedTx = data['signedTx'];
+      constitution.doDeposit(starAddress, poolAddress, function(res) {
+        if (!res.error) {
+          signedTx = res.signedTx;
           done();
         }
       });
     });
 
     it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(data) {
-        if (!data['error']) {
+      constitution.sendTransaction(signedTx, function(res) {
+        if (!res.error) {
           var signedTx = '';
           done();
         }
@@ -228,9 +229,9 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('retrieve owned ships to verify star has been deposited', function(done) {
-      constitution.readOwnedShipsStatus(ethAddress, function(data) {
-        if (!data['error']) {
-          var keyArr = Object.keys(data);
+      constitution.readOwnedShipsStatus(ethAddress, function(res) {
+        if (!res.error) {
+          var keyArr = Object.keys(res.data);
           var idx = keyArr.indexOf(starAddress.toString());
           if (idx === -1) { done(); }
         }
@@ -238,34 +239,34 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
     });
 
     it('verify the new balance of Sparks held by the wallet is 1 more than above', function(done) {
-      constitution.readBalance(ethAddress, function(data) {
-        if (!data['error']) {
-          if (data === sparksBalance + 1 || data === sparksBalance + 2) { done(); } 
+      constitution.readBalance(ethAddress, function(res) {
+        if (!res.error) {
+          if (res.data === sparksBalance + 1 || res.data === sparksBalance + 2) { done(); } 
         }
       });
     });
   });
 
   it('verify pool assets are 2 more than above', function(done) {
-    constitution.readPoolAssets(function(data) {
-      if (!data['error']) {
-        if (data.length === poolAssets + 2) { done(); }
+    constitution.readPoolAssets(function(res) {
+      if (!res.error) {
+        if (res.data.length === poolAssets + 2) { done(); }
       }
     });
   });
 
   it('withdraw the star from the pool', function(done) {
-    constitution.doWithdraw(starAddress, poolAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
+    constitution.doWithdraw(starAddress, poolAddress, function(res) {
+      if (!res.error) {
+        signedTx = res.signedTx;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(data) {
-      if (!data['error']) {
+    constitution.sendTransaction(signedTx, function(res) {
+      if (!res.error) {
         var signedTx = '';
         done();
       }
@@ -273,9 +274,9 @@ describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balanc
   });
 
   it('retrieve owned ships to verify star is back', function(done) {
-    constitution.readOwnedShipsStatus(ethAddress, function(data) {
-      if (!data['error']) {
-        var keyArr = Object.keys(data);
+    constitution.readOwnedShipsStatus(ethAddress, function(res) {
+      if (!res.error) {
+        var keyArr = Object.keys(res.data);
         var idx = keyArr.indexOf(starAddress.toString());
         if (idx > -1) { done(); }
       }
@@ -290,17 +291,17 @@ describe('#Spawn a star, configure keys, spawn two planets from it', function() 
 
   it('spawn a star', function(done) {
     starAddress = constitution.getSpawnCandidate(0);
-    constitution.doSpawn(starAddress, ethAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
+    constitution.doSpawn(starAddress, ethAddress, function(res) {
+      if (!res.error) {
+        signedTx = res.signedTx;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(data) {
-      if (!data['error']) {
+    constitution.sendTransaction(signedTx, function(res) {
+      if (!res.error) {
         var signedTx = '';
         done();
       }
@@ -308,17 +309,17 @@ describe('#Spawn a star, configure keys, spawn two planets from it', function() 
   });
 
   it('configure star\'s keys', function(done) {
-    constitution.doConfigureKeys(starAddress, 123, 456, 1, false, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
+    constitution.doConfigureKeys(starAddress, 123, 456, 1, false, function(res) {
+      if (!res.error) {
+        signedTx = res.signedTx;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(data) {
-      if (!data['error']) {
+    constitution.sendTransaction(signedTx, function(res) {
+      if (!res.error) {
         var signedTx = '';
         done();
       }
@@ -334,17 +335,17 @@ describe('#Spawn a star, configure keys, spawn two planets from it', function() 
 
     it('spawn a planet', function(done) {
       planetAddress = constitution.getSpawnCandidate(starAddress);
-      constitution.doSpawn(planetAddress, ethAddress, function(data) {
-        if (!data['error']) {
-          signedTx = data['signedTx'];
+      constitution.doSpawn(planetAddress, ethAddress, function(res) {
+        if (!res.error) {
+          signedTx = res.signedTx;
           done();
         }
       });
     });
 
     it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(data) {
-        if (!data['error']) {
+      constitution.sendTransaction(signedTx, function(res) {
+        if (!res.error) {
           var signedTx = '';
           done();
         }
@@ -361,17 +362,17 @@ describe('#spawn star, approve transfer to other account, switch account, comple
 
   it('spawn a star', function(done) {
     starAddress = constitution.getSpawnCandidate(0);
-    constitution.doSpawn(starAddress, ethAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
+    constitution.doSpawn(starAddress, ethAddress, function(res) {
+      if (!res.error) {
+        signedTx = res.signedTx;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(data) {
-      if (!data['error']) {
+    constitution.sendTransaction(signedTx, function(res) {
+      if (!res.error) {
         var signedTx = '';
         done();
       }
@@ -379,17 +380,17 @@ describe('#spawn star, approve transfer to other account, switch account, comple
   });
 
   it('approve transfer', function(done) {
-    constitution.doApprove(otherAccount, starAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
+    constitution.doApprove(otherAccount, starAddress, function(res) {
+      if (!res.error) {
+        signedTx = res.signedTx;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(data) {
-      if (!data['error']) {
+    constitution.sendTransaction(signedTx, function(res) {
+      if (!res.error) {
         var signedTx = '';
         done();
       }
@@ -397,8 +398,8 @@ describe('#spawn star, approve transfer to other account, switch account, comple
   });
 
   it('retrieve pending transfers', function(done) {
-    constitution.readTransferringFor(otherAccount, function(data) {
-      if (!data['error']) {
+    constitution.readTransferringFor(otherAccount, function(res) {
+      if (!res.error) {
         done();
       }
     });
@@ -406,7 +407,7 @@ describe('#spawn star, approve transfer to other account, switch account, comple
 
   it('switch account', function(done) {
     constitution.setDefaultAccountWithPathAndIndex(path, 1, function(res) {
-      if (!res['error']) {
+      if (!res.error) {
         if (res.data === otherAccount) {
           done();
         }
@@ -415,17 +416,17 @@ describe('#spawn star, approve transfer to other account, switch account, comple
   });
 
   it('do transfer', function(done) {
-    constitution.doSafeTransferFrom(ethAddress, otherAccount, starAddress, function(data) {
-      if (!data['error']) {
-        signedTx = data['signedTx'];
+    constitution.doSafeTransferFrom(ethAddress, otherAccount, starAddress, function(res) {
+      if (!res.error) {
+        signedTx = res.signedTx;
         done();
       }
     });
   });
 
   it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(data) {
-      if (!data['error']) {
+    constitution.sendTransaction(signedTx, function(res) {
+      if (!res.error) {
         var signedTx = '';
         done();
       }
@@ -433,9 +434,9 @@ describe('#spawn star, approve transfer to other account, switch account, comple
   });
 
   it('retrieve owned ships to verify transferred star exists in list', function(done) {
-    constitution.readOwnedShipsStatus(otherAccount, function(data) {
-      if (!data['error']) {
-        var keyArr = Object.keys(data);
+    constitution.readOwnedShipsStatus(otherAccount, function(res) {
+      if (!res.error) {
+        var keyArr = Object.keys(res.data);
         var idx = keyArr.indexOf(starAddress.toString());
         if (idx > -1) { done(); } 
       }
