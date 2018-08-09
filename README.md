@@ -155,7 +155,7 @@ Returns the address of the sponsor of ship `shipAddress`
 
 #### `readPoolAssets(poolAddress, callback)`
 
-Returns the total Spark assets of the pool `poolAddress`
+Returns an array of Urbit star names held by the pool `poolAddress`
 
 
 #### `readBalance(poolAddress, callback)`
@@ -343,7 +343,7 @@ constitution.readSponsor(256, function(res) {
   }
 });
 ```
-#### Logged value
+#### Logged object
 ```
 {
   error: false,

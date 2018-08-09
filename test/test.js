@@ -406,7 +406,7 @@ describe('#spawn star, approve transfer to other account, switch account, comple
   });
 
   it('switch account', function(done) {
-    constitution.setDefaultAccountWithPathAndIndex(path, 1, function(res) {
+    constitution.setDefaultAccount(path, 1, function(res) {
       if (!res.error) {
         if (res.data === otherAccount) {
           done();
@@ -441,5 +441,25 @@ describe('#spawn star, approve transfer to other account, switch account, comple
         if (idx > -1) { done(); } 
       }
     });
+  });
+});
+
+describe('#set offline true, retrieve a signed transaction that creates a galaxy', function() {
+
+  var galaxyAddress = 118;  // will fail if galaxy creation test above randomly chose 118
+  var ethAddress = '0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d';
+  var offlineData = {
+      gas: 232180,
+      gasPrice: 20000000000,
+      nonce: 45,
+    }
+
+  it('create a signed tx that creates a galaxy', function(done) {
+    constitution.setOffline(true);
+    constitution.doCreateGalaxy(galaxyAddress, ethAddress, function(res) {
+      if (!res.error) {
+        done();
+      }
+    }, offlineData);
   });
 });

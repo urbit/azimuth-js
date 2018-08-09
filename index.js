@@ -29,20 +29,20 @@ var setServerUrl = function(serverURL) {
   else { web3 = new Web3(new Web3.providers.HttpProvider(serverURL)); }
 
   contracts = {
-    constitution: new web3.eth.Contract(contractDetails.constitution['abi'], contractDetails.constitution['address']),
-    ships: new web3.eth.Contract(contractDetails.ships['abi'], contractDetails.ships['address']),
-    polls: new web3.eth.Contract(contractDetails.polls['abi'], contractDetails.polls['address']),
-    pool: new web3.eth.Contract(contractDetails.pool['abi'], contractDetails.pool['address'])
+    constitution: new web3.eth.Contract(contractDetails.constitution.abi, contractDetails.constitution.address),
+    ships: new web3.eth.Contract(contractDetails.ships.abi, contractDetails.ships.address),
+    polls: new web3.eth.Contract(contractDetails.polls.abi, contractDetails.polls.address),
+    pool: new web3.eth.Contract(contractDetails.pool.abi, contractDetails.pool.address)
   };
 };
 
 var setPrivateKey = function(hd, path, idx, cb) {
   hdKey = hd;
   web3.eth.accounts.privateKeyToAccount(hdKey.privateKey.toString('hex'));
-  setDefaultAccountWithPathAndIndex(path, idx, cb);
+  setDefaultAccount(path, idx, cb);
 };
 
-var setDefaultAccountWithPathAndIndex = function(path, idx, cb) {
+var setDefaultAccount = function(path, idx, cb) {
   web3.eth.getAccounts(function(err, res) {
     if (!err) {
       web3.eth.defaultAccount = res[idx];
@@ -53,8 +53,12 @@ var setDefaultAccountWithPathAndIndex = function(path, idx, cb) {
 };
 
 var setPoolAddress = function(poolAddress) {
-  contractDetails.pool['address'] = poolAddress;
-  contracts['pool'] = new web3.eth.Contract(contractDetails.pool['abi'], contractDetails.pool['address']);
+  contractDetails.pool.address = poolAddress;
+  contracts.pool = new web3.eth.Contract(contractDetails.pool.abi, contractDetails.pool.address);
+};
+
+var setOffline = function(offlineStatus) {
+  offline = offlineStatus;
 };
 //
 //// VALIDATE: validate input data
@@ -207,91 +211,91 @@ var generateShipList = function(shipListString, cb) {
 // GET: read contract data, pass the result to callback
 //
 var getConstitutionOwner = function(cb) {
-  contracts['constitution'].methods.owner().call(cb);
+  contracts.constitution.methods.owner().call(cb);
 };
 
 var getVotesAddress = function(cb) {
-  contracts['constitution'].methods.votes().call(cb);
+  contracts.constitution.methods.votes().call(cb);
 };
 
 var getCanEscapeTo = function(ship, sponsor, cb) {
-  contracts['constitution'].methods.canEscapeTo(ship, sponsor).call(cb);
+  contracts.constitution.methods.canEscapeTo(ship, sponsor).call(cb);
 };
 
 var getShipsOwner = function(cb) {
-  contracts['ships'].methods.owner().call(cb);
+  contracts.ships.methods.owner().call(cb);
 };
 
 var getOwnedShips = function(address, cb) {
-  contracts['ships'].methods.getOwnedShipsByAddress(address).call(cb);
+  contracts.ships.methods.getOwnedShipsByAddress(address).call(cb);
 };
 
 var getOwner = function(ship, cb) {
-  contracts['ships'].methods.getOwner(ship).call(cb);
+  contracts.ships.methods.getOwner(ship).call(cb);
 };
 
 var getIsOwner = function(shipAddress, ethAddress, cb) {
-  contracts['ships'].methods.isOwner(shipAddress, ethAddress).call(cb);
+  contracts.ships.methods.isOwner(shipAddress, ethAddress).call(cb);
 };
 
 var getIsActive = function(ship, cb) {
-  contracts['ships'].methods.isActive(ship).call(cb);
+  contracts.ships.methods.isActive(ship).call(cb);
 };
 
 var getSponsor = function(ship, cb) {
-  contracts['ships'].methods.getSponsor(ship).call(cb);
+  contracts.ships.methods.getSponsor(ship).call(cb);
 };
 
 var getIsRequestingEscapeTo = function(ship, sponsor, cb) {
-  contracts['ships'].methods.isRequestingEscapeTo(ship, sponsor).call(cb);
+  contracts.ships.methods.isRequestingEscapeTo(ship, sponsor).call(cb);
 };
 
 var getHasBeenBooted = function(ship, cb) {
-  contracts['ships'].methods.hasBeenBooted(ship).call(cb);
+  contracts.ships.methods.hasBeenBooted(ship).call(cb);
 };
 
 var getKeys = function(ship, cb) {
-  contracts['ships'].methods.getKeys(ship).call(cb);
+  contracts.ships.methods.getKeys(ship).call(cb);
 };
 
 var getIsTransferProxy = function(ship, address, cb) {
-  contracts['ships'].methods.isTransferProxy(ship, address).call(cb);
+  contracts.ships.methods.isTransferProxy(ship, address).call(cb);
 };
 
 var getIsSpawnProxy = function(ship, address, cb) {
-  contracts['ships'].methods.isSpawnProxy(ship, address).call(cb);
+  contracts.ships.methods.isSpawnProxy(ship, address).call(cb);
 };
 
 var getEscapeRequest = function(ship, cb) {
-  contracts['ships'].methods.getEscapeRequest(ship).call(cb);
+  contracts.ships.methods.getEscapeRequest(ship).call(cb);
 };
 
 var getTransferringFor = function(address, cb) {
-  contracts['ships'].methods.getTransferringFor(address).call(cb);
+  contracts.ships.methods.getTransferringFor(address).call(cb);
 };
 
 var getSpawningFor = function(address, cb) {
-  contracts['ships'].methods.getSpawningFor(address).call(cb);
+  contracts.ships.methods.getSpawningFor(address).call(cb);
 };
 
 var getPoolAssets = function(cb) {
-  contracts['pool'].methods.getAllAssets().call(cb);
+  contracts.pool.methods.getAllAssets().call(cb);
 };
 
 var getSparkBalance = function(ethAddress, cb) {
-  contracts['pool'].methods.balanceOf(ethAddress).call(cb);
+  contracts.pool.methods.balanceOf(ethAddress).call(cb);
 };
 
 var getHasVotedOnConstitutionPoll = function(galaxy, address, cb) {
-  contracts['polls'].methods.hasVotedOnConstitutionPoll(galaxy, address).call(cb);
+  contracts.polls.methods.hasVotedOnConstitutionPoll(galaxy, address).call(cb);
 };
 
 var getDocumentHasAchievedMajority = function(proposal, cb) {
-  contracts['polls'].methods.documentHasAchievedMajority(proposal).call(cb);
+  contracts.polls.methods.documentHasAchievedMajority(proposal).call(cb);
 };
 
 var getHasVotedOnDocumentPoll = function(galaxy, proposal, cb) {
-  contracts['polls'].methods.hasVotedOnDocumentPoll(galaxy, proposal).call(cb);
+  contracts.polls.methods.hasVotedOnDocumentPoll(galaxy, proposal).call(cb);
 };
 //
 // READ: fill fields with requested data
@@ -339,9 +343,9 @@ var readOwnedShipsStatus = function(ethAddress, cb) {
             var shipAddress = res[counter];
             if (!err) {
               ownedShips[shipAddress] = {};
-              ownedShips[shipAddress]['name'] = '~' + toShipName(shipAddress);
-              ownedShips[shipAddress]['address'] = shipAddress;
-              ownedShips[shipAddress]['hasBeenBooted'] = bootedResult;
+              ownedShips[shipAddress].name = '~' + toShipName(shipAddress);
+              ownedShips[shipAddress].address = shipAddress;
+              ownedShips[shipAddress].hasBeenbooted = bootedResult;
               if (counter === res.length - 1) { shipsAcquired(); }
               else { 
                 counter++;
@@ -538,7 +542,7 @@ var checkIsNotOwned = function(shipAddress, cb, next) {
 //
 // DO: do transactions that modify the blockchain
 //
-var doCreateGalaxy = function(galaxy, ethAddress, cb) {
+var doCreateGalaxy = function(galaxy, ethAddress, cb, offlineTxData) {
   validateGalaxy(galaxy, cb, function() {
     validateAddress(ethAddress, cb, function() {
       if (offline) return transact();
@@ -552,13 +556,14 @@ var doCreateGalaxy = function(galaxy, ethAddress, cb) {
     }
   }
   function transact() {
-    signTransaction(contracts['constitution'].methods.createGalaxy(galaxy, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.createGalaxy(galaxy, ethAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doDeposit = function(star, poolAddress, cb) {
+var doDeposit = function(star, poolAddress, cb, offlineTxData) {
   validateStar(star, cb, function() {
     if (offline) return transact();
       checkIsTransferProxy(star, poolAddress, cb, function() {
@@ -572,24 +577,26 @@ var doDeposit = function(star, poolAddress, cb) {
     });
   }
   function transact() {
-    signTransaction(contracts['pool'].methods.deposit(star).encodeABI(),
-                    contractDetails.pool['address'],
-                    cb);
+    signTransaction(contracts.pool.methods.deposit(star).encodeABI(),
+                    contractDetails.pool.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doWithdraw = function(star, poolAddress, cb) {
+var doWithdraw = function(star, poolAddress, cb, offlineTxData) {
   validateStar(star, cb, function() {
     return transact();
   });
   function transact() {
-    signTransaction(contracts['pool'].methods.withdraw(star).encodeABI(),
-                    contractDetails.pool['address'],
-                    cb);
+    signTransaction(contracts.pool.methods.withdraw(star).encodeABI(),
+                    contractDetails.pool.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doSpawn = function(shipAddress, ethAddress, cb) {
+var doSpawn = function(shipAddress, ethAddress, cb, offlineTxData) {
   var sponsorAddress = shipAddress % minStarAddress;
   if (shipAddress > maxStarAddress) sponsorAddress = shipAddress % (maxStarAddress + 1);
   validateShip(shipAddress, cb, function() {
@@ -613,13 +620,14 @@ var doSpawn = function(shipAddress, ethAddress, cb) {
     });
   }
   function transact() {
-    signTransaction(contracts['constitution'].methods.spawn(shipAddress, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.spawn(shipAddress, ethAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doSetSpawnProxy = function(shipAddress, ethAddress, cb) {
+var doSetSpawnProxy = function(shipAddress, ethAddress, cb, offlineTxData) {
   validateParent(shipAddress, cb, function() {
     validateAddress(ethAddress, cb, function() {
       if (offline) return transact();
@@ -629,13 +637,14 @@ var doSetSpawnProxy = function(shipAddress, ethAddress, cb) {
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.setSpawnProxy(shipAddress, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.setSpawnProxy(shipAddress, ethAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doConfigureKeys = function(shipAddress, encryptionKey, authenticationKey, cryptoSuiteVersion, discontinuous, cb) {
+var doConfigureKeys = function(shipAddress, encryptionKey, authenticationKey, cryptoSuiteVersion, discontinuous, cb, offlineTxData) {
   var encryp32 = web3.utils.fromAscii(encryptionKey);
   var authent32 = web3.utils.fromAscii(authenticationKey);
   validateShip(shipAddress, cb, function() {
@@ -650,13 +659,14 @@ var doConfigureKeys = function(shipAddress, encryptionKey, authenticationKey, cr
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.configureKeys(shipAddress, encryp32, authent32, cryptoSuiteVersion, discontinuous).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.configureKeys(shipAddress, encryp32, authent32, cryptoSuiteVersion, discontinuous).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doTransferShip = function(shipAddress, ethAddress, reset, cb) {
+var doTransferShip = function(shipAddress, ethAddress, reset, cb, offlineTxData) {
   validateShip(shipAddress, cb, function() {
     validateAddress(ethAddress, cb, function() {
       if (offline) return transact();
@@ -664,13 +674,14 @@ var doTransferShip = function(shipAddress, ethAddress, reset, cb) {
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.transferShip(shipAddress, ethAddress, reset).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.transferShip(shipAddress, ethAddress, reset).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doSetTransferProxy = function(shipAddress, ethAddress, cb) {
+var doSetTransferProxy = function(shipAddress, ethAddress, cb, offlineTxData) {
   validateShip(shipAddress, cb, function() {
     validateAddress(ethAddress, cb, function() {
       if (offline) return transact();
@@ -678,13 +689,14 @@ var doSetTransferProxy = function(shipAddress, ethAddress, cb) {
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.setTransferProxy(shipAddress, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.setTransferProxy(shipAddress, ethAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doEscape = function(shipAddress, sponsorAddress, cb) {
+var doEscape = function(shipAddress, sponsorAddress, cb, offlineTxData) {
   validateChild(shipAddress, cb, function() {
     validateParent(sponsorAddress, cb, function() {
       if (offline) return transact();
@@ -696,13 +708,14 @@ var doEscape = function(shipAddress, sponsorAddress, cb) {
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.escape(shipAddress, sponsorAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.escape(shipAddress, sponsorAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doAdopt = function(sponsorAddress, escapeeAddress, cb) {
+var doAdopt = function(sponsorAddress, escapeeAddress, cb, offlineTxData) {
   validateParent(sponsorAddress, cb, function() {
     validateChild(escapeeAddress, cb, function () {
       if (offline) return transact();
@@ -712,13 +725,14 @@ var doAdopt = function(sponsorAddress, escapeeAddress, cb) {
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.adopt(sponsorAddress, escapeeAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.adopt(sponsorAddress, escapeeAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doReject = function(sponsorAddress, escapeeAddress, cb) {
+var doReject = function(sponsorAddress, escapeeAddress, cb, offlineTxData) {
   validateParent(sponsorAddress, cb, function() {
     validateChild(escapeeAddress, cb, function () {
       if (offline) return transact();
@@ -728,13 +742,14 @@ var doReject = function(sponsorAddress, escapeeAddress, cb) {
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.reject(sponsorAddress, escapeeAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.reject(sponsorAddress, escapeeAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doApprove = function(ethAddress, shipAddress, cb) {
+var doApprove = function(ethAddress, shipAddress, cb, offlineTxData) {
   validateAddress(ethAddress, cb, function () {
     validateShip(shipAddress, cb, function () {
       if (offline) return transact();
@@ -742,13 +757,14 @@ var doApprove = function(ethAddress, shipAddress, cb) {
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.approve(ethAddress, shipAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.approve(ethAddress, shipAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doSafeTransferFrom = function(fromEthAddress, toEthAddress, shipAddress, cb) {
+var doSafeTransferFrom = function(fromEthAddress, toEthAddress, shipAddress, cb, offlineTxData) {
   validateAddress(fromEthAddress, cb, function () {
     validateAddress(toEthAddress, cb, function () {
       validateShip(shipAddress, cb, function () {
@@ -759,13 +775,14 @@ var doSafeTransferFrom = function(fromEthAddress, toEthAddress, shipAddress, cb)
     });
   });
   function transact() {
-    signTransaction(contracts['constitution'].methods.safeTransferFrom(fromEthAddress, toEthAddress, shipAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.safeTransferFrom(fromEthAddress, toEthAddress, shipAddress).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doCastConstitutionVote = function(galaxy, prop, vote, cb) {
+var doCastConstitutionVote = function(galaxy, prop, vote, cb, offlineTxData) {
   validateGalaxy(galaxy, cb, function() {
     validateAddress(prop, cb, function() {
       if (offline) return transact();
@@ -783,13 +800,14 @@ var doCastConstitutionVote = function(galaxy, prop, vote, cb) {
     } else { cb({ error: { msg: "Error retrieving vote status." }, data: '' }); }
   }
   function transact() {
-    signTransaction(contracts['constitution'].methods.castConstitutionVote(galaxy, prop, vote).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.castConstitutionVote(galaxy, prop, vote).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var doCastDocumentVote = function(galaxy, prop, vote, cb) {
+var doCastDocumentVote = function(galaxy, prop, vote, cb, offlineTxData) {
   validateGalaxy(galaxy, function() {
     validateBytes32(prop, function() {
       if (offline) return transact();
@@ -813,28 +831,40 @@ var doCastDocumentVote = function(galaxy, prop, vote, cb) {
     } else { cb({ error: { msg: "Error retrieving vote status." }, data: '' }); }
   }
   function transact() {
-    signTransaction(contracts['constitution'].methods.castDocumentVote(galaxy, prop, vote).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+    signTransaction(contracts.constitution.methods.castDocumentVote(galaxy, prop, vote).encodeABI(),
+                    contractDetails.constitution.address,
+                    cb,
+                    offlineTxData);
   }
 };
 
-var signTransaction = function(encodedABI, contractAddress, cb) {
+var signTransaction = function(encodedABI, contractAddress, cb, offlineTxData) {
+  var tx = {
+    from: web3.eth.defaultAccount,
+    to: contractAddress,
+    value: 0x0,
+    data: encodedABI,
+  };
   if (!offline) {
-    var tx = {
-        from: web3.eth.defaultAccount,
-        to: contractAddress,
-        value: 0x0,
-        data: encodedABI,
-      }; 
     web3.eth.estimateGas(tx)
     .then((gas) => {
-      tx['gas'] = Math.round(gas * 1.8);
+      tx.gas = Math.round(gas * 1.8);
       web3.eth.accounts.signTransaction(tx, '0x' + privateKey)
       .then((signed) => {
         cb({ error: false, signedTx: signed.rawTransaction, rawTx: tx });
       }).catch((err) => { cb({ error: { msg: "Sign transaction error" }, data: err }) });
     }).catch((err) => { cb({ error: { msg: "Estimate gas error" }, data: err }) });
+  } else {
+    if (offlineTxData.gas == undefined || offlineTxData.gasPrice == undefined || offlineTxData.nonce == undefined) {
+      return cb({ error: { msg: "Offline transaction data incomplete" }, data: '' });
+    }
+    tx.gas = offlineTxData.gas;
+    tx.gasPrice = offlineTxData.gasPrice;
+    tx.nonce = offlineTxData.nonce;
+    web3.eth.accounts.signTransaction(tx, '0x' + privateKey)
+      .then((signed) => {
+        cb({ error: false, signedTx: signed.rawTransaction, rawTx: tx });
+      }).catch((err) => { cb({ error: { msg: "Sign transaction error" }, data: err }) });
   }
 };
 
@@ -846,35 +876,12 @@ var sendTransaction = function(signedTx, cb) {
   tx.on('error', cb({ error: { msg: console.error }, data: '' }));
 };
 
-var generateTxOffline = function(cb) {
-  if (!validateEtherAddress(tx.to)) {
-    cb(validator.errorMsgs[5]);
-    return;
-  }
-  var txData = // uiFuncs.getTxData();
-  txData.isOffline = true;
-  txData.nonce = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(nonceDec));
-  txData.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(gasPriceDec));
-  if (tokenTx.id != 'ether') {
-    txData.data = // $scope.tokenObjs[tokenTx.id].getData(tx.to, tx.value).data;
-    txData.to = // $scope.tokenObjs[tokenTx.id].getContractAddress();
-    txData.value = '0x00';
-  }
-  uiFuncs.generateTx(txData, function(rawTx) {
-    if (!rawTx.isError) {
-      cb({ error: false, rawTx: rawTx.rawTx, signedTx: rawTx.signedTx, showRaw: true})
-    } else {
-      cb({ error: { msg: rawTx.error }, data: '' });
-    }
-  });
-};
-
 module.exports = {
-  offline: offline,
   setServerUrl: setServerUrl,
-  setPoolAddress: setPoolAddress,
   setPrivateKey: setPrivateKey,
-  setDefaultAccountWithPathAndIndex: setDefaultAccountWithPathAndIndex,
+  setDefaultAccount: setDefaultAccount,
+  setPoolAddress: setPoolAddress,
+  setOffline: setOffline,
   minShipAddress: minShipAddress,
   maxGalaxyAddress: maxGalaxyAddress,
   minStarAddress: minStarAddress,
