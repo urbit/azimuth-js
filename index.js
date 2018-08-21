@@ -617,13 +617,13 @@ async function isActiveShipVoter(galaxy, voter)
   voter = voter || account;
   let res = { result: false };
   // must either be ship owner, or delegate for the owner
-  if (!await canVoteAs(ship, voter))
+  if (!await canVoteAs(galaxy, voter))
   {
     res.reason = reasons.permission;
     return res;
   }
   // ship must be active in order to vote
-  if (!await isActive(ship))
+  if (!await isActive(galaxy))
   {
     res.reason = reasons.inactive;
     return res;
@@ -816,22 +816,22 @@ function setDnsDomains(primary, secondary, tertiary)
 
 function getConstitutionPoll(proposal)
 {
-  return polls.constitutionPolls(proposal).call();
+  return polls.methods.constitutionPolls(proposal).call();
 }
 
 function getDocumentPoll(proposal)
 {
-  return polls.documentPolls(proposal).call();
+  return polls.methods.documentPolls(proposal).call();
 }
 
 function constitutionHasAchievedMajority(proposal)
 {
-  return polls.constitutionHasAchievedMajority(proposal).call();
+  return polls.methods.constitutionHasAchievedMajority(proposal).call();
 }
 
 function documentHasAchievedMajority(proposal)
 {
-  return polls.documentHasAchievedMajority(proposal).call();
+  return polls.methods.documentHasAchievedMajority(proposal).call();
 }
 
 function canStartPoll(poll)
@@ -842,12 +842,12 @@ function canStartPoll(poll)
 
 function hasVotedOnConstitutionPoll(galaxy, proposal)
 {
-  return polls.hasVotedOnConstitutionPoll(galaxy, proposal).call();
+  return polls.methods.hasVotedOnConstitutionPoll(galaxy, proposal).call();
 }
 
 function hasVotedOnDocumentPoll(galaxy, proposal)
 {
-  return polls.hasVotedOnDocumentPoll(galaxy, proposal).call();
+  return polls.methods.hasVotedOnDocumentPoll(galaxy, proposal).call();
 }
 
 function pollIsActive(poll)
