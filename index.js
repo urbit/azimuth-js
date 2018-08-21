@@ -1,920 +1,900 @@
 'use strict';
 
-// urbit constitution-js
+//TODO probably split up into files per contract
 
-var Web3 = require('web3');
-var ethUtil = require('ethereumjs-util');
-var obService = require('urbit-ob');
-var contractDetails = require('./scripts/contractDetails');
+// usage:
+//TODO initialize contracts, set account
 
-const minShipAddress = 0;
-const maxGalaxyAddress = 255;
-const minStarAddress = 256;
-const maxStarAddress = 65535;
-const maxShipAddress = 4294967295;
-const emptyAddress = '0x0000000000000000000000000000000000000000';
-const oneSpark = 1000000000000000000;
-const planetsPerSpark = 65536;
+//NOTE
+// for granular promise usage with transactions, see example:
+// https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#id12
 
-var web3;
-var contracts;
-var privateKey;
-var hdKey;
-var offline = false;
+const Web3 = require('web3');
+const ethUtil = require('ethereumjs-util');
+const abis = require('./resources/abis.json');
+
 //
-//// CONFIG: setup and configure web3
+// script variables
 //
-var setServerUrl = function(serverURL) {
-  if (typeof web3 !== 'undefined') { web3 = new Web3(web3.currentProvider); } 
-  else { web3 = new Web3(new Web3.providers.HttpProvider(serverURL)); }
 
-  contracts = {
-    constitution: new web3.eth.Contract(contractDetails.constitution['abi'], contractDetails.constitution['address']),
-    ships: new web3.eth.Contract(contractDetails.ships['abi'], contractDetails.ships['address']),
-    polls: new web3.eth.Contract(contractDetails.polls['abi'], contractDetails.polls['address']),
-    pool: new web3.eth.Contract(contractDetails.pool['abi'], contractDetails.pool['address'])
-  };
-};
+// web3: the web3 object we'll be working with.
+let web3;
 
-var setPrivateKey = function(hd, path, idx, cb) {
-  hdKey = hd;
-  web3.eth.accounts.privateKeyToAccount(hdKey.privateKey.toString('hex'));
-  setDefaultAccountWithPathAndIndex(path, idx, cb);
-};
+// contract instances
+let constitution, ships, polls, pool;
 
-var setDefaultAccountWithPathAndIndex = function(path, idx, cb) {
-  web3.eth.getAccounts(function(err, res) {
-    if (!err) {
-      web3.eth.defaultAccount = res[idx];
-      privateKey = hdKey.derive(path + '/' + idx).privateKey.toString('hex');
-      cb({ error: false, data: web3.eth.defaultAccount });
-    } else { cb({ error: { msg: "Error setting private key" }, data: '' }); }
-  });
-};
+//TODO maybe remove, we're not doing validation unless called to do so anymore,
+//     so this is only really relevant in signTransaction()...
+let offline = false;
 
-var setPoolAddress = function(poolAddress) {
-  contractDetails.pool['address'] = poolAddress;
-  contracts['pool'] = new web3.eth.Contract(contractDetails.pool['abi'], contractDetails.pool['address']);
-};
-//
-//// VALIDATE: validate input data
-//
-var validateShip = function(ship, cb, next) {
-  if (ship < minShipAddress || ship > maxShipAddress || ship % 1 !== 0)
-    cb({ error: { msg: "Ship " + ship + " not a galaxy, star or planet." }, data: '' });
-  return next();
-};
+// hd wallet master node
+let hdNode;
 
-var validateParent = function(ship, cb, next) {
-  if (ship < minShipAddress || ship > maxStarAddress || ship % 1 !== 0)
-    cb({ error: { msg: "Ship " + ship + " not a galaxy or star." }, data: '' });
-  return next();
-};
+// private key for the used account
+//TODO can't we contain this in web3 somehow?
+let privateKey;
 
-var validateChild = function(ship, cb, next) {
-  if (ship < minStarAddress || ship > maxShipAddress || ship % 1 !== 0)
-    cb({ error: { msg: "Ship " + ship + " not a star or planet." }, data: '' });
-  return next();
-};
+// ethereum address that will perform transactions
+// set alongside hdNode (setHdAccount), or individually (setPublicAccount)
+let account;
 
-var validateGalaxy = function(galaxy, cb, next) {
-  if (galaxy < minShipAddress || galaxy > maxGalaxyAddress || galaxy % 1 !== 0)
-    cb({ error: { msg: "Ship " + galaxy + " not a galaxy." }, data: '' });
-  return next();
-};
-
-var validateStar = function(star, cb, next) {
-  if (star < minStarAddress || star > maxStarAddress || star % 1 !== 0)
-    cb({ error: { msg: "Ship " + star + " not a star." }, data: '' });
-  return next();
-};
-
-var validateAddress = function(address, cb, next) {
-  if (!validateEtherAddress(address))
-    cb({ error: { msg: address + " is not a valid Ethereum address." }, data: '' });
-  return next();
-};
-
-var validateBytes32 = function(bytes, cb, next) {
-  if (bytes.length > 32)
-    cb({ error: { msg: "Input too long: " + bytes }, data: '' });
-  return next();
-};
-
-var validateEtherAddress = function(address) {
-  if (address.substring(0, 2) != "0x") return false;
-  else if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) return false;
-  else if (/^(0x)?[0-9a-f]{40}$/.test(address) || /^(0x)?[0-9A-F]{40}$/.test(address)) return true;
-  else return isChecksumAddress(address);
+// reasons for inability to transact
+let reasons = {
+  permission:   'Insufficient permission for this action',
+  zero:         'Cannot target the zero address',
+  inactive:     'Ship is not active',
+  spawned:      'Ship already spawned',
+  spawnClass:   'Spawning galaxy planets is not supported',
+  spawnPrefix:  'Prefix is unable to spawn children',
+  sponsorBoot:  'Sponsor has not been booted',
+  sponsor:      'Invalid sponsor for ship',
+  notEscape:    'Ship is not escaping to sponsor',
+  upgradePath:  'Unexpected upgrade path',
+  majority:     'Proposal has already achieved majority',
+  pollTime:     'Existing poll is still active or cooling down',
+  pollInactive: 'Poll is not currently active',
+  pollVoted:    'Ship already voted on this poll'
 }
 
-var isChecksumAddress = function(address) {
-  return address == ethUtil.toChecksumAddress(address);
-};
-//
-// UI Validators
-//
-var valGalaxy = function(galaxyAddress) {
-  if (galaxyAddress < minShipAddress || galaxyAddress > maxGalaxyAddress || typeof galaxyAddress !== 'number' || galaxyAddress % 1 !== 0) {
-    return false;
-  } else {
-    return true;
-  }
-};
-
-var valStar = function(starAddress) {
-  if (starAddress < minStarAddress || starAddress > maxStarAddress || typeof starAddress !== 'number' || starAddress % 1 !== 0) {
-    return false;
-  } else {
-    return true;
-  }
-};
-
-var valShip = function(shipAddress) {
-  if (shipAddress < minShipAddress || shipAddress > maxShipAddress || typeof shipAddress !== 'number' || shipAddress % 1 !== 0) {
-    return false;
-  } else {
-    return true;
-  }
-};
-
-var valAddress = function(ethAddress) {
-  if (validateEtherAddress(ethAddress)) {
-    return true;
-  } else {
-    return false;
-  }
-};
-//
-// UI Conveniences
-//
-var formatShipName = function(shipName) {
-  if (!shipName) {
-    return shipName;
-  } 
-  if (shipName.length < 2) {
-    return shipName;
-  }
-  if (shipName[0] != '~') {
-    return '~' + shipName;
-  } else {
-    return shipName;
-  }
-};
-
-var toAddress = function(shipName) {
-  return obService.toAddress(shipName);
+let Class = {
+  Galaxy: 0,
+  Star: 1,
+  Planet: 2
 }
 
-var toShipName = function(shipAddress) {
-  if (shipAddress > -1 && shipAddress < minStarAddress) {
-    return obService.toGalaxyName(shipAddress);
-  } else if (shipAddress > maxGalaxyAddress && shipAddress < (maxStarAddress + 1)) {
-    return obService.toStarName(shipAddress);
-  } else {
-    return obService.toPlanetName(shipAddress);
-  }
-};
+//
+// configure
+//
 
-var getSpawnCandidate = function(shipAddress) {
-  var candidate;
-  if (shipAddress > -1 && shipAddress < minStarAddress) {
-    candidate = ((Math.floor(Math.random() * maxGalaxyAddress) + 1) * minStarAddress + shipAddress);
-    return candidate;
-  } else if (shipAddress > maxGalaxyAddress && shipAddress < (maxStarAddress + 1)) {
-    candidate = ((Math.floor(Math.random() * maxStarAddress) + 1) * (maxStarAddress + 1) + shipAddress);
-    return candidate;
-  } else {
-    return;
-  }
-};
+function setServerUrl(url)
+{
+  web3 = new Web3(new Web3.providers.HttpProvider(url));
+}
 
-var generateShipList = function(shipListString, cb) {
-  var t = shipListString.split('\n');
-  var r = {};
-  for (var i = 0; i < t.length; i ++) {
-    if (t[i]) {
-      r[t[i]] = { address: t[i], name: '~' + toShipName(t[i])};
-    }
+function setOffline(offl)
+{
+  offline = offl;
+}
+
+//TODO these two are a bit weird. can they not be collapsed into just the logic
+//     from setHdAccount?
+function setPrivateKey(hd, path, index)
+{
+  hdNode = hd;
+  web3.eth.accounts.privateKeyToAccount(hdNode.privateKey.toString('hex'));
+  return setHdAccount(path, index);
+}
+
+//TODO can we not get public key from the hdNode, rather than accounts?
+async function setHdAccount(path, index)
+{
+  let acs = await web3.eth.getAccounts();
+  setPublicAccount(acs[index]);
+  if (hdNode)
+  {
+    privateKey = hdNode.derive(path + '/' + index).privateKey.toString('hex');
+  }
+  return acs[index];
+}
+
+function setGanacheAccount()
+{
+  privateKey = 'a44de2416ee6beb2f323fab48b432925c9785808d33a6ca6d7ba00b45e9370c3';
+  setPublicAccount('0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d');
+}
+
+function setPublicAccount(address)
+{
+  web3.eth.defaultAccount = address;
+  account = address;
+}
+
+//NOTE verified functioning pattern, throws in the awaits just get thrown up
+async function initializeContracts(shipsAddress, offlineConstitution, offlinePolls)
+{
+  ships = new web3.eth.Contract(abis.ships, shipsAddress);
+  if (!offline)
+  {
+    let constitutionAddress = await ships.methods.owner().call();
+    constitution = new web3.eth.Contract(abis.constitution, constitutionAddress);
+    let pollsAddress = await constitution.methods.polls().call();
+    polls = new web3.eth.Contract(abis.polls, pollsAddress);
+  } else {
+    constitution = new web3.eth.Contract(abis.constitution, offlineConstitution);
+    polls = new web3.eth.Contract(abis.polls, offlinePolls);
+  }
+}
+
+function initializeContractsDefault()
+{
+  //TODO update with real address once deployed
+  return initializeContracts('0x863d9c2e5c4c133596cfac29d55255f0d0f86381');
+}
+
+function setPool(poolAddress)
+{
+  c.pool = new web3.eth.Contract(abis.pool, poolAddress);
+}
+
+//
+// transactions
+//
+
+function pseudoTx(target, callData, value)
+{
+  if (typeof callData === 'object') callData = callData.encodeABI();
+  return {
+    from: account,
+    to: target,
+    data: callData,
+    value: value || 0x0
   };
-  if (cb) {
-    cb(r);
-  } else {
-    return r;
-  }
-};
-//
-// GET: read contract data, pass the result to callback
-//
-var getConstitutionOwner = function(cb) {
-  contracts['constitution'].methods.owner().call(cb);
-};
+}
 
-var getVotesAddress = function(cb) {
-  contracts['constitution'].methods.votes().call(cb);
-};
+//TODO maybe do gas estimation in a separate fillTransactionDetails() function?
+async function signTransaction(tx)
+{
+  //TODO check important tx values are set? all but from are web3 optional...
 
-var getCanEscapeTo = function(ship, sponsor, cb) {
-  contracts['constitution'].methods.canEscapeTo(ship, sponsor).call(cb);
-};
-
-var getShipsOwner = function(cb) {
-  contracts['ships'].methods.owner().call(cb);
-};
-
-var getOwnedShips = function(address, cb) {
-  contracts['ships'].methods.getOwnedShipsByAddress(address).call(cb);
-};
-
-var getOwner = function(ship, cb) {
-  contracts['ships'].methods.getOwner(ship).call(cb);
-};
-
-var getIsOwner = function(shipAddress, ethAddress, cb) {
-  contracts['ships'].methods.isOwner(shipAddress, ethAddress).call(cb);
-};
-
-var getIsActive = function(ship, cb) {
-  contracts['ships'].methods.isActive(ship).call(cb);
-};
-
-var getSponsor = function(ship, cb) {
-  contracts['ships'].methods.getSponsor(ship).call(cb);
-};
-
-var getIsRequestingEscapeTo = function(ship, sponsor, cb) {
-  contracts['ships'].methods.isRequestingEscapeTo(ship, sponsor).call(cb);
-};
-
-var getHasBeenBooted = function(ship, cb) {
-  contracts['ships'].methods.hasBeenBooted(ship).call(cb);
-};
-
-var getKeys = function(ship, cb) {
-  contracts['ships'].methods.getKeys(ship).call(cb);
-};
-
-var getIsTransferProxy = function(ship, address, cb) {
-  contracts['ships'].methods.isTransferProxy(ship, address).call(cb);
-};
-
-var getIsSpawnProxy = function(ship, address, cb) {
-  contracts['ships'].methods.isSpawnProxy(ship, address).call(cb);
-};
-
-var getEscapeRequest = function(ship, cb) {
-  contracts['ships'].methods.getEscapeRequest(ship).call(cb);
-};
-
-var getTransferringFor = function(address, cb) {
-  contracts['ships'].methods.getTransferringFor(address).call(cb);
-};
-
-var getSpawningFor = function(address, cb) {
-  contracts['ships'].methods.getSpawningFor(address).call(cb);
-};
-
-var getPoolAssets = function(cb) {
-  contracts['pool'].methods.getAllAssets().call(cb);
-};
-
-var getSparkBalance = function(ethAddress, cb) {
-  contracts['pool'].methods.balanceOf(ethAddress).call(cb);
-};
-
-var getHasVotedOnConstitutionPoll = function(galaxy, address, cb) {
-  contracts['polls'].methods.hasVotedOnConstitutionPoll(galaxy, address).call(cb);
-};
-
-var getDocumentHasAchievedMajority = function(proposal, cb) {
-  contracts['polls'].methods.documentHasAchievedMajority(proposal).call(cb);
-};
-
-var getHasVotedOnDocumentPoll = function(galaxy, proposal, cb) {
-  contracts['polls'].methods.hasVotedOnDocumentPoll(galaxy, proposal).call(cb);
-};
-//
-// READ: fill fields with requested data
-//
-var readShipData = function(shipAddress, cb) {
-  validateShip(shipAddress, cb, function() {
-    getHasBeenBooted(shipAddress, put);
-  });
-  function put(err, res) {
-    if (!err) {
-      cb({ error: false, ship: { address: shipAddress, hasBeenBooted: res } });
-    } else { cb({ error: { msg: "Error retrieving hasBeenBooted" }, data: '' }); }
-  }
-};
-
-var readOwnedShips = function(ethAddress, cb) {
-  if (!ethAddress) { return; }
-  validateAddress(ethAddress, cb, function() {
-    getOwnedShips(ethAddress, function(err, res) {
-      if (!err) {
-        var str = "";
-        for (var i = 0; i < res.length; i++) {
-          str = str + res[i] + "\n";
-        }
-        cb({ error: false, data: generateShipList(res)});
-      } else { cb({ error: { msg: "Error retrieving owned ships" }, data: '' }); }
-    });
-  });
-};
-
-var readOwnedShipsStatus = function(ethAddress, cb) {
-  if (!ethAddress) { return; }
-  validateAddress(ethAddress, cb, function() {
-    var ownedShips = {}
-    var shipsAcquired = function() {
-      if (ownedShips.length < 1) { cb({ error: { msg: ethAddress + "does not own any ships." }, data: '' }); } 
-      else { cb({ error: false, data: ownedShips }); }
+  // if no gas limit was specified, estimate it
+  //TODO web3 default gas is "to be determined"? can we let it do this for us?
+  if (!tx.gas)
+  {
+    // can't estimate gas if we're offline
+    if (offline)
+    {
+      throw {
+        name: 'Error',
+        message: 'Need transaction gas limit.'
+      };
     }
-    getOwnedShips(ethAddress, function(err, res) {
-      if (!err) {
-        if (res.length < 1) { shipsAcquired(); }
-        var counter = 0;
-        var getBootedData = function() {
-          getHasBeenBooted(res[counter], function(err, bootedResult) {
-            var shipAddress = res[counter];
-            if (!err) {
-              ownedShips[shipAddress] = {};
-              ownedShips[shipAddress]['name'] = '~' + toShipName(shipAddress);
-              ownedShips[shipAddress]['address'] = shipAddress;
-              ownedShips[shipAddress]['hasBeenBooted'] = bootedResult;
-              if (counter === res.length - 1) { shipsAcquired(); }
-              else { 
-                counter++;
-                getBootedData();
-              }
-            } else { cb({ error: { msg: "Error retrieving booted status." }, data: '' }); }
-          });
-        }
-        getBootedData();
-      } else { cb({ error: { msg: "Error retrieving ships." }, data: '' }); }
-    });
-  });
-};
-
-var readTransferringFor = function(ethAddress, cb) {
-  if (!ethAddress) { return; }
-  validateAddress(ethAddress, cb, function() {
-    getTransferringFor(ethAddress, put);
-    function put(err, res) {
-      if (!err) {
-        cb({ error: false, data: res});
-      } else { cb({ error: { msg: "Error retrieving transferringFor" }, data: '' }); }
-    }
-  });
-};
-
-var readHasOwner = function(shipAddress, cb) {
-  validateShip(shipAddress, cb, function() {
-    getOwner(shipAddress, put);
-  });
-  function put(err, res) {
-    if (!err) {
-      var ownedStatus = res === emptyAddress ? false : true
-      cb({ error: false, data: ownedStatus });
-    } else { cb({ error: { msg: "Error retrieving owner" }, data: '' }); }
+    //NOTE +1 because exactly the required gas causes a revert
+    //TODO maybe we want to do *1.1 or similar instead?
+    //TODO do we want to catch gas estimation errors and throw a custom error?
+    tx.gas = (await web3.eth.estimateGas(tx)) + 1;
   }
-};
 
-var readIsOwner = function(shipAddress, ethAddress, cb) {
-  validateShip(shipAddress, cb, function() {
-    validateAddress(ethAddress, cb, function() {
-      getIsOwner(shipAddress, ethAddress, put);
-    });
-  });
-  function put(err, res) {
-    if (!err) {
-      cb({ error: false, data: res });
-    } else { cb({ error: { msg: "Error retrieving isOwner" }, data: '' }); }
-  }
-};
+  //TODO gasPrice defaults to web3.eth.gasPrice...
 
-var readSponsor = function(shipAddress, cb) {
-  validateChild(shipAddress, cb, function() {
-    getSponsor(shipAddress, put);
-  });
-  function put(err, res) {
-    if (!err) {
-      cb({ error: false, data: res });
-    } else { cb({ error: { msg: "Error retrieving sponsor" }, data: '' }); }
-  }
-};
+  return web3.eth.accounts.signTransaction(tx, '0x' + privateKey);
+}
 
-var readPoolAssets = function(cb) {
-  getPoolAssets(put);
-  function put(err, res) {
-    if (!err) {
-      var t = [];
-      for (var i = 0; i < res.length; i++) {
-        t.push(formatShipName(toShipName(res[i])));
-      }
-      cb({ error: false, data: t });
-    } else { cb({ error: { msg: "Error retrieving pool assets" }, data: '' }); }
-  }
-};
+function sendTransaction(signedTx)
+{
+  if (typeof signedTx === 'object') signedTx = signedTx.rawTransaction;
+  return web3.eth.sendSignedTransaction(signedTx);
+}
 
-var readIsRequestingEscapeTo = function(shipAddress, sponsorAddress, cb) {
-  validateChild(shipAddress, cb, function() {
-    validateParent(sponsorAddress, cb, function () {
-      getIsRequestingEscapeTo(shipAddress, sponsorAddress, put);
-    });
-  });
-  function put(err, res) {
-    if (!err) {
-      cb({ error: false, data: res });
-    } else { cb({ error: { msg: "Error retrieving isRequestingEscapeTo" }, data: '' }); }
-  }
-};
+async function doTheThing(tx)
+{
+  return await sendTransaction(await signTransaction(tx));
+}
 
-var readKeys = function(shipAddress, cb) {
-  validateShip(shipAddress, cb, function() {
-    getKeys(shipAddress, put);
-  });
-  function put(err, res) {
-    if (!err) {
-      cb({ error: false, data: res });
-    } else { cb({ error: { msg: "Error retrieving keys" }, data: '' }); }
-  }
-};
-
-var readIsSpawnProxy = function(shipAddress, ethAddress, cb) {
-  validateParent(shipAddress, cb, function() {
-    validateAddress(ethAddress, cb, function () {
-      getIsSpawnProxy(shipAddress, ethAddress, put);
-    });
-  });
-  function put(err, res) {
-    if (!err) {
-      cb({ error: false, data: res });
-    } else { cb({ error: { msg: "Error retrieving spawn proxy" }, data: '' }); }
-  }
-};
-
-var readBalance = function(ethAddress, cb) {
-  getSparkBalance(ethAddress, function(err, res) {
-    if (!err) {
-      cb({ error: false, data: (res / oneSpark) / planetsPerSpark });
-    } else { cb({ error: { msg: "Error retrieving spark balance" }, data: '' }); }
-  });
-};
 //
-// CHECK: verify if conditions for a transaction are met
+// ships utilities
 //
-var checkOwnership = function(shipAddress, cb, next) {
-  getIsOwner(shipAddress, web3.eth.defaultAccount, function(err, res) {
-    if (!err) {
-      if (res) return next();
-      cb({ error: { msg: "Not your ship. " + shipAddress }, data: '' });
-    } else { cb({ error: { msg: "Error retrieving ownership status" }, data: '' }); }
-  });
-};
 
-var checkIsTransferProxy = function(shipAddress, ethAddress, cb, next) {
-  getIsTransferProxy(shipAddress, ethAddress, function(err, res) {
-    if (!err) {
-      if (res) return next();
-      cb({ error: { msg: "Ship is not transferable by " + ethAddress }, data: '' });
-    } else { cb({ error: { msg: "Error retrieving transfer proxy status" }, data: '' }); }
-  });
-};
+function getPrefix(ship)
+{
+  if (ship < 65536)
+  {
+    return ship % 256;
+  }
+  return ship % 65536;
+}
 
-var checkIsUnlocked = function(shipAddress, cb, next) {
-  getIsActive(shipAddress, function(err, res) {
-    if (!err) {
-      if (res) return next();
-      cb({ error: { msg: "Ship is not active." }, data: '' });
-    } else { cb({ error: { msg: "Error retrieving unlocked status" }, data: '' }); }
-  });
-};
+function getShipClass(ship)
+{
+  if (ship < 256) return Class.Galaxy;
+  if (ship < 65536) return Class.Star;
+  return Class.Planet;
+}
 
-var checkIsLatent = function(shipAddress, cb, next) {
-  getIsActive(shipAddress, function(err, res) {
-    if (!err) {
-      if (!res) return next();
-      cb({ error: { msg: "Ship is active." }, data: '' });
-    } else { cb({ error: { msg: "Error retrieving latent status" }, data: '' }); }
-  });
-};
-
-var checkCanEscapeTo = function(shipAddress, sponsorAddress, cb, next) {
-  getCanEscapeTo(shipAddress, sponsorAddress, function(err, res) {
-    if (!err) {
-      if (res) return next();
-      cb({ error: { msg: "Ship " + shipAddress + " cannot escape to ship " + sponsorAddress + "." }, data: '' });
-    } else { cb({ error: { msg: "Error retrieving canEscapeTo" }, data: '' }); }
-  });
-};
-
-var checkEscape = function(shipAddress, sponsorAddress, cb, next) {
-  getIsRequestingEscapeTo(shipAddress, sponsorAddress, function(err, res) {
-    if (!err) {
-      if (res) return next();
-      cb({ error: { msg: "Escape doesn't match." }, data: '' });
-    } else { cb({ error: { msg: "Error retrieving isRequestingEscapeTo" }, data: '' }); }
-  });
-};
-
-var checkHasBeenBooted = function(sponsorAddress, cb, next) {
-  getHasBeenBooted(sponsorAddress, function(err, res) {
-    if (!err) {
-      if (res) return next() 
-      cb({ error: { msg: "Ship has not been booted." }, data: '' });
-  } else { cb({ error: { msg: "Error retrieving booted status" }, data: '' }); }
-  });
-};
-
-var checkIsNotOwned = function(shipAddress, cb, next) {
-  getOwner(shipAddress, function(err, res) {
-    if (!err) {
-      if (res === emptyAddress) return next() 
-      cb({ error: { msg: "Ship has an owner." }, data: '' });
-    } else { cb({ error: { msg: "Error retrieving hasOwner" }, data: '' }); }
-  });
-};
 //
-// DO: do transactions that modify the blockchain
+// ships contract
 //
-var doCreateGalaxy = function(galaxy, ethAddress, cb) {
-  validateGalaxy(galaxy, cb, function() {
-    validateAddress(ethAddress, cb, function() {
-      if (offline) return transact();
-      getConstitutionOwner(checkPermission);
-    });
-  });
-  function checkPermission(err, res) {
-    if (!err) {
-      if (res !== ethUtil.toChecksumAddress(ethAddress)) { cb({ error: { msg: "Insufficient permissions." }, data: '' }); }
-      else { checkIsNotOwned(galaxy, cb, transact); }
-    }
-  }
-  function transact() {
-    signTransaction(contracts['constitution'].methods.createGalaxy(galaxy, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
 
-var doDeposit = function(star, poolAddress, cb) {
-  validateStar(star, cb, function() {
-    if (offline) return transact();
-      checkIsTransferProxy(star, poolAddress, cb, function() {
-        checkOwnership(star, cb, checkHasNotBeenBooted);
-      });
-  });
-  function checkHasNotBeenBooted() {
-    getHasBeenBooted(star, function(data) {
-      if (data) { cb({ error: { msg: "Ship has already been booted." }, data: '' }); }
-      else { transact(); }
-    });
-  }
-  function transact() {
-    signTransaction(contracts['pool'].methods.deposit(star).encodeABI(),
-                    contractDetails.pool['address'],
-                    cb);
-  }
-};
+//NOTE shipsTx() not needed because nodoby can make transactions to it.
 
-var doWithdraw = function(star, poolAddress, cb) {
-  validateStar(star, cb, function() {
-    return transact();
-  });
-  function transact() {
-    signTransaction(contracts['pool'].methods.withdraw(star).encodeABI(),
-                    contractDetails.pool['address'],
-                    cb);
-  }
-};
+function getShip(ship)
+{
+  return ships.methods.ships(ship).call();
+}
 
-var doSpawn = function(shipAddress, ethAddress, cb) {
-  var sponsorAddress = shipAddress % minStarAddress;
-  if (shipAddress > maxStarAddress) sponsorAddress = shipAddress % (maxStarAddress + 1);
-  validateShip(shipAddress, cb, function() {
-    validateAddress(ethAddress, cb, function() {
-      if (offline) return transact();
-      checkIsLatent(shipAddress, cb, function() {
-        checkHasBeenBooted(sponsorAddress, cb, checkParent);
-      });
-    });
-  });
-  function checkParent() {
-    if (shipAddress < minStarAddress) return checkRights();
-    checkIsUnlocked(sponsorAddress, cb, checkRights);
-  }
-  function checkRights() {
-    getIsSpawnProxy(sponsorAddress, ethAddress, function(err, res) {
-      if (!err) {
-        if (res) return transact();
-        checkOwnership(sponsorAddress, cb, transact);
-      } else { cb({ error: { msg: "Error retrieving spawn proxy status" }, data: '' }); }
-    });
-  }
-  function transact() {
-    signTransaction(contracts['constitution'].methods.spawn(shipAddress, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function getSpawned(ship)
+{
+  return ships.methods.getSpawned(ship).call();
+}
 
-var doSetSpawnProxy = function(shipAddress, ethAddress, cb) {
-  validateParent(shipAddress, cb, function() {
-    validateAddress(ethAddress, cb, function() {
-      if (offline) return transact();
-      checkOwnership(shipAddress, cb, function() {
-        checkIsUnlocked(shipAddress, cb, transact);
-      });
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.setSpawnProxy(shipAddress, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function isActive(ship)
+{
+  if (typeof ship === 'object') return (ship.active);
+  return ships.methods.isActive(ship).call();
+}
 
-var doConfigureKeys = function(shipAddress, encryptionKey, authenticationKey, cryptoSuiteVersion, discontinuous, cb) {
-  var encryp32 = web3.utils.fromAscii(encryptionKey);
-  var authent32 = web3.utils.fromAscii(authenticationKey);
-  validateShip(shipAddress, cb, function() {
-    validateBytes32(encryp32, cb, function() {
-      validateBytes32(authent32, cb, function() {
-        // TODO: add validation for cryptoSuiteVersion
-        if (offline) return transact();
-        checkOwnership(shipAddress, cb, function() {
-          checkIsUnlocked(shipAddress, cb, transact);
-        });
-      });
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.configureKeys(shipAddress, encryp32, authent32, cryptoSuiteVersion, discontinuous).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function hasBeenBooted(ship)
+{
+  //TODO is this cool y/n? we can save on api calls this way, internally
+  //NOTE we assume the caller knows what they're calling with,
+  //     so that we don't need to wrap the result in a promise
+  if (typeof ship === 'object') return (ship.keyRevisionNumber > 0);
+  return ships.methods.hasBeenBooted(ship).call();
+}
 
-var doTransferShip = function(shipAddress, ethAddress, reset, cb) {
-  validateShip(shipAddress, cb, function() {
-    validateAddress(ethAddress, cb, function() {
-      if (offline) return transact();
-      checkOwnership(shipAddress, cb, transact);
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.transferShip(shipAddress, ethAddress, reset).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function getOwnedShips(address)
+{
+  address = address || account;
+  return ships.methods.getOwnedShipsByAddress(address).call();
+}
 
-var doSetTransferProxy = function(shipAddress, ethAddress, cb) {
-  validateShip(shipAddress, cb, function() {
-    validateAddress(ethAddress, cb, function() {
-      if (offline) return transact();
-      checkOwnership(shipAddress, cb, transact);
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.setTransferProxy(shipAddress, ethAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function getManagingFor(address)
+{
+  address = address || account;
+  return ships.methods.getManagingFor(address).call();
+}
 
-var doEscape = function(shipAddress, sponsorAddress, cb) {
-  validateChild(shipAddress, cb, function() {
-    validateParent(sponsorAddress, cb, function() {
-      if (offline) return transact();
-      checkOwnership(shipAddress, cb, function() {
-        checkHasBeenBooted(sponsorAddress, cb, function() {
-          checkCanEscapeTo(shipAddress, sponsorAddress, cb, transact);
-        });
-      });
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.escape(shipAddress, sponsorAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function getTransferringFor(address)
+{
+  address = address || account;
+  return ships.methods.getTransferringFor(address).call();
+}
 
-var doAdopt = function(sponsorAddress, escapeeAddress, cb) {
-  validateParent(sponsorAddress, cb, function() {
-    validateChild(escapeeAddress, cb, function () {
-      if (offline) return transact();
-      checkOwnership(escapeeAddress, cb, function() {
-        checkEscape(escapeeAddress, sponsorAddress, cb, transact);
-      });
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.adopt(sponsorAddress, escapeeAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function getSpawningFor(address)
+{
+  address = address || account;
+  return ships.methods.getSpawningFor(address).call();
+}
 
-var doReject = function(sponsorAddress, escapeeAddress, cb) {
-  validateParent(sponsorAddress, cb, function() {
-    validateChild(escapeeAddress, cb, function () {
-      if (offline) return transact();
-      checkOwnership(escapeeAddress, cb, function() {
-        checkEscape(escapeeAddress, sponsorAddress, cb, transact);
-      });
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.reject(sponsorAddress, escapeeAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function getVotingFor(address)
+{
+  address = address || account;
+  return ships.methods.getVotingFor(address).call();
+}
 
-var doApprove = function(ethAddress, shipAddress, cb) {
-  validateAddress(ethAddress, cb, function () {
-    validateShip(shipAddress, cb, function () {
-      if (offline) return transact();
-      checkOwnership(shipAddress, cb, transact);
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.approve(ethAddress, shipAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function isOwner(ship, owner)
+{
+  owner = owner || account;
+  if (typeof ship === 'object') return (ship.owner === owner);
+  return ships.methods.isOwner(ship, owner).call();
+}
 
-var doSafeTransferFrom = function(fromEthAddress, toEthAddress, shipAddress, cb) {
-  validateAddress(fromEthAddress, cb, function () {
-    validateAddress(toEthAddress, cb, function () {
-      validateShip(shipAddress, cb, function () {
-        if (offline) return transact();
-        // TODO: add check to validate that the caller has been approved to initiate transfer
-        transact();
-      });
-    });
-  });
-  function transact() {
-    signTransaction(contracts['constitution'].methods.safeTransferFrom(fromEthAddress, toEthAddress, shipAddress).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
+async function isActiveShipOwner(ship, owner)
+{
+  owner = owner || account;
+  res = { result: false };
+  if (!await canManage(ship))
+  {
+    res.reason = reasons.permission;
+    return res;
   }
-};
+  if (!await isActive(ship))
+  {
+    res.reason = reasons.inactive;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
 
-var doCastConstitutionVote = function(galaxy, prop, vote, cb) {
-  validateGalaxy(galaxy, cb, function() {
-    validateAddress(prop, cb, function() {
-      if (offline) return transact();
-      checkOwnership(galaxy, cb, function() {
-        checkIsUnlocked(galaxy, cb, function() {
-          getHasVotedOnConstitutionPoll(galaxy, prop, checkVote);
-        });
-      });
-    });
-  });
-  function checkVote(err, res) {
-    if (!err) {
-      if (!res) return transact();
-      else { cb({ error: { msg: "Vote already registered." }, data: '' }); }
-    } else { cb({ error: { msg: "Error retrieving vote status." }, data: '' }); }
-  }
-  function transact() {
-    signTransaction(contracts['constitution'].methods.castConstitutionVote(galaxy, prop, vote).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function isOperator(owner, operator)
+{
+  operator = operator || account;
+  return ships.methods.isOperator(owner, operator).call();
+}
 
-var doCastDocumentVote = function(galaxy, prop, vote, cb) {
-  validateGalaxy(galaxy, function() {
-    validateBytes32(prop, function() {
-      if (offline) return transact();
-      checkOwnership(galaxy, function() {
-        checkIsUnlocked(galaxy, cb, function() {
-          getDocumentHasAchievedMajority(prop, checkMajority);
-        });
-      });
-    });
-  });
-  function checkMajority(err, res) {
-    if (!err) {
-      if (!res) return getHasVotedOnDocumentPoll(galaxy, prop, checkVote);
-      else { cb({ error: { msg: "Document already has majority." }, data: '' }); }
-    } else { cb({ error: { msg: "Error retrieving document majority status." }, data: '' }); }
-  }
-  function checkVote(err, res) {
-    if (!err) {
-      if (!res) return transact();
-      else { cb({ error: { msg: "Vote already registered." }, data: '' }); }
-    } else { cb({ error: { msg: "Error retrieving vote status." }, data: '' }); }
-  }
-  function transact() {
-    signTransaction(contracts['constitution'].methods.castDocumentVote(galaxy, prop, vote).encodeABI(),
-                    contractDetails.constitution['address'],
-                    cb);
-  }
-};
+function isTransferProxy(ship, proxy)
+{
+  proxy = proxy || account;
+  if (typeof ship === 'object')
+    return (ship.transferProxy === proxy);
+  return ships.methods.isTransferProxy(ship, proxy).call();
+}
 
-var signTransaction = function(encodedABI, contractAddress, cb) {
-  if (!offline) {
-    var tx = {
-        from: web3.eth.defaultAccount,
-        to: contractAddress,
-        value: 0x0,
-        data: encodedABI,
-      }; 
-    web3.eth.estimateGas(tx)
-    .then((gas) => {
-      tx['gas'] = Math.round(gas * 1.8);
-      web3.eth.accounts.signTransaction(tx, '0x' + privateKey)
-      .then((signed) => {
-        cb({ error: false, signedTx: signed.rawTransaction, rawTx: tx });
-      }).catch((err) => { cb({ error: { msg: "Sign transaction error" }, data: err }) });
-    }).catch((err) => { cb({ error: { msg: "Estimate gas error" }, data: err }) });
-  }
-};
+function isSpawnProxy(ship, address)
+{
+  address = address || account;
+  if (typeof ship === 'object') return (ship.spawnProxy === address);
+  return ships.methods.isSpawnProxy(ship, address).call();
+}
 
-var sendTransaction = function(signedTx, cb) {
-  var tx = web3.eth.sendSignedTransaction(signedTx);
-  tx.on('transactionHash', hash => {
-    cb({ error: false, txHash: hash });
-  });
-  tx.on('error', cb({ error: { msg: console.error }, data: '' }));
-};
+function canManage(ship, address)
+{
+  address = address || account;
+  return ships.methods.canManage(ship, address).call();
+}
 
-var generateTxOffline = function(cb) {
-  if (!validateEtherAddress(tx.to)) {
-    cb(validator.errorMsgs[5]);
-    return;
+function canVoteAs(ship, address)
+{
+  address = address || account;
+  return ships.methods.canVoteAs(ship, address).call();
+}
+
+//
+// constitution contract
+//
+
+function constitutionTx(encodedABI, value)
+{
+  return pseudoTx(constitution._address, encodedABI, value);
+}
+
+function getConstitutionOwner()
+{
+  return constitution.methods.owner().call();
+}
+
+async function isConstitutionOwner(address)
+{
+  address = address || account;
+  return (address === await getConstitutionOwner());
+}
+
+function getSpawnLimit(ship, timestamp)
+{
+  timestamp = timestamp || Math.round(new Date().getTime()/1000);
+  return constitution.methods.getSpawnLimit(ship, timestamp).call();
+}
+
+async function canSetManager()
+{
+  return true;
+}
+
+function setManager(manager)
+{
+  return constitutionTx(constitution.methods.setManager(manager));
+}
+
+async function canConfigureKeys(ship)
+{
+  return await isActiveShipManager(ship);
+}
+
+function configureKeys(ship, crypt, auth, suite, discontinuous)
+{
+  return constitutionTx(
+    constitution.methods.configureKeys(ship, crypt, auth, suite, discontinuous)
+  );
+}
+
+async function canSpawn(ship, target)
+{
+  let res = { result: false };
+  let prefix = getPrefix(ship);
+  let preShip = await getShip(prefix);
+  // must either be the owner of the prefix, or a spawn proxy for it
+  if (!isOwner(preShip) && !isSpawnProxy(preShip))
+  {
+    res.reason = reasons.permission;
+    return res;
   }
-  var txData = // uiFuncs.getTxData();
-  txData.isOffline = true;
-  txData.nonce = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(nonceDec));
-  txData.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(gasPriceDec));
-  if (tokenTx.id != 'ether') {
-    txData.data = // $scope.tokenObjs[tokenTx.id].getData(tx.to, tx.value).data;
-    txData.to = // $scope.tokenObjs[tokenTx.id].getContractAddress();
-    txData.value = '0x00';
+  // only currently unowned ships can be spawned
+  if (!await isOwner(ship, 0x0))
+  {
+    res.reason = reasons.spawned;
+    return res;
   }
-  uiFuncs.generateTx(txData, function(rawTx) {
-    if (!rawTx.isError) {
-      cb({ error: false, rawTx: rawTx.rawTx, signedTx: rawTx.signedTx, showRaw: true})
-    } else {
-      cb({ error: { msg: rawTx.error }, data: '' });
-    }
-  });
-};
+  // only allow spawning of ships of the class directly below the prefix
+  if ((getShipClass(prefix)+1) !== getShipClass(ship))
+  {
+    res.reason = reasons.spawnClass;
+    return res;
+  }
+  // prefix ship must be live and able to spawn
+  if (!hasBeenBooted(preShip) ||
+      preShip.spawnCount >= await getSpawnLimit(prefix))
+  {
+    res.reason = reasons.spawnPrefix;
+    return res;
+  }
+  // prevent burning of ships
+  if (target === 0 || target === '0' || target === '0x0')
+  {
+    res.reason = reasons.zero;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function spawn(ship, target)
+{
+  return constitutionTx(constitution.methods.spawn(ship, target));
+}
+
+async function canSetSpawnProxy(prefix)
+{
+  let res = { result: false };
+  let preShip = await getShip(prefix);
+  // must be the owner of the ship
+  if (!await isOwner(preShip))
+  {
+    res.reason = reasons.permission;
+    return res;
+  }
+  // the ship must be active
+  if (!await isActive(preShip))
+  {
+    res.reason = reasons.inactive;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function setSpawnProxy(prefix, spawnProxy)
+{
+  return constitutionTx(constitution.methods.setSpawnProxy(prefix, spawnProxy));
+}
+
+async function canTransferShip(ship, target)
+{
+  let res = { result: false };
+  let theShip = await getShip(ship);
+  // must be either the owner of the ship,
+  // a transfer proxy for the ship,
+  // or an operator for the owner
+  if (!isOwner(theShip) &&
+      !isTransferProxy(theShip) &&
+      !await isOperator(theShip.owner))
+  {
+    res.reason = reasons.permission;
+    return res;
+  }
+  // prevent burning of ships
+  if (target === 0 || target === '0' || target === '0x0')
+  {
+    res.reason = reasons.zero;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function transferShip(ship, target, reset)
+{
+  return constitutionTx(constitution.methods.transferShip(ship, target, reset));
+}
+
+async function canSetTransferProxy(ship, proxy)
+{
+  let res = { result: false };
+  let theShip = await getShip(ship);
+  // must be either the owner of the ship,
+  // or an operator for the owner
+  if (!isOwner(theShip) &&
+      !await isOperator(theShip.owner))
+  {
+    res.reason = reasons.permission;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function setTransferProxy(ship, transferProxy)
+{
+  return constitutionTx(
+    constitution.methods.setTransferProxy(ship, transferProxy)
+  );
+}
+
+async function canEscape(ship, sponsor)
+{
+  let asm = await isActiveShipManager(ship);
+  if (!asm.result) return asm;
+  let res = { result: false };
+  let shipClass = getShipClass(ship);
+  let sponsorClass = getShipClass(sponsor);
+  // can only escape to a ship one class higher than ourselves,
+  // except in the special case where the escaping ship hasn't
+  // been booted yet -- in that case we may escape to ships of
+  // the same class, to support lightweight invitation chains.
+  if (sponsorClass+1 !== shipClass &&
+      !(sponsorClass === shipClass &&
+        !await hasBeenBooted(ship)))
+  {
+    res.reason = reasons.sponsor;
+    return res;
+  }
+  // can't escape to a sponsor that hasn't been booted
+  if (!await hasBeenBooted(sponsor))
+  {
+    res.reason = reasons.sponsorBoot;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function escape(ship, sponsor)
+{
+  return constitutionTx(constitution.methods.escape(ship, sponsor));
+}
+
+async function canCancelEscape(ship)
+{
+  return await isActiveShipManager(ship);
+}
+
+function cancelEscape(ship)
+{
+  return constitutionTx(constitution.methods.cancelEscape(ship));
+}
+
+async function canAdopt(sponsor, escapee)
+{
+  let asm = await isActiveShipManager(ship);
+  if (!asm.result) return asm;
+  let res = { result: false };
+  // escapee must currently be trying to escape to sponsor
+  if (!await isRequestingEscapeTo(escapee, sponsor))
+  {
+    res.reason = reasons.notEscape;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function adopt(sponsor, escapee)
+{
+  return constitutionTx(constitution.methods.adopt(sponsor, escapee));
+}
+
+async function canReject(sponsor, escapee)
+{
+  let asm = await isActiveShipManager(ship);
+  if (!asm.result) return asm;
+  let res = { result: false };
+  // escapee must currently be trying to escape to sponsor
+  if (!await isRequestingEscapeTo(escapee, sponsor))
+  {
+    res.reason = reasons.notEscape;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function reject(sponsor, escapee)
+{
+  return constitutionTx(constitution.methods.reject(sponsor, escapee));
+}
+
+async function canDetach(sponsor, ship)
+{
+  let asm = await isActiveShipManager(ship);
+  if (!asm.result) return asm;
+  let res = { result: false };
+  // ship must currently be sponsored by sponsor
+  if (!await isSponsor(ship, sponsor))
+  {
+    res.reason = reasons.notSponsor;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function detach(sponsor, ship)
+{
+  return constitutionTx(constitution.methods.detach(sponsor, ship));
+}
+
+async function canSetDelegate()
+{
+  return true;
+}
+
+function setDelegate(delegate)
+{
+  return constitutionTx(constitution.methods.setDelegate(delegate));
+}
+
+async function isActiveShipVoter(galaxy, voter)
+{
+  voter = voter || account;
+  let res = { result: false };
+  // must either be ship owner, or delegate for the owner
+  if (!await canVoteAs(ship, voter))
+  {
+    res.reason = reasons.permission;
+    return res;
+  }
+  // ship must be active in order to vote
+  if (!await isActive(ship))
+  {
+    res.reason = reasons.inactive;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+async function canStartConstitutionPoll(galaxy, proposal)
+{
+  let asv = await isActiveShipVoter(galaxy);
+  if (!asv.result) return asv;
+  let res = { result: false };
+  let prop = new web3.eth.Contract(abis.constitution, proposal);
+  // ensure that the upgrade target expects the current contract as the source
+  if (constitution._address !==
+      await prop.methods.previousConstitution().call())
+  {
+    res.reason = reasons.upgradePath;
+    return res;
+  }
+  // proposal must not have achieved majority before
+  if (await constitutionHasAchievedMajority(proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  // check that the poll has cooled down enough to be started again
+  if (!canStartPoll(await getConstitutionPoll(proposal)))
+  {
+    res.reason = reasons.pollTime;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function startConstitutionPoll(galaxy, proposal)
+{
+  return constitutionTx(
+    constitution.methods.startConstitutionPoll(galaxy, proposal)
+  );
+}
+
+async function canStartDocumentPoll(galaxy)
+{
+  let asv = await isActiveShipVoter(galaxy);
+  if (!asv.result) return asv;
+  let res = { result: false };
+  // proposal must not have achieved majority before
+  if (await documentHasAchievedMajority(proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  // check that the poll has cooled down enough to be started again
+  if (!canStartPoll(await getDocumentPoll(proposal)))
+  {
+    res.reason = reasons.pollTime;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function startDocumentPoll(galaxy, proposal)
+{
+  return constitutionTx(
+    constitution.methods.startDocumentPoll(galaxy, proposal)
+  );
+}
+
+async function canCastConstitutionVote(galaxy, proposal)
+{
+  let asv = await isActiveShipVoter(galaxy);
+  if (!asv.result) return asv;
+  let res = { result: false };
+  // proposal must not have achieved majority before
+  if (await constitutionHasAchievedMajority(proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  // may only vote when the poll is open
+  if (!pollIsActive(await getConstitutionPoll(proposal)))
+  {
+    res.reason = reasons.pollInactive;
+    return res;
+  }
+  // may only vote once
+  if (await hasVotedOnConstitutionPoll(galaxy, proposal))
+  {
+    res.reason = reasons.pollVoted;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function castConstitutionVote(galaxy, proposal, vote)
+{
+  return constitutionTx(
+    constitution.methods.castConstitutionVote(galaxy, proposal, vote)
+  );
+}
+
+async function canCastDocumentVote(galaxy, proposal)
+{
+  let asv = await isActiveShipVoter(galaxy);
+  if (!asv.result) return asv;
+  let res = { result: false };
+  // proposal must not have achieved majority before
+  if (await documentHasAchievedMajority(proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  // may only vote when the poll is open
+  if (!pollIsActive(await getDocumentPoll(proposal)))
+  {
+    res.reason = reasons.pollInactive;
+    return res;
+  }
+  // may only vote once
+  if (await hasVotedOnDocumentPoll(galaxy, proposal))
+  {
+    res.reason = reasons.pollVoted;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+function castDocumentVote(galaxy, proposal, vote)
+{
+  return constitutionTx(
+    constitution.methods.castDocumentVote(galaxy, proposal, vote)
+  );
+}
+
+function updateConstitutionPoll(proposal)
+{
+  return constitutionTx(constitution.methods.updateConstitutionPoll(proposal));
+}
+
+function updateDocumentPoll(proposal)
+{
+  return constitutionTx(constitution.methods.updateDocumentPoll(proposa));
+}
+
+async function canCreateGalaxy(galaxy, target)
+{
+  let res = { result: false };
+  // only contract owner may do this
+  if (!await isConstitutionOwner())
+  {
+    res.reason = reasons.permission;
+  }
+  // only currently unowned ships can be spawned
+  if (!await isOwner(galaxy, 0x0))
+  {
+    res.reason = reasons.spawned;
+  }
+  // prevent burning of ships
+  if (target === 0 || target === '0' || target === '0x0')
+  {
+    res.reason = reasons.zero;
+    return res;
+  }
+}
+
+function createGalaxy(galaxy, target)
+{
+  return constitutionTx(constitution.methods.createGalaxy(galaxy, target));
+}
+
+function canSetDnsDomains()
+{
+  return isConstitutionOwner();
+}
+
+function setDnsDomains(primary, secondary, tertiary)
+{
+  return constitutionTx(
+    constitution.methods.setDnsDomains(primary, secondary, tertiary)
+  );
+}
+
+// polls
+
+function getConstitutionPoll(proposal)
+{
+  return polls.constitutionPolls(proposal).call();
+}
+
+function getDocumentPoll(proposal)
+{
+  return polls.documentPolls(proposal).call();
+}
+
+function constitutionHasAchievedMajority(proposal)
+{
+  return polls.constitutionHasAchievedMajority(proposal).call();
+}
+
+function documentHasAchievedMajority(proposal)
+{
+  return polls.documentHasAchievedMajority(proposal).call();
+}
+
+function canStartPoll(poll)
+{
+  let now = Math.round(new Date().getTime()/1000);
+  return (now > (poll.start + poll.duration + poll.cooldown));
+}
+
+function hasVotedOnConstitutionPoll(galaxy, proposal)
+{
+  return polls.hasVotedOnConstitutionPoll(galaxy, proposal).call();
+}
+
+function hasVotedOnDocumentPoll(galaxy, proposal)
+{
+  return polls.hasVotedOnDocumentPoll(galaxy, proposal).call();
+}
+
+function pollIsActive(poll)
+{
+  let now = Math.round(new Date().getTime()/1000);
+  return (now < (poll.start + poll.duration));
+}
+
+//TODO pool
+
+////
+
+//TODO validation functions for ship classes, addresses, bytes32
+//TODO maybe shipname conversion? that should probably be a separate lib though
+
+// configure default server url
+setServerUrl('http://localhost:8545');
 
 module.exports = {
-  offline: offline,
-  setServerUrl: setServerUrl,
-  setPoolAddress: setPoolAddress,
-  setPrivateKey: setPrivateKey,
-  setDefaultAccountWithPathAndIndex: setDefaultAccountWithPathAndIndex,
-  minShipAddress: minShipAddress,
-  maxGalaxyAddress: maxGalaxyAddress,
-  minStarAddress: minStarAddress,
-  maxStarAddress: maxStarAddress,
-  maxStarAddress: maxStarAddress,
-  contractDetails: contractDetails,
-  valGalaxy: valGalaxy,
-  valStar: valStar,
-  valShip: valShip,
-  valAddress: valAddress,
-  formatShipName: formatShipName,
-  toAddress: toAddress,
-  toShipName: toShipName,
-  getSpawnCandidate: getSpawnCandidate,
-  readShipData: readShipData,
-  readTransferringFor: readTransferringFor,
-  readHasOwner: readHasOwner,
-  readIsOwner: readIsOwner,
-  readPoolAssets: readPoolAssets,
-  readBalance: readBalance,
-  readSponsor: readSponsor,
-  readOwnedShips: readOwnedShips,
-  readOwnedShipsStatus: readOwnedShipsStatus,
-  readIsRequestingEscapeTo: readIsRequestingEscapeTo,
-  readKeys: readKeys,
-  readIsSpawnProxy: readIsSpawnProxy,
-  doCreateGalaxy: doCreateGalaxy,
-  doDeposit: doDeposit,
-  doWithdraw: doWithdraw,
-  doSpawn: doSpawn,
-  doSetSpawnProxy: doSetSpawnProxy,
-  doConfigureKeys: doConfigureKeys,
-  doTransferShip: doTransferShip,
-  doSetTransferProxy: doSetTransferProxy,
-  doEscape: doEscape,
-  doAdopt: doAdopt,
-  doReject: doReject,
-  doApprove: doApprove,
-  doSafeTransferFrom: doSafeTransferFrom,
-  doCastConstitutionVote: doCastConstitutionVote,
-  doCastDocumentVote: doCastDocumentVote,
-  sendTransaction: sendTransaction
-};
+  config: {
+    setServerUrl,
+    setOffline,
+    setPrivateKey,
+    setHdAccount,
+    setGanacheAccount,
+    initializeContracts,
+    initializeContractsDefault,
+    setPool
+  },
+  transact: {
+    signTransaction,
+    doTheThing,
+    sendTransaction
+  },
+  ships: {
+    getShip,
+    getOwnedShips,
+    getManagingFor,
+    getTransferringFor,
+    getSpawningFor,
+    getVotingFor,
+    isOwner,
+    isActive
+  },
+  constitution: {
+    setManager,
+    canConfigureKeys,
+    configureKeys,
+  }
+}
