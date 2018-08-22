@@ -3609,6 +3609,20 @@
         "type": "function"
       },
       {
+        "constant": true,
+        "inputs": [],
+        "name": "getAssetCount",
+        "outputs": [
+          {
+            "name": "count",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "constant": false,
         "inputs": [
           {

@@ -14,7 +14,7 @@ const abis = require('./resources/abis.json');
 let ships = require('./contracts/ships');
 let constitution = require('./contracts/constitution');
 let polls = require('./contracts/polls');
-let pool = require('./contract/pool');
+let pool = require('./contracts/pool');
 
 //
 // script variables
@@ -86,6 +86,7 @@ function setPublicAccount(address)
   account = address;
   ships.setAccount(address);
   constitution.setAccount(address);
+  pool.setAccount(address);
 }
 
 //NOTE verified functioning pattern, throws in the awaits just get thrown up
@@ -117,7 +118,7 @@ function initializeContractsDefault()
 
 function setPool(poolAddress)
 {
-  //TODO pool.setContract(new web3.eth.Contract(abis.pool, poolAddress));
+  pool.setContract(new web3.eth.Contract(abis.pool, poolAddress));
 }
 
 //
@@ -187,5 +188,6 @@ module.exports = {
   },
   ships,
   constitution,
-  polls
+  polls,
+  pool
 }
