@@ -8,13 +8,14 @@
 // https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#id12
 
 const Web3 = require('web3');
-const ethUtil = require('ethereumjs-util');
 const abis = require('./resources/abis.json');
 
 let ships = require('./contracts/ships');
 let constitution = require('./contracts/constitution');
 let polls = require('./contracts/polls');
 let pool = require('./contracts/pool');
+
+let utils = require('./utils');
 
 //
 // script variables
@@ -55,6 +56,7 @@ function setOffline(offl)
 
 //TODO these two are a bit weird. can they not be collapsed into just the logic
 //     from setHdAccount?
+//TODO should they use ethUtils.isValidPrivate to sanity-check?
 function setPrivateKey(hd, path, index)
 {
   hdNode = hd;
@@ -82,6 +84,13 @@ function setGanacheAccount()
 
 function setPublicAccount(address)
 {
+  if (!utils.isAddress(address))
+  {
+    throw {
+      name: 'AccountError',
+      message: 'Invalid account address: '+address
+    };
+  }
   web3.eth.defaultAccount = address;
   account = address;
   ships.setAccount(address);
@@ -138,7 +147,7 @@ async function signTransaction(tx)
     if (offline)
     {
       throw {
-        name: 'Error',
+        name: 'TransactionError',
         message: 'Need transaction gas limit.'
       };
     }
@@ -189,5 +198,6 @@ module.exports = {
   ships,
   constitution,
   polls,
-  pool
+  pool,
+  utils
 }
