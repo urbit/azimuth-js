@@ -40,7 +40,7 @@ function getSpawnLimit(ship, timestamp)
 async function isConstitutionOwner(address)
 {
   address = address || account;
-  return (address === await c.methods.owner().call());
+  return utils.addressEquals(address, await c.methods.owner().call());
 }
 
 //
@@ -52,7 +52,7 @@ async function isConstitutionOwner(address)
 
 async function canSetManager()
 {
-  return true;
+  return { result: true };
 }
 
 function setManager(manager)
@@ -84,7 +84,7 @@ async function canSpawn(ship, target)
     return res;
   }
   // only currently unowned ships can be spawned
-  if (!await s.isOwner(ship, 0x0))
+  if (await s.hasOwner(ship))
   {
     res.reason = reasons.spawned;
     return res;
@@ -103,7 +103,7 @@ async function canSpawn(ship, target)
     return res;
   }
   // prevent burning of ships
-  if (target === 0 || target === '0' || target === '0x0')
+  if (utils.isZeroAddress(target))
   {
     res.reason = reasons.zero;
     return res;
@@ -158,7 +158,7 @@ async function canTransferShip(ship, target)
     return res;
   }
   // prevent burning of ships
-  if (target === 0 || target === '0' || target === '0x0')
+  if (utils.isZeroAddress(target))
   {
     res.reason = reasons.zero;
     return res;
@@ -228,7 +228,7 @@ function escape(ship, sponsor)
 
 async function canCancelEscape(ship)
 {
-  return await s.checkActiveShipManager(ship);
+  return s.checkActiveShipManager(ship);
 }
 
 function cancelEscape(ship)
@@ -238,11 +238,11 @@ function cancelEscape(ship)
 
 async function canAdopt(sponsor, escapee)
 {
-  let asm = await s.checkActiveShipManager(ship);
+  let asm = await s.checkActiveShipManager(sponsor);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
-  if (!await s.isRequestingEscapeTo(escapee, sponsor))
+  if (!await s.isRequestingEscape(escapee, sponsor))
   {
     res.reason = reasons.notEscape;
     return res;
@@ -258,11 +258,11 @@ function adopt(sponsor, escapee)
 
 async function canReject(sponsor, escapee)
 {
-  let asm = await s.checkActiveShipManager(ship);
+  let asm = await s.checkActiveShipManager(sponsor);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
-  if (!await s.isRequestingEscapeTo(escapee, sponsor))
+  if (!await s.isRequestingEscape(escapee, sponsor))
   {
     res.reason = reasons.notEscape;
     return res;
@@ -446,7 +446,7 @@ function updateConstitutionPoll(proposal)
 
 function updateDocumentPoll(proposal)
 {
-  return protoTx(c.methods.updateDocumentPoll(proposa));
+  return protoTx(c.methods.updateDocumentPoll(proposal));
 }
 
 async function canCreateGalaxy(galaxy, target)
@@ -456,18 +456,22 @@ async function canCreateGalaxy(galaxy, target)
   if (!await isConstitutionOwner())
   {
     res.reason = reasons.permission;
+    return res;
   }
   // only currently unowned ships can be spawned
-  if (!await s.isOwner(galaxy, 0x0))
+  if (await s.hasOwner(galaxy))
   {
     res.reason = reasons.spawned;
+    return res;
   }
   // prevent burning of ships
-  if (target === 0 || target === '0' || target === '0x0')
+  if (utils.isZeroAddress(target))
   {
     res.reason = reasons.zero;
     return res;
   }
+  res.result = true;
+  return res;
 }
 
 function createGalaxy(galaxy, target)
@@ -491,7 +495,7 @@ function setDnsDomains(primary, secondary, tertiary)
 
 function protoTx(encodedABI, value)
 {
-  return utils.protoTx(c._address, encodedABI, value);
+  return utils.protoTx(account, c._address, encodedABI, value);
 }
 
 module.exports = {

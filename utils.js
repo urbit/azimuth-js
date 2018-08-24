@@ -25,20 +25,20 @@ let ShipClass = {
 
 function getShipClass(ship)
 {
-  if (ship < 256) return Class.Galaxy;
-  if (ship < 65536) return Class.Star;
-  return Class.Planet;
+  if (ship < 256) return ShipClass.Galaxy;
+  if (ship < 65536) return ShipClass.Star;
+  return ShipClass.Planet;
 }
 
 //
 // transactions
 //
 
-function protoTx(target, callData, value)
+function protoTx(from, target, callData, value)
 {
   if (typeof callData === 'object') callData = callData.encodeABI();
   return {
-    from: account,
+    from: from,
     to: target,
     data: callData,
     value: value || 0x0
@@ -83,6 +83,11 @@ function isChild(ship)
   return (typeof ship === 'number' && ship > maxGalaxy && ship <= maxPlanet);
 }
 
+function isBytes32(bytes32)
+{
+  return (typeof bytes32 === 'object' && bytes32.length <= 32);
+}
+
 function isAddress(address)
 {
   if (typeof address !== 'string') return false;
@@ -94,9 +99,15 @@ function isAddress(address)
   }
 }
 
-function isBytes32(bytes32)
+function addressEquals(a1, a2)
 {
-  return (typeof bytes32 === 'object' && bytes32.length <= 32);
+  return (ethUtil.toChecksumAddress(a1) === ethUtil.toChecksumAddress(a2));
+}
+
+function isZeroAddress(address)
+{
+  return (address === 0 || address === '0' || address === '0x0' ||
+          ethUtil.isZeroAddress(address));
 }
 
 module.exports = {
@@ -112,6 +123,8 @@ module.exports = {
   isPlanet,
   isParent,
   isChild,
+  isBytes32,
   isAddress,
-  isBytes32
+  addressEquals,
+  isZeroAddress
 }

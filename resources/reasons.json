@@ -8,6 +8,7 @@
   "sponsorBoot":  "Sponsor has not been booted",
   "sponsor":      "Invalid sponsor for ship",
   "notEscape":    "Ship is not escaping to sponsor",
+  "notGalaxy":    "Only galaxies may vote",
   "upgradePath":  "Unexpected upgrade path",
   "majority":     "Proposal has already achieved majority",
   "pollTime":     "Existing poll is still active or cooling down",

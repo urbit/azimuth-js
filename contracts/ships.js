@@ -1,6 +1,7 @@
 let s; // ships contract
 
 const reasons = require('../resources/reasons.json');
+const utils = require('../utils');
 
 let account; // assumed caller address
 
@@ -77,10 +78,18 @@ function hasBeenBooted(ship)
   return s.methods.hasBeenBooted(ship).call();
 }
 
+//NOTE this breaks the expected "pass object be sychronous" model...
+async function hasOwner(ship)
+{
+  let res = isOwner(ship, '0x0000000000000000000000000000000000000000');
+  if (typeof ship === 'object') return !res;
+  return !await res;
+}
+
 function isOwner(ship, owner)
 {
   owner = owner || account;
-  if (typeof ship === 'object') return (ship.owner === owner);
+  if (typeof ship === 'object') return utils.addressEquals(ship.owner, owner);
   return s.methods.isOwner(ship, owner).call();
 }
 
@@ -94,14 +103,15 @@ function isTransferProxy(ship, proxy)
 {
   proxy = proxy || account;
   if (typeof ship === 'object')
-    return (ship.transferProxy === proxy);
+    return utils.addressEquals(ship.transferProxy, proxy);
   return s.methods.isTransferProxy(ship, proxy).call();
 }
 
 function isSpawnProxy(ship, address)
 {
   address = address || account;
-  if (typeof ship === 'object') return (ship.spawnProxy === address);
+  if (typeof ship === 'object')
+    return utils.addressEquals(ship.spawnProxy, address);
   return s.methods.isSpawnProxy(ship, address).call();
 }
 
@@ -115,6 +125,18 @@ function canVoteAs(ship, address)
 {
   address = address || account;
   return s.methods.canVoteAs(ship, address).call();
+}
+
+function isRequestingEscape(ship, sponsor)
+{
+  if (!sponsor)
+    return s.methods.isEscaping(ship).call();
+  return s.methods.isRequestingEscapeTo(ship, sponsor).call();
+}
+
+function isSponsor(ship, sponsor)
+{
+  return s.methods.isSponsor(ship, sponsor).call();
 }
 
 //
@@ -143,6 +165,11 @@ async function checkActiveShipVoter(galaxy, voter)
 {
   voter = voter || account;
   let res = { result: false };
+  if (utils.getShipClass(galaxy) !== utils.ShipClass.Galaxy)
+  {
+    res.reason = reasons.notGalaxy;
+    return res;
+  }
   // must either be ship owner, or delegate for the owner
   if (!await canVoteAs(galaxy, voter))
   {
@@ -174,11 +201,14 @@ module.exports = {
   isActive,
   hasBeenBooted,
   isOwner,
+  hasOwner,
   isOperator,
   isTransferProxy,
   isSpawnProxy,
   canManage,
   canVoteAs,
+  isRequestingEscape,
+  isSponsor,
   //
   checkActiveShipManager,
   checkActiveShipVoter

@@ -76,6 +76,11 @@ async function setHdAccount(path, index)
   return acs[index];
 }
 
+function setRawPrivateKey(pk)
+{
+  privateKey = pk;
+}
+
 function setGanacheAccount()
 {
   privateKey = 'a44de2416ee6beb2f323fab48b432925c9785808d33a6ca6d7ba00b45e9370c3';
@@ -151,10 +156,12 @@ async function signTransaction(tx)
         message: 'Need transaction gas limit.'
       };
     }
-    //NOTE +1 because exactly the required gas causes a revert
-    //TODO maybe we want to do *1.1 or similar instead?
+    //NOTE you always want to at least +1 because exactly the required gas
+    //     causes a revert
+    //NOTE we do *2.1 though because in some cases that's the true amount of
+    //     gas you need. setManager is the worst offender for some reason
     //TODO do we want to catch gas estimation errors and throw a custom error?
-    tx.gas = (await web3.eth.estimateGas(tx)) + 1;
+    tx.gas = Math.floor((await web3.eth.estimateGas(tx)) * 2.1);
   }
 
   //TODO gasPrice defaults to web3.eth.gasPrice...
@@ -185,6 +192,8 @@ module.exports = {
     setOffline,
     setPrivateKey,
     setHdAccount,
+    setRawPrivateKey,
+    setPublicAccount,
     setGanacheAccount,
     initializeContracts,
     initializeContractsDefault,
