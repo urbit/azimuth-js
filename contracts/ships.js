@@ -129,6 +129,12 @@ function canVoteAs(ship, address)
 
 function isRequestingEscape(ship, sponsor)
 {
+  if (typeof ship === 'object')
+  {
+    if (!sponsor)
+      return ship.escapeRequested;
+    return (ship.escapeRequestedTo === sponsor);
+  }
   if (!sponsor)
     return s.methods.isEscaping(ship).call();
   return s.methods.isRequestingEscapeTo(ship, sponsor).call();
@@ -136,6 +142,8 @@ function isRequestingEscape(ship, sponsor)
 
 function isSponsor(ship, sponsor)
 {
+  if (typeof ship === 'object')
+    return (ship.hasSponsor && ship.sponsor === sponsor);
   return s.methods.isSponsor(ship, sponsor).call();
 }
 

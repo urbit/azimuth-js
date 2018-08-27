@@ -172,7 +172,7 @@ function transferShip(ship, target, reset)
   return protoTx(c.methods.transferShip(ship, target, reset));
 }
 
-async function canSetTransferProxy(ship, proxy)
+async function canSetTransferProxy(ship)
 {
   let res = { result: false };
   let theShip = await s.getShip(ship);
@@ -298,7 +298,7 @@ function detach(sponsor, ship)
 
 async function canSetDelegate()
 {
-  return true;
+  return { result: true };
 }
 
 function setDelegate(delegate)
@@ -349,7 +349,7 @@ function startConstitutionPoll(galaxy, proposal)
   return protoTx(c.methods.startConstitutionPoll(galaxy, proposal));
 }
 
-async function canStartDocumentPoll(galaxy)
+async function canStartDocumentPoll(galaxy, proposal)
 {
   let asv = await s.checkActiveShipVoter(galaxy);
   if (!asv.result) return asv;

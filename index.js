@@ -24,10 +24,6 @@ let utils = require('./utils');
 // web3: the web3 object we'll be working with.
 let web3;
 
-//TODO maybe remove, only relevant in 2 functions, and caller should know
-//     if they're offline and what extra data to provide in that case.
-let offline = false;
-
 // hd wallet master node
 let hdNode;
 
@@ -47,11 +43,6 @@ function setServerUrl(url)
 {
   web3 = new Web3(new Web3.providers.HttpProvider(url));
   constitution.setWeb3(web3);
-}
-
-function setOffline(offl)
-{
-  offline = offl;
 }
 
 //TODO these two are a bit weird. can they not be collapsed into just the logic
@@ -81,6 +72,7 @@ function setRawPrivateKey(pk)
   privateKey = pk;
 }
 
+//NOTE for testing with the readme mnemonic only
 function setGanacheAccount()
 {
   privateKey = 'a44de2416ee6beb2f323fab48b432925c9785808d33a6ca6d7ba00b45e9370c3';
@@ -103,21 +95,21 @@ function setPublicAccount(address)
   pool.setAccount(address);
 }
 
-//NOTE verified functioning pattern, throws in the awaits just get thrown up
-async function initializeContracts(shipsAddress, offlineConstitution, offlinePolls)
+async function initializeContracts(shipsAddress,
+                                   constitutionAddress,
+                                   pollsAddress)
 {
   let s = new web3.eth.Contract(abis.ships, shipsAddress);
-  let c, p;
-  if (!offline)
+  if (!constitutionAddress)
   {
-    let constitutionAddress = await s.methods.owner().call();
-    c = new web3.eth.Contract(abis.constitution, constitutionAddress);
-    let pollsAddress = await c.methods.polls().call();
-    p = new web3.eth.Contract(abis.polls, pollsAddress);
-  } else {
-    c = new web3.eth.Contract(abis.constitution, offlineConstitution);
-    p = new web3.eth.Contract(abis.polls, offlinePolls);
+    constitutionAddress = await s.methods.owner().call();
   }
+  let c = new web3.eth.Contract(abis.constitution, constitutionAddress);
+  if (!pollsAddress)
+  {
+    pollsAddress = await c.methods.polls().call();
+  }
+  let p = new web3.eth.Contract(abis.polls, pollsAddress);
   //
   ships.setContract(s);
   polls.setContract(p);
@@ -145,17 +137,8 @@ async function signTransaction(tx)
   //TODO check important tx values are set? all but from are web3 optional...
 
   // if no gas limit was specified, estimate it
-  //TODO web3 default gas is "to be determined"? can we let it do this for us?
   if (!tx.gas)
   {
-    // can't estimate gas if we're offline
-    if (offline)
-    {
-      throw {
-        name: 'TransactionError',
-        message: 'Need transaction gas limit.'
-      };
-    }
     //NOTE you always want to at least +1 because exactly the required gas
     //     causes a revert
     //NOTE we do *2.1 though because in some cases that's the true amount of
@@ -175,21 +158,12 @@ function sendTransaction(signedTx)
   return web3.eth.sendSignedTransaction(signedTx);
 }
 
-async function doTheThing(tx)
-{
-  return await sendTransaction(await signTransaction(tx));
-}
-
-//TODO validation functions for ship classes, addresses, bytes32
-//TODO maybe shipname conversion? that should probably be a separate lib though
-
 // configure default server url
 setServerUrl('http://localhost:8545');
 
 module.exports = {
   config: {
     setServerUrl,
-    setOffline,
     setPrivateKey,
     setHdAccount,
     setRawPrivateKey,
@@ -201,7 +175,6 @@ module.exports = {
   },
   transact: {
     signTransaction,
-    doTheThing,
     sendTransaction
   },
   ships,

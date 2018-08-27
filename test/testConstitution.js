@@ -44,8 +44,6 @@ async function send(tx)
   return cj.transact.sendTransaction(await cj.transact.signTransaction(tx));
 }
 
-//TODO find the first unused galaxy and work off that, so that we don't need a
-//     completely fresh testnet for every single run
 let galaxy = 0;
 let galaxyPlanet = 65536;
 let star1 = 256;
@@ -55,6 +53,7 @@ let planet1b = 131328;
 
 it('prepare the environment', async function() {
   await cj.config.initializeContractsDefault();
+  // find the first unused galaxy, so we have a clean-ish testing environment
   while (await s.hasOwner(galaxy)) galaxy++;
   console.log('using galaxy ' + galaxy + '/255')
   galaxyPlanet = galaxyPlanet + galaxy;

@@ -108,6 +108,11 @@ async function canDeposit(star)
   return case1;
 }
 
+function deposit(star)
+{
+  return protoTx(p.methods.deposit(star));
+}
+
 async function canWithdrawAny()
 {
   let res = { result: false };
@@ -125,6 +130,11 @@ async function canWithdrawAny()
   return res;
 }
 
+function withdrawAny()
+{
+  return protoTx(p.methods.withdrawAny());
+}
+
 async function canWithdraw(star)
 {
   let res = { result: false };
@@ -140,6 +150,20 @@ async function canWithdraw(star)
   }
   res.result = true;
   return res;
+}
+
+function withdraw(star)
+{
+  return protoTx(p.methods.withdraw(star));
+}
+
+//
+// misc internal utility
+//
+
+function protoTx(encodedABI, value)
+{
+  return utils.protoTx(account, p._address, encodedABI, value);
 }
 
 module.exports = {
