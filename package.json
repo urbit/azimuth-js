@@ -1,6 +1,6 @@
 {
-  "name": "constitution-js",
-  "version": "0.1.92",
+  "name": "@urbit/constitution-js",
+  "version": "0.2.0",
   "description": "Interact with the Urbit constitution",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "urbit-ob": "1.0.0",
     "web3": "^1.0.0-beta.34"
   },
-  "author": "~mirfet-hocbyt",
+  "author": "Tlon",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/urbit/constitution-js/issues"
