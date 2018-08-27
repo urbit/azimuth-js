@@ -1,17 +1,59 @@
 # Urbit Constitution-JS
 
 
-
 ## Install
 
 `npm install constitution-js --save`
 
 
+## Usage
+
+Some library functions are asynchronous, returning a `Promise` object rather
+than a direct result.  
+Functions that use Web3 may throw. The thrown object will always contain at
+least `name` and `message` properties. Tread carefully when using Web3 while
+offline.  
+Contract action checks (`canXYZ()`) return result objects in the form of
+`{ result: bool, reason: string }`, where `reason` is only set when `result` is
+`false`. These can't resolve when offline.
+
+The library is split up into sections:
+[`config`](docs/config.md),
+[`transact`](docs/transact.md),
+[`ships`](docs/ships.md),
+[`constitution`](docs/constitution.md),
+`polls`,
+[`pool`](docs/pool.md),
+[`utils`](docs/utils.md).  
+Generally, you'll use `config` to set up, then getters from `ships` to display
+current state, `utils` to verify input sanity, checks and actions in
+`constitution` to validate and generate transactions, and `transact` to sign
+and send the transactions.
+
+As a client implementation, you'll most likely be using:
+
+* `config.`:
+  * `setServerUrl(url)`, to connect to an Ethereum node,
+  * `setPrivateKey(hd, path, index)`, to set the user's account,
+  * `initializeContractsDefault()`, to load in the contract addresses,
+  * `setPool(poolAddress)`, to configure a pool address
+* `ships.`:
+  * `getOwnedShips()`, to get the ships owned by the account,
+  * `getShip(ship)`, to get the on-chain state of a ship
+* `utils`, to verify user input sanity,
+* `constitution.` / `pool.`:
+  * `canFunction()`, to verify if the account can perform `function()` on-chain,
+  * `function()`, to generate a transaction for doing `function()` on-chain
+* `transact.`:
+  * `signTransaction(tx)`, to sign a generated transaction,
+  * `sendTransaction(signedTx)`, to send a transaction
+
 
 ## Development
 
-### Testnet
-In order to test the functionality of the Wallet, you'll need a testnet running the 
+### Local testnet
+
+In order to test the functionality of the Wallet, you'll need a testnet running the
 Urbit constitution.
 1. Clone [the constitution](https://github.com/urbit/constitution)
 2. `cd` into the repo and `npm install`
@@ -21,275 +63,18 @@ Urbit constitution.
 4. Run `truffle deploy` from the constitution's directory to deploy to your local node.
 
 ### Useful addresses
-Constitution owner (is allowed to create galaxies): `0x6deffb0cafdb11d175f123f6891aa64f01c24f7d`
+Constitution owner (is allowed to create galaxies):
+`0x6deffb0cafdb11d175f123f6891aa64f01c24f7d`
 
-Test pool: `0x0724ee9912836c2563eee031a739dda6dd775333`
-
-
+Test pool:
+`0xb71c0b6cee1bcae56dfe95cd9d3e41ddd7eafc43`
 
 ## Test
 
 `npm test`
 
-Run `ganache-cli -m "benefit crew supreme gesture quantum web media hazard theory mercy wing kitten"` and `truffle deploy` before starting the test.
+Make sure a local testnet node is running prior to starting the tests.
 
-
-
-## Important things to know
-
-There are three categories of Urbit ships: galaxies, stars, and planets. Galaxies spawn stars. Stars spawn planets.
-
-Each Urbit ship has a unique integer address. Galaxy addresses are numbered 0 - 255 (2^8). Star addresses are numbered 256 - 65,535 (2^16). Planet addresses are numbered 65,536 - 4,294,967,295 (2^32).
-
-Each Urbit ship also has a unique human-readable name that's determined from its address.
-
-
-
-## Functions
-
-
-### Config
-
-#### `setServerUrl(serverURL)`
-
-Set the URL `serverURL` for web3
-
-
-#### `setPrivateKey(hd, path, index, callback)`
-
-Set the HDKey `hd`, path `path`, and index `index` of the address to use. Callback returns the address at `index`.
-
-
-#### `setDefaultAccountWithPathAndIndex(path, index, callback)`
-
-Set the path `path` and index `index` of the address to use. Call this after calling `setPrivateKey()` if you want to switch to a different address from the one originally specified. Callback returns the address at `index`.
-
-
-#### `setPoolAddress(poolAddress)`
-
-Set the ETH address of the pool `poolAddress` to use. (Optional, defaults to standard pool)
-
-
-### Validation and Formatting
-
-#### `valGalaxy(galaxyAddress)`
-
-Returns a bool validating Urbit galaxy address `galaxyAddress`
-
-
-#### `valStar(starAddress)`
-
-Returns a bool validating Urbit star address `starAddress`
-
-
-#### `valShip(shipAddress)`
-
-Returns a bool validating Urbit ship address `shipAddress`
-
-
-#### `valAddress(ethAddress)`
-
-Returns a bool validating Ether address `ethAddress`. 
-
-
-#### `formatShipName(shipName)`
-
-Returns a string with a tilde added to a valid Urbit ship name `shipName`
-
-
-#### `toAddress(shipName)`
-
-Return the corresponding Urbit ship address of ship with name `shipName`
-
-
-#### `toShipName(shipAddress)`
-
-Returns the coorresponding Urbit ship name of ship with address `shipAddress`
-
-
-#### `getSpawnCandidate(shipAddress)`
-
-Returns the Urbit ship address of a random spawn candidate from ship with address `shipAddress`. This call does NOT guarantee availability of the returned address.
-
-
-
-### Read 
-
-Read Urbit ship data stored on the blockchain
-
-
-#### `readShipData(shipAddress, callback)`
-
-Returns `hasBeenBooted` bool for ship `shipAddress`
-
-
-#### `readOwnedShips(ethAddress, callback)`
-
-Returns an object loaded with the ships owned by the account `ethAddress`
-
-
-#### `readOwnedShipsStatus(ethAddress, callback)`
-
-Returns an object loaded with the ships owned by `ethAddress` including their `name` and `hasBeenBooted` status
-
-
-#### `readTransferringFor(ethAddress, callback)`
-
-Returns an object loaded with the pending transfer ships by the account `ethAddress`
-
-
-#### `readHasOwner(shipAddress, callback)`
-
-Returns a bool for whether ship `shipAddress` has an owner
-
-
-#### `readIsOwner(shipAddress, ethAddress, callback)`
-
-Returns `true` if `ethAddress` owns the ship `shipAddress`
-
-
-#### `readSponsor(shipAddress, callback)`
-
-Returns the address of the sponsor of ship `shipAddress`
-
-
-#### `readPoolAssets(poolAddress, callback)`
-
-Returns the total Spark assets of the pool `poolAddress`
-
-
-#### `readBalance(poolAddress, callback)`
-
-Returns the balance of Spark assets in the pool `poolAddress` held by the given wallet 
-
-
-#### `readIsRequestingEscapeTo(shipAddress, sponsorAddress, callback)`
-
-Returns a bool for whether ship `shipAddress` is currently requesting an escape to ship `sponsorAddress`
-
-
-#### `readKeys(shipAddress, callback)`
-
-Returns the keys for ship `shipAddress`
-
-
-#### `readIsSpawnProxy(shipAddress, ethAddress, callback)`
-
-Returns a bool for whether the account `ethAddress` is the spawn proxy of the ship`shipAddress`
-
-
-
-### Transactions
-
-The callback in each of these functions returns an object in this format:
-```
-{ 
-  error: false,
-  signedTx: '0xf8b0138504a817c80083038af494098b6cb45da68c31c751d9df211cbe3056c356d180b84426295b5200000000000000000000000000000000000000000000000000000000000000d70000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d8602c9e6a44eb5a0a6a65a5455e0e5377685be404840eaf917bb5aaeeaf95603e48a7b4498c0d5b0a00ee33788ab4d08e87759f34ea7fb72c2031e9033a63bfcb6ed77a92e1d298c5e',
-  rawTx: 
-    { 
-      from: '0x6deffb0cafdb11d175f123f6891aa64f01c24f7d',
-      to: '0x098b6cb45da68c31c751d9df211cbe3056c356d1',
-      value: '0x0',
-      data: '0x26295b5200000000000000000000000000000000000000000000000000000000000000d70000000000000000000000006deffb0cafdb11d175f123f6891aa64f01c24f7d',
-      gas: '0x38af4',
-      chainId: '0x164f3522749',
-      gasPrice: '0x4a817c800',
-      nonce: '0x13' 
-   } 
-}
-```
-
-
-
-#### `doCreateGalaxy(galaxy, ethAddress, callback)`
-
-Create galaxy `galaxy` and give it to address `ethAddress`
-
-
-#### `doDeposit(star, poolAddress, callback)`
-
-Deposit ship `star` into the pool at `poolAddress`
-
-
-#### `doWithdraw(star, poolAddress, callback)`
-
-Withdraw `star` from the pool at `poolAddress`
-
-
-#### `doSpawn(shipAddress, ethAddress, callback)`
-
-Spawn ship `shipAddress` and give it to address `ethAddress`
-
-
-#### `doSetSpawnProxy(shipAddress, ethAddress, callback)`
-
-Set `ethAddress` as the spawn proxy of `shipAddress`
-
-
-#### `doConfigureKeys(shipAddress, encryptionKey, authenticationKey, cryptoSuiteVersion, discontinuous, callback)`
-
-Set `encryptionKey` and `authenticationKey` as the keys for ship `shipAddress` with corresponding `cryptoSuiteVersion`. bool `discontinuous` optionally increments the continuity number of ship `shipAddress`
-
-
-#### `doTransferShip(shipAddress, ethAddress, reset, callback)`
-
-Transfer ship `shipAddress` to address `ethAddress`. bool `reset` optionally clears the keys and breaks continuity
-
-
-#### `doSetTransferProxy(shipAddress, ethAddress, callback)`
-
-Set address `ethAddress` as the transfer proxy for ship `shipAddress`
-
-
-#### `doEscape(shipAddress, sponsorAddress, callback)`
-
-Escape ship `shipAddress` to ship `sponsorAddress`
-
-
-#### `doAdopt(sponsorAddress, escapeeAddress, callback)`
-
-Ship `sponsorAddress` adopts ship `escapeeAddress`
-
-
-#### `doReject(sponsorAddress, escapeeAddress, callback)`
-
-Ship `sponsorAddress` rejects ship `escapeeAddress`
-
-
-#### `doApprove(ethAddress, shipAddress, callback)`
-
-Approve address `ethAddress` to transfer ship `shipAddress`
-
-
-#### `doSafeTransferFrom(fromEthAddress, toEthAddress, shipAddress, callback)`
-
-Conduct a safe transfer of ship `shipAddress` from address `fromEthAddress` to address `toEthAddress`
-
-
-#### `doCastConstitutionVote(galaxy, prop, vote, callback)`
-
-Cast bool vote `vote` from galaxy `galaxy` on constitution proposal at address `prop`
-
-
-#### `doCastDocumentVote(galaxy, prop, vote, callback)`
-
-Cast bool `vote` from galaxy `galaxy` on document proposal at address `prop`
-
-
-
-
-### Send
-
-#### `sendTransaction(signedTx, callback)`
-
-Submit `signedTx` to the blockchain. The object returned in the callback is in this format:
-```
-{ 
-  error: false,
-  txHash: '0xb6b61dc7e59a39dc141e8971e29f86175ef9e9ba0fc4ea2948351c4aa009a8e1'
-}
-```
 
 
 
@@ -323,7 +108,7 @@ constitution.setPrivateKey(masterKey, path, idx, function(res) {
 }
 ```
 
-#### 2. Call `getSpawnCandidate` passing in the Urbit address of a ship you own 
+#### 2. Call `getSpawnCandidate` passing in the Urbit address of a ship you own
 ```
 var spawnCandidate = constitution.getSpawnCandidate(256)
 console.log(spawnCandidate);
@@ -377,7 +162,3 @@ constitution.readOwnedShipsStatus('0x6deffb0cafdb11d175f123f6891aa64f01c24f7d', 
     }
 }
 ```
-
-
-
-Find out more: https://urbit.org  
