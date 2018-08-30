@@ -3,7 +3,7 @@
 var contracts = function() {}
 
 contracts.constitution = {
-  "address": "0x098b6cb45da68c31c751d9df211cbe3056c356d1",
+  "address": "0x56db68f29203ff44a803faa2404a44ecbb7a7480",
   "contractName": "Constitution",
   "abi": [
       {
@@ -995,7 +995,7 @@ contracts.constitution = {
 };
 
 contracts.ships = {
-  	"address": "0xe0834579269eac6beca2882a6a21f6fb0b1d7196",
+  	"address": "0x863d9c2e5c4c133596cfac29d55255f0d0f86381",
   	"contractName": "Ships",
   	"abi": [
       {
@@ -2762,7 +2762,7 @@ contracts.ships = {
 };
 
 contracts.polls = {
-	"address": "0x0654b24a5da81f6ed1ac568e802a9d6b21483561",
+	"address": "0x935452c45eda2958976a429c9733c40302995efd",
 	"contractName": "Polls",
   	"abi": [
       {
@@ -3274,7 +3274,7 @@ contracts.polls = {
 };
 
 contracts.pool = {
-	"address": "0x0724ee9912836c2563eee031a739dda6dd775333",
+	"address": "0xb71c0b6cee1bcae56dfe95cd9d3e41ddd7eafc43",
 	"contractName": "Pool",
   	"abi": [
       {
