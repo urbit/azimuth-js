@@ -345,7 +345,7 @@ var readOwnedShipsStatus = function(ethAddress, cb) {
               ownedShips[shipAddress] = {};
               ownedShips[shipAddress].name = '~' + toShipName(shipAddress);
               ownedShips[shipAddress].address = shipAddress;
-              ownedShips[shipAddress].hasBeenbooted = bootedResult;
+              ownedShips[shipAddress].hasBeenBooted = bootedResult;
               if (counter === res.length - 1) { shipsAcquired(); }
               else { 
                 counter++;
