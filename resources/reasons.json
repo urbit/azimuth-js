@@ -17,5 +17,6 @@
   "contractCant": "Contract has not been granted sufficient permission",
   "poolBoot":     "Booted stars are not eligible for pools",
   "poolActive":   "Active stars can't be spawned into pools",
-  "notInPool":    "Star is not held by pool"
+  "notInPool":    "Star is not held by pool",
+  "empty":        ""
 }

@@ -1,6 +1,6 @@
 {
   "name": "@urbit/constitution-js",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "Interact with the Urbit constitution",
   "repository": {
     "type": "git",
@@ -20,20 +20,19 @@
     "bip39": "^2.5.0",
     "chai": "^4.1.2",
     "hdkey": "^1.0.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "secp256k1": "^3.5.2"
   },
   "dependencies": {
     "ethereumjs-util": "^5.1.2",
-    "urbit-ob": "1.0.0",
-    "web3": "^1.0.0-beta.34",
-    "websocket": "^1.0.26"
+    "web3": "^1.0.0-beta.34"
   },
   "author": "Tlon",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/urbit/constitution-js/issues"
   },
-  "homepage": "https://github.com/urbit/constitution-js#readme",
+  "homepage": "https://github.com/urbit/constitution-js",
   "directories": {
     "test": "test"
   }
