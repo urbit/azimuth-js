@@ -11,3 +11,7 @@ module.exports.getAssetCount = (contracts) => {
   return contracts.pool.methods.getAssetCount().call();
 }
 
+module.exports.getBalance = (contracts, address) => {
+  return contracts.pool.methods.balances(address).call();
+}
+

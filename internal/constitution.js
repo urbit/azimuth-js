@@ -33,18 +33,6 @@ module.exports.canEscapeTo = (contracts, ship, sponsor) => {
   return contracts.constitution.methods.canEscapeTo(ship, sponsor).call();
 }
 
-module.exports.name = (contracts) => {
-  return contracts.constitution.methods.name.call();
-}
-
-module.exports.symbol = (contracts) => {
-  return contracts.constitution.methods.symbol.call();
-}
-
-module.exports.tokenURI = (contracts, token) => {
-  return contracts.constitution.methods.tokenUri(token).call();
-}
-
 // NB (jtobin):
 //
 //   The following is extremely repetitive.  Could obviously abstract via
