@@ -42,3 +42,18 @@ module.exports.getBalance = internal.getBalance;
  */
 module.exports.deposit = internal.deposit;
 
+/*
+ * Pay a spark token and withdraw a star from the pool.
+ * @param {Object} contracts - The Urbit contracts object.
+ * @param {Number} star - A (star) ship token.
+ * @return {Object} An unsigned transaction object.
+ */
+module.exports.withdraw = internal.withdraw;
+
+/*
+ * Pay a spark token and withdraw any available star from the pool.
+ * @param {Object} contracts - The Urbit contracts object.
+ * @return {Object} An unsigned transaction object.
+ */
+module.exports.withdrawAny = internal.withdrawAny;
+
