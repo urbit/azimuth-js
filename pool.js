@@ -34,3 +34,11 @@ module.exports.getAssetCount = internal.getAssetCount;
  */
 module.exports.getBalance = internal.getBalance;
 
+/*
+ * Add a star to the pool and receive a spark token in return.
+ * @param {Object} contracts - The Urbit contracts object.
+ * @param {Number} star - A (star) ship token.
+ * @return {Object} An unsigned transaction object.
+ */
+module.exports.deposit = internal.deposit;
+

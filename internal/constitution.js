@@ -56,10 +56,10 @@ function tx(to, data, value) {
   };
 }
 
-module.exports.safeTransferFrom = (contracts, _from, _to, _token, _data) => {
+module.exports.safeTransferFrom = (contracts, _from, _to, _token) => {
   let addr = contracts.constitution._address;
   let data = contracts.constitution.methods.safeTransferFrom(
-               _from, _to, _token, _data);
+               _from, _to, _token);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
@@ -68,14 +68,14 @@ module.exports.transferFrom = (contracts, _from, _to, _token) => {
   let addr = contracts.constitution._address;
   let data = contracts.constitution.methods.transferFrom(_from, _to, _token);
   let abi  = data.encodeABI();
-  return utils.protoTex(addr, abi, 0);
+  return tx(addr, abi, 0);
 }
 
 module.exports.approve = (contracts, _approved, _token) => {
   let addr = contracts.constitution._address;
   let data = contracts.constitution.methods.approve(_approved, _token);
   let abi  = data.encodeABI();
-  return utils.protoTex(addr, abi, 0);
+  return tx(addr, abi, 0);
 }
 
 module.exports.setApprovalForAll = (contracts, _operator, _approved) => {
@@ -83,7 +83,7 @@ module.exports.setApprovalForAll = (contracts, _operator, _approved) => {
   let data = contracts.constitution.methods.setApprovalForAll(
                _operator, _approved);
   let abi  = data.encodeABI();
-  return utils.protoTex(addr, abi, 0);
+  return tx(addr, abi, 0);
 }
 
 module.exports.setManager = (contracts, _manager) => {

@@ -189,9 +189,9 @@ function getShipClass(_, ship) {
 module.exports = {
   owner: internal.owner,
   getShip: internal.getShip,
-  getOwnedByAddress: internal.getOwnedByAddress,
+  getOwnedShipsByAddress: internal.getOwnedShipsByAddress,
   getOwnedShipCount: internal.getOwnedShipCount,
-  getOwnedShipsAtIndex: internal.getOwnedShipsAtIndex,
+  getOwnedShipAtIndex: internal.getOwnedShipAtIndex,
   isManager: internal.isManager,
   canManage: internal.canManage,
   getManagingForCount: internal.getManagingForCount,
