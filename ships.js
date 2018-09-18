@@ -18,7 +18,7 @@ const utils = require('./utils');
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
  * @param {Number} address - Owner's address.
- * @return {Promise => Bool} True if owner of the ship, false otherwise.
+ * @return {Promise<Bool>} True if owner of the ship, false otherwise.
  */
 function isOwner(contracts, ship, address) {
   if (typeof ship === 'object') {
@@ -31,7 +31,7 @@ function isOwner(contracts, ship, address) {
  * Get the owner of a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Address} The ship's owner.
+ * @return {Promise<Address>} The ship's owner.
  */
 function getOwner(contracts, ship) {
   if (typeof ship === 'object') {
@@ -44,7 +44,7 @@ function getOwner(contracts, ship) {
  * Check if a ship is active.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Bool} True if the ship is active, false otherwise.
+ * @return {Promise<Bool>} True if the ship is active, false otherwise.
  */
 function isActive(contracts, ship) {
   if (typeof ship === 'object') {
@@ -57,7 +57,7 @@ function isActive(contracts, ship) {
  * Get the key configuration for a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Object} The ship's key configuration.
+ * @return {Promise<Object>} The ship's key configuration.
  */
 function getKeys(contracts, ship) {
   if (typeof ship === 'object') {
@@ -75,7 +75,7 @@ function getKeys(contracts, ship) {
  * Get the key revision number of a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Number} The ship's key revision number.
+ * @return {Promise<Number>} The ship's key revision number.
  */
 function getKeyRevisionNumber(contracts, ship) {
   if (typeof ship === 'object') {
@@ -88,7 +88,7 @@ function getKeyRevisionNumber(contracts, ship) {
  * Check if a ship has been booted.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Bool} True if it has been booted, false otherwise.
+ * @return {Promise<Bool>} True if it has been booted, false otherwise.
  */
 function hasBeenBooted(contracts, ship) {
   if (typeof ship === 'object') {
@@ -101,7 +101,7 @@ function hasBeenBooted(contracts, ship) {
  * Check if a ship is live.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Bool} True if the ship is live, false otherwise.
+ * @return {Promise<Bool>} True if the ship is live, false otherwise.
  */
 function isLive(contracts, ship) {
   if (typeof ship === 'object') {
@@ -118,7 +118,7 @@ function isLive(contracts, ship) {
  * Get a ship's continuity number.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Number} The ship's continuity number.
+ * @return {Promise<Number>} The ship's continuity number.
  */
 function getContinuityNumber(contracts, ship) {
   if (typeof ship === 'object') {
@@ -131,7 +131,7 @@ function getContinuityNumber(contracts, ship) {
  * Get a ship's spawn count.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Number} The ship's spawn count.
+ * @return {Promise<Number>} The ship's spawn count.
  */
 function getSpawnCount(contracts, ship) {
   if (typeof ship === 'object') {
@@ -144,7 +144,7 @@ function getSpawnCount(contracts, ship) {
  * Check if a ship has been spawned.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Bool} True if the ship has been spawned, false
+ * @return {Promise<Bool>} True if the ship has been spawned, false
  *  otherwise.
  */
 function getSpawned(contracts, ship) {
@@ -158,7 +158,7 @@ function getSpawned(contracts, ship) {
  * Get a ship's sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Number} The ship's sponsor.
+ * @return {Promise<Number>} The ship's sponsor.
  */
 function getSponsor(contracts, ship) {
   if (typeof ship === 'object') {
@@ -171,7 +171,7 @@ function getSponsor(contracts, ship) {
  * Check if a ship has a sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Bool} True if the ship has a sponsor, false otherwise.
+ * @return {Promise<Bool>} True if the ship has a sponsor, false otherwise.
  */
 function hasSponsor(contracts, ship) {
   if (typeof ship === 'object') {
@@ -185,7 +185,7 @@ function hasSponsor(contracts, ship) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
  * @param {Number} sponsor - The sponsor's ship token.
- * @return {Promise => Bool} True if a sponsor, false otherwise.
+ * @return {Promise<Bool>} True if a sponsor, false otherwise.
  */
 function isSponsor(contracts, ship, sponsor) {
   if (typeof ship === 'object') {
@@ -198,7 +198,7 @@ function isSponsor(contracts, ship, sponsor) {
  * Check if a ship is requesting escape.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Bool} True if requesting escape, false otherwise.
+ * @return {Promise<Bool>} True if requesting escape, false otherwise.
  */
 function isEscaping(contracts, ship) {
   if (typeof ship === 'object') {
@@ -211,7 +211,7 @@ function isEscaping(contracts, ship) {
  * Get the sponsor that another ship is requesting escape to.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => Number} The sponsor ship token.
+ * @return {Promise<Number>} The sponsor ship token.
  */
 function getEscapeRequest(contracts, ship) {
   if (typeof ship === 'object') {
@@ -225,7 +225,7 @@ function getEscapeRequest(contracts, ship) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
  * @param {Number} sponsor - Sponsor's ship token.
- * @return {Promise => Bool} True if escape to sponsor requested, false
+ * @return {Promise<Bool>} True if escape to sponsor requested, false
  *  otherwise.
  */
 function isRequestingEscapeTo(contracts, ship, sponsor) {
@@ -240,7 +240,7 @@ function isRequestingEscapeTo(contracts, ship, sponsor) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if address is spawn proxy, false otherwise.
+ * @return {Promise<Bool>} True if address is spawn proxy, false otherwise.
  */
 function isSpawnProxy(contracts, ship, address) {
   if (typeof ship === 'object') {
@@ -253,7 +253,7 @@ function isSpawnProxy(contracts, ship, address) {
  * Get the spawn proxy for a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => String} The spawn proxy's address.
+ * @return {Promise<String>} The spawn proxy's address.
  */
 function getSpawnProxy(contracts, ship) {
   if (typeof ship === 'object') {
@@ -267,7 +267,7 @@ function getSpawnProxy(contracts, ship) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if the address is a transfer proxy, false
+ * @return {Promise<Bool>} True if the address is a transfer proxy, false
  *  otherwise.
  */
 function isTransferProxy(contracts, ship, address) {
@@ -281,7 +281,7 @@ function isTransferProxy(contracts, ship, address) {
  * Get the transfer proxy for a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise => String} The transfer proxy's address.
+ * @return {Promise<String>} The transfer proxy's address.
  */
 function getTransferProxy(contracts, ship) {
   if (typeof ship === 'object') {
@@ -325,7 +325,7 @@ function getShipClass(_, ship) {
 /**
  * Get the ships contract owner.
  * @param {Object} contracts - An Urbit contracts object.
- * @return {Promise => String} The contract owner's address.
+ * @return {Promise<String>} The contract owner's address.
  */
 const owner = internal.owner;
 
@@ -333,7 +333,7 @@ const owner = internal.owner;
  * Get a ship object, given its token id.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
- * @return {Promise => Object} A ship object.
+ * @return {Promise<Object>} A ship object.
  */
 const getShip = internal.getShip;
 
@@ -341,7 +341,7 @@ const getShip = internal.getShip;
  * Get the ships that an address owns.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Array<Number>} An array of owned ships.
+ * @return {Promise<Array.<Number>>} An array of owned ships.
  */
 const getOwnedShipsByAddress = internal.getOwnedShipsByAddress;
 
@@ -349,7 +349,7 @@ const getOwnedShipsByAddress = internal.getOwnedShipsByAddress;
  * Get a count of ships owned by an address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Number} Owned ship count for the address.
+ * @return {Promise<Number>} Owned ship count for the address.
  */
 const getOwnedShipCount = internal.getOwnedShipCount;
 
@@ -358,7 +358,7 @@ const getOwnedShipCount = internal.getOwnedShipCount;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
  * @param {Number} index - The index of the array.
- * @return {Promise => Number} The ship at the provided index.
+ * @return {Promise<Number>} The ship at the provided index.
  */
 const getOwnedShipAtIndex = internal.getOwnedShipAtIndex;
 
@@ -367,7 +367,7 @@ const getOwnedShipAtIndex = internal.getOwnedShipAtIndex;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} owner - The owner's address.
  * @param {String} manager - The manager's address.
- * @return {Promise => Bool} True if the address is a manager, false otherwise.
+ * @return {Promise<Bool>} True if the address is a manager, false otherwise.
  */
 const isManager = internal.isManager;
 
@@ -376,7 +376,7 @@ const isManager = internal.isManager;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {String} address - The manager's address.
- * @return {Promise => Bool} True if the address can manage the ship, false
+ * @return {Promise<Bool>} True if the address can manage the ship, false
  *  otherwise.
  */
 const canManage = internal.canManage;
@@ -385,7 +385,7 @@ const canManage = internal.canManage;
  * Get a count of the ships an address is managing.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Number} The count of ships being managed.
+ * @return {Promise<Number>} The count of ships being managed.
  */
 const getManagingForCount = internal.getManagingForCount;
 
@@ -393,7 +393,7 @@ const getManagingForCount = internal.getManagingForCount;
  * Get the ships an account is managing.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Array<Number>} The ships being managed.
+ * @return {Promise<Array.<Number>>} The ships being managed.
  */
 const getManagingFor = internal.getManagingFor;
 
@@ -402,7 +402,7 @@ const getManagingFor = internal.getManagingFor;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The owner's address.
  * @param {String} address - The delegate's address.
- * @return {Promise => Bool} True is delegate, false otherwise.
+ * @return {Promise<Bool>} True is delegate, false otherwise.
  */
 const isDelegate = internal.isDelegate;
 
@@ -411,7 +411,7 @@ const isDelegate = internal.isDelegate;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {String} address - The delegate's address.
- * @return {Promise => Bool} True is the address can vote for the ship, false
+ * @return {Promise<Bool>} True is the address can vote for the ship, false
  *  otherwise.
  */
 const canVoteAs = internal.canVoteAs;
@@ -420,7 +420,7 @@ const canVoteAs = internal.canVoteAs;
  * Get a count of the ships an address can vote for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Number} The count of ships that can be voted for.
+ * @return {Promise<Number>} The count of ships that can be voted for.
  */
 const getVotingForCount = internal.getVotingForCount;
 
@@ -428,7 +428,7 @@ const getVotingForCount = internal.getVotingForCount;
  * Get the ships an account is voting for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Array<Number>} The ships being voted for.
+ * @return {Promise<Array.<Number>>} The ships being voted for.
  */
 const getVotingFor = internal.getVotingFor;
 
@@ -436,7 +436,7 @@ const getVotingFor = internal.getVotingFor;
  * Get a count of the ships an address is a spawn proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Number} The count of ships.
+ * @return {Promise<Number>} The count of ships.
  */
 const getSpawningForCount = internal.getSpawningForCount;
 
@@ -444,7 +444,7 @@ const getSpawningForCount = internal.getSpawningForCount;
  * Get the ships an account is a spawn proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Array<Number>} The ships.
+ * @return {Promise<Array.<Number>>} The ships.
  */
 const getSpawningFor = internal.getSpawningFor;
 
@@ -452,7 +452,7 @@ const getSpawningFor = internal.getSpawningFor;
  * Get a count of the ships an address is a transfer proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Number} The count of ships.
+ * @return {Promise<Number>} The count of ships.
  */
 const getTransferringForCount = internal.getTransferringForCount;
 
@@ -460,7 +460,7 @@ const getTransferringForCount = internal.getTransferringForCount;
  * Get the ships an account is a transfer proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise => Array<Number>} The ships.
+ * @return {Promise<Array.<Number>>} The ships.
  */
 const getTransferringFor = internal.getTransferringFor;
 
@@ -469,7 +469,7 @@ const getTransferringFor = internal.getTransferringFor;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The owner's address.
  * @param {String} address - The operator's address.
- * @return {Promise => Bool} True is operator, false otherwise.
+ * @return {Promise<Bool>} True is operator, false otherwise.
  */
 const isOperator = internal.isOperator;
 

@@ -8,7 +8,7 @@ const internal = require('./internal/constitution');
 /**
  * Get constitution contract owner.
  * @param {Object} contracts - An Urbit contracts object.
- * @return {Promise => String} The owner address.
+ * @return {Promise<String>} The owner address.
  */
 module.exports.owner = internal.owner;
 
@@ -16,7 +16,7 @@ module.exports.owner = internal.owner;
  * Get the amount of ships owned by an address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - Owner's address.
- * @return {Promise => Number} Number of ships.
+ * @return {Promise<Number>} Number of ships.
  */
 module.exports.balanceOf = internal.balanceOf;
 
@@ -24,7 +24,7 @@ module.exports.balanceOf = internal.balanceOf;
  * Get the current owner of a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
- * @return {Promise => String} Owner's address.
+ * @return {Promise<String>} Owner's address.
  */
 module.exports.ownerOf = internal.ownerOf;
 
@@ -32,7 +32,7 @@ module.exports.ownerOf = internal.ownerOf;
  * Check if a ship is active.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
- * @return {Promise => Bool} true if ship is active, false otherwise.
+ * @return {Promise<Bool>} true if ship is active, false otherwise.
  */
 module.exports.exists = internal.exists;
 
@@ -40,7 +40,7 @@ module.exports.exists = internal.exists;
  * Get the transfer proxy for a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
- * @return {Promise => String} The transfer proxy's address.
+ * @return {Promise<String>} The transfer proxy's address.
  */
 module.exports.getApproved = internal.getApproved;
 
@@ -49,7 +49,7 @@ module.exports.getApproved = internal.getApproved;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} owner - The owner's address.
  * @param {String} operator - The operator's address.
- * @return {Promise => Bool} true if 'operator' is an operator for 'owner'.
+ * @return {Promise<Bool>} true if 'operator' is an operator for 'owner'.
  */
 module.exports.isApprovedForAll = internal.isApprovedForAll;
 
@@ -58,7 +58,7 @@ module.exports.isApprovedForAll = internal.isApprovedForAll;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {Number} time - Time (uint256).
- * @return {Promise => Number} The spawn limit.
+ * @return {Promise<Number>} The spawn limit.
  */
 module.exports.getSpawnLimit = internal.getSpawnLimit;
 
@@ -67,7 +67,7 @@ module.exports.getSpawnLimit = internal.getSpawnLimit;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {Number} sponsor - Sponsor's ship token.
- * @return {Promise => Bool} True if ship can escape, false otherwise.
+ * @return {Promise<Bool>} True if ship can escape, false otherwise.
  */
 module.exports.canEscapeTo = internal.canEscapeTo;
 

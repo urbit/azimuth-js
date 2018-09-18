@@ -94,7 +94,7 @@ function canStartPoll(poll) {
  * Check if a ship has an owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function hasOwner(contracts, ship) {
   if (typeof ship === 'object') {
@@ -107,7 +107,7 @@ async function hasOwner(contracts, ship) {
  * Check if an address is the constitution owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - Owner's address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function isConstitutionOwner(contracts, address) {
   return utils.addressEquals(address, await constitution.owner(contracts));
@@ -118,7 +118,7 @@ async function isConstitutionOwner(contracts, address) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canCreateGalaxy(contracts, galaxy, address) {
   let res = { result: false };
@@ -146,7 +146,7 @@ async function canCreateGalaxy(contracts, galaxy, address) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canSpawn(contracts, ship, target) {
   let res = { result: false };
@@ -200,7 +200,7 @@ async function canSpawn(contracts, ship, target) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canSetSpawnProxy(contracts, prefix, address) {
   let res = { result: false };
@@ -226,7 +226,7 @@ async function canSetSpawnProxy(contracts, prefix, address) {
  * @param {Number} tokenId - Ship token.
  * @param {String} sender - Sender's address.
  * @param {String} target - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canTransferShip(contracts, ship, source, target) {
   let res     = { result: false };
@@ -258,7 +258,7 @@ async function canTransferShip(contracts, ship, source, target) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canSetTransferProxy(contracts, ship, address) {
   let res     = { result: false };
@@ -280,7 +280,7 @@ async function canSetTransferProxy(contracts, ship, address) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canConfigureKeys(contracts, ship, address) {
   res = { result: false };
@@ -306,7 +306,7 @@ async function canConfigureKeys(contracts, ship, address) {
  * @param {Number} ship - Ship token.
  * @param {Number} sponsor - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canEscape(contracts, ship, sponsor, address) {
   let asm = await checkActiveShipManager(contracts, ship, address);
@@ -342,7 +342,7 @@ async function canEscape(contracts, ship, sponsor, address) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function checkActiveShipManager(contracts, ship, address) {
   res = { result: false };
@@ -366,7 +366,7 @@ async function checkActiveShipManager(contracts, ship, address) {
  * @param {Number} escapee - Escapee's ship token.
  * @param {Number} sponsor - Sponsor's ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canAdopt(contracts, sponsor, escapee, address) {
   let asm = await checkActiveShipManager(contracts, sponsor, address);
@@ -389,7 +389,7 @@ async function canAdopt(contracts, sponsor, escapee, address) {
  * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} escapee - Escapee's ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canReject(contracts, sponsor, escapee, address) {
   let asm = await checkActiveShipManager(contracts, sponsor, address);
@@ -412,7 +412,7 @@ async function canReject(contracts, sponsor, escapee, address) {
  * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} ship - Ship token.
  * @param {String} address - Target address.
- * @return {Promise => Bool} True if so, false otherwise.
+ * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canDetach(contracts, sponsor, ship, address)
 {
