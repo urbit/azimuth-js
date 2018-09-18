@@ -4,13 +4,13 @@ const assert = require('chai').assert;
 const bip39  = require('bip39');
 const hdkey  = require('hdkey');
 const Web3   = require('web3');
+const ethUtil  = require('ethereumjs-util');
 
 const cjs = require('..');
 const check = cjs.check;
 const constitution = cjs.constitution;
 const ships = cjs.ships;
 const txn = cjs.txn;
-const utils = cjs.utils;
 
 const reasons = require('../resources/reasons.json');
 
@@ -28,24 +28,16 @@ const pair0 = cjs.getKeyPair(hd, path, 0);
 const pair1 = cjs.getKeyPair(hd, path, 1);
 const pair2 = cjs.getKeyPair(hd, path, 2);
 
-const ac0 = utils.addHexPrefix(pair0.address.toString('hex'));
-const ac1 = utils.addHexPrefix(pair1.address.toString('hex'));
-const ac2 = utils.addHexPrefix(pair2.address.toString('hex'));
+const ac0 = ethUtil.addHexPrefix(pair0.address.toString('hex'));
+const ac1 = ethUtil.addHexPrefix(pair1.address.toString('hex'));
+const ac2 = ethUtil.addHexPrefix(pair2.address.toString('hex'));
 
 const pk0 = pair0.privateKey;
 const pk1 = pair1.privateKey;
 const pk2 = pair2.privateKey;
 
-const zaddr = utils.zeroAddress();
+const zaddr = ethUtil.zeroAddress();
 
-// ganache provider
-//
-// NB (jtobin):
-//
-//   HttpProvider is deprecated, but WebsocketsProvider maintains a connection,
-//   and is thus marginally more painful to switch to.
-
-const provider = new Web3.providers.HttpProvider('http://localhost:8545');
 
 // contract addresses
 
@@ -77,6 +69,7 @@ async function firstUnownedGalaxy(contracts) {
 
 function main() {
 
+  let provider  = new Web3.providers.HttpProvider('http://localhost:8545');
   let web3      = new Web3(provider);
   let contracts = cjs.initContracts(web3, contractAddresses);
 
