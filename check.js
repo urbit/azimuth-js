@@ -1,54 +1,101 @@
+/**
+ * Contract checks, assertions, and verifications
+ * @module check
+ */
 
 const constitution = require('./constitution');
-const ships        = require('./ships');
-const polls        = require('./polls');
-const pool         = require('./pool');
-const utils        = require('./utils');
-const reasons      = require('./resources/reasons.json');
+const ships = require('./ships');
+const polls = require('./polls');
+const pool = require('./pool');
+const utils = require('./utils');
+const reasons = require('./resources/reasons.json');
 
 const MAXGALAXY = 255;
-const MAXSTAR   = 65535;
+const MAXSTAR = 65535;
 const MAXPLANET = 4294967295;
 
+/**
+ * Check if something is a ship.
+ * @param {Number} ship - Ship token.
+ * @return {Bool} True if a ship, false otherwise.
+ */
 function isShip(ship) {
   return (typeof ship === 'number' && ship >= 0 && ship <= MAXPLANET);
 }
 
+/**
+ * Check if something is a galaxy.
+ * @param {Number} ship - Ship token.
+ * @return {Bool} True if a galaxy, false otherwise.
+ */
 function isGalaxy(ship) {
   return (typeof ship === 'number' && ship >= 0 && ship <= MAXGALAXY);
 }
 
+/**
+ * Check if something is a star.
+ * @param {Number} ship - Ship token.
+ * @return {Bool} True if a star, false otherwise.
+ */
 function isStar(ship) {
   return (typeof ship === 'number' && ship > MAXGALAXY && ship <= MAXSTAR);
 }
 
+/**
+ * Check if something is a planet.
+ * @param {Number} ship - Ship token.
+ * @return {Bool} True if a planet, false otherwise.
+ */
 function isPlanet(ship) {
   return (typeof ship === 'number' && ship > MAXSTAR && ship <= MAXPLANET);
 }
 
+/**
+ * Check if a ship is a parent of another ship.
+ * @param {Number} ship - Ship token.
+ * @return {Bool} True if a parent, false otherwise.
+ */
 function isParent(ship) {
   return (typeof ship === 'number' && ship > 0 && ship <= MAXSTAR);
 }
 
+/**
+ * Check if a ship is a child of another ship.
+ * @param {Number} ship - Ship token.
+ * @return {Bool} True if a child, false otherwise.
+ */
 function isChild(ship) {
   return (typeof ship === 'number' && ship > MAXGALAXY && ship <= MAXPLANET);
 }
 
-
-// first argument thrown out to keep API consistent
-function pollIsActive(_, poll) {
+/**
+ * Check if a poll is active.
+ * @param {Object} poll - A poll object.
+ * @return {Bool} True if active, false otherwise.
+ */
+function pollIsActive(poll) {
   let now = Math.round(new Date().getTime()/1000);
   let end = poll.start + poll.duration;
   return now < end;
 }
 
-// first argument thrown out to keep API consistent
-function canStartPoll(_, poll) {
+/**
+ * Check if a poll can be started.
+ * @param {Object} poll - A poll object.
+ * @return {Bool} True if so, false otherwise.
+ */
+function canStartPoll(poll) {
   let now   = Math.round(new Date().getTime()/1000);
   let start = poll.start + poll.duration + poll.coolDown;
   return now > start;
 }
 
+/**
+ * Check if a ship has an owner.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} tokenId - Ship token.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function hasOwner(contracts, ship) {
   if (typeof ship === 'object') {
     return !utils.addressEquals(ship.owner, utils.zeroAddress());
@@ -56,10 +103,23 @@ async function hasOwner(contracts, ship) {
   return !await ships.isOwner(contracts, ship, utils.zeroAddress());
 }
 
+/**
+ * Check if an address is the constitution owner.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - Owner's address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function isConstitutionOwner(contracts, address) {
   return utils.addressEquals(address, await constitution.owner(contracts));
 }
 
+/**
+ * Check if an address can create the specified galaxy.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} tokenId - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function canCreateGalaxy(contracts, galaxy, address) {
   let res = { result: false };
   // can't target zero address
@@ -81,6 +141,13 @@ async function canCreateGalaxy(contracts, galaxy, address) {
   return res;
 }
 
+/**
+ * Check if an address can spawn the given ship.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} tokenId - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function canSpawn(contracts, ship, target) {
   let res = { result: false };
 
@@ -89,7 +156,7 @@ async function canSpawn(contracts, ship, target) {
     res.reason = reasons.zero;
     return res;
   }
-  let prefix        = ships.getPrefix(contracts, ship);
+  let prefix        = ships.getPrefix(ship);
   let parentShipObj = await ships.getShip(contracts, prefix);
 
   // must either be the owner of the parentShipObj, or a spawn proxy for it
@@ -128,6 +195,13 @@ async function canSpawn(contracts, ship, target) {
   return res;
 }
 
+/**
+ * Check if an address can set a spawn proxy for the given ship.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} tokenId - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function canSetSpawnProxy(contracts, prefix, address) {
   let res = { result: false };
   let parentShip = await ships.getShip(contracts, prefix);
@@ -145,6 +219,15 @@ async function canSetSpawnProxy(contracts, prefix, address) {
   return res;
 }
 
+/**
+ * Check if the sender address can send the provided ship to the target
+ * address.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} tokenId - Ship token.
+ * @param {String} sender - Sender's address.
+ * @param {String} target - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function canTransferShip(contracts, ship, source, target) {
   let res     = { result: false };
   // prevent burning of ships
@@ -170,6 +253,13 @@ async function canTransferShip(contracts, ship, source, target) {
   return res;
 }
 
+/**
+ * Check if the address can set a transfer proxy for the ship.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} tokenId - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function canSetTransferProxy(contracts, ship, address) {
   let res     = { result: false };
   let shipObj = await ships.getShip(contracts, ship);
@@ -185,6 +275,13 @@ async function canSetTransferProxy(contracts, ship, address) {
   return res;
 }
 
+/**
+ * Check if the address can configure public keys for the ship.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} tokenId - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function canConfigureKeys(contracts, ship, address) {
   res = { result: false };
   // must be able to manage ship
@@ -203,8 +300,16 @@ async function canConfigureKeys(contracts, ship, address) {
   return res;
 }
 
-async function canEscape(contracts, ship, sponsor, owner) {
-  let asm = await checkActiveShipManager(contracts, ship, owner);
+/**
+ * Check if the target address can make a ship escape to the given sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} ship - Ship token.
+ * @param {Number} sponsor - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
+async function canEscape(contracts, ship, sponsor, address) {
+  let asm = await checkActiveShipManager(contracts, ship, address);
   if (!asm.result) {
     return asm;
   }
@@ -232,6 +337,13 @@ async function canEscape(contracts, ship, sponsor, owner) {
   return res;
 }
 
+/**
+ * Check if a ship is active and the target address can manage it.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} ship - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
 async function checkActiveShipManager(contracts, ship, address) {
   res = { result: false };
   if (!await ships.canManage(contracts, ship, address))
@@ -248,8 +360,16 @@ async function checkActiveShipManager(contracts, ship, address) {
   return res;
 }
 
-async function canAdopt(contracts, sponsor, escapee, sponsorAddress) {
-  let asm = await checkActiveShipManager(contracts, sponsor, sponsorAddress);
+/**
+ * Check if the target address can adopt the escapee as its new sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} escapee - Escapee's ship token.
+ * @param {Number} sponsor - Sponsor's ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
+async function canAdopt(contracts, sponsor, escapee, address) {
+  let asm = await checkActiveShipManager(contracts, sponsor, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
@@ -262,8 +382,17 @@ async function canAdopt(contracts, sponsor, escapee, sponsorAddress) {
   return res;
 }
 
-async function canReject(contracts, sponsor, escapee, sponsorAddress) {
-  let asm = await checkActiveShipManager(contracts, sponsor, sponsorAddress);
+/**
+ * Check if the target address can reject the escapee's request to the given
+ * sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} sponsor - Sponsor's ship token.
+ * @param {Number} escapee - Escapee's ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
+async function canReject(contracts, sponsor, escapee, address) {
+  let asm = await checkActiveShipManager(contracts, sponsor, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
@@ -276,9 +405,18 @@ async function canReject(contracts, sponsor, escapee, sponsorAddress) {
   return res;
 }
 
-async function canDetach(contracts, sponsor, ship, shipAddress)
+/**
+ * Check if the target address can detach a ship from its sponsor.
+ * sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} sponsor - Sponsor's ship token.
+ * @param {Number} ship - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise => Bool} True if so, false otherwise.
+ */
+async function canDetach(contracts, sponsor, ship, address)
 {
-  let asm = await checkActiveShipManager(contracts, ship, shipAddress);
+  let asm = await checkActiveShipManager(contracts, ship, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // ship must currently be sponsored by sponsor

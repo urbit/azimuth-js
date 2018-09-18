@@ -1,6 +1,4 @@
 
-const utils = require('../utils')
-
 module.exports.owner = (contracts) => {
   return contracts.constitution.methods.owner().call();
 }
