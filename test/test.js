@@ -279,13 +279,13 @@ function main() {
   describe('#setManager', async function() {
 
     it('generates usable transaction, also configureKeys', async function() {
-      cant(await check.canConfigureKeys(contracts, galaxy, ac1),
+      cant(await check.canManageAndShipIsActive(contracts, galaxy, ac1),
            reasons.permission);
 
       let tx = constitution.setManager(contracts, ac1);
       await sendTransaction(web3, tx, pk0);
 
-      can(await check.canConfigureKeys(contracts, galaxy, ac1));
+      can(await check.canManageAndShipIsActive(contracts, galaxy, ac1));
     });
 
   });
@@ -317,9 +317,9 @@ function main() {
   describe('#cancelEscape', async function() {
 
     it('can only be done by active ship manager', async function() {
-      cant(await check.checkActiveShipManager(contracts, planet1a, ac1),
+      cant(await check.canManageAndShipIsActive(contracts, planet1a, ac1),
            reasons.permission);
-      can(await check.checkActiveShipManager(contracts, star2, ac1));
+      can(await check.canManageAndShipIsActive(contracts, star2, ac1));
     });
 
     it('generates usable transaction', async function() {

@@ -276,31 +276,6 @@ async function canSetTransferProxy(contracts, ship, address) {
 }
 
 /**
- * Check if the address can configure public keys for the ship.
- * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
- * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
- */
-async function canConfigureKeys(contracts, ship, address) {
-  let res = { result: false };
-  // must be able to manage ship
-  if (!await ships.canManage(contracts, ship, address))
-  {
-    res.reason = reasons.permission;
-    return res;
-  }
-  // ship must be active
-  if (!await ships.isActive(contracts, ship))
-  {
-    res.reason = reasons.inactive;
-    return res;
-  }
-  res.result = true;
-  return res;
-}
-
-/**
  * Check if the target address can make a ship escape to the given sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
@@ -309,7 +284,7 @@ async function canConfigureKeys(contracts, ship, address) {
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canEscape(contracts, ship, sponsor, address) {
-  let asm = await checkActiveShipManager(contracts, ship, address);
+  let asm = await canManageAndShipIsActive(contracts, ship, address);
   if (!asm.result) {
     return asm;
   }
@@ -344,7 +319,7 @@ async function canEscape(contracts, ship, sponsor, address) {
  * @param {String} address - Target address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
-async function checkActiveShipManager(contracts, ship, address) {
+async function canManageAndShipIsActive(contracts, ship, address) {
   res = { result: false };
   if (!await ships.canManage(contracts, ship, address))
   {
@@ -369,7 +344,7 @@ async function checkActiveShipManager(contracts, ship, address) {
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canAdopt(contracts, sponsor, escapee, address) {
-  let asm = await checkActiveShipManager(contracts, sponsor, address);
+  let asm = await canManageAndShipIsActive(contracts, sponsor, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
@@ -392,7 +367,7 @@ async function canAdopt(contracts, sponsor, escapee, address) {
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canReject(contracts, sponsor, escapee, address) {
-  let asm = await checkActiveShipManager(contracts, sponsor, address);
+  let asm = await canManageAndShipIsActive(contracts, sponsor, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
@@ -416,7 +391,7 @@ async function canReject(contracts, sponsor, escapee, address) {
  */
 async function canDetach(contracts, sponsor, ship, address)
 {
-  let asm = await checkActiveShipManager(contracts, ship, address);
+  let asm = await canManageAndShipIsActive(contracts, ship, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // ship must currently be sponsored by sponsor
@@ -449,9 +424,8 @@ module.exports = {
   canSetSpawnProxy,
   canTransferShip,
   canSetTransferProxy,
-  canConfigureKeys,
+  canManageAndShipIsActive,
   canEscape,
-  checkActiveShipManager,
   canAdopt,
   canReject,
   canDetach
