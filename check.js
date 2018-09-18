@@ -283,7 +283,7 @@ async function canSetTransferProxy(contracts, ship, address) {
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canConfigureKeys(contracts, ship, address) {
-  res = { result: false };
+  let res = { result: false };
   // must be able to manage ship
   if (!await ships.canManage(contracts, ship, address))
   {
