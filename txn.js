@@ -24,7 +24,7 @@ function renderAsHex(value) {
  * @param {Web3} web3 - a web3 object.
  * @param {Object} tx - an unsigned transaction.
  * @param {Buffer} privateKey - a private key.
- * @return {Promise => Object} A signed transaction object with `messageHash`,
+ * @return {Promise<Object>} A signed transaction object with `messageHash`,
  *  `v`, `r`, `s`, and `rawTransaction` fields.
  */
 async function signTransaction(web3, tx, privateKey) {

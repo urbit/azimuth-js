@@ -11,6 +11,10 @@ Clone the repo, then do a simple:
 
 Older versions are on npm.  This one will show up soon.
 
+## API Reference
+
+[./docs/](./docs/index.md)
+
 ## Usage
 
 Require the library via something like:
@@ -35,10 +39,11 @@ const check = cjs.check;
 const txn = cjs.txn
 ```
 
-The library exposes, as far as is possible, a purely-functional API.  This
-means you'll have to supply your own web3 object whenever dealing with
+The library exposes a purely-functional API.  This means you'll have to supply
+your own state (e.g. web3 instance, contracts instance) whenever dealing with
 transactions and contract initialisation.  For example, when running a fresh
-local Ganache node with the appropriate mnemonic, this will get you set up:
+local Ganache node with the appropriate (see below) mnemonic, this will get you
+set up:
 
 ```javascript
 const Web3 = require('web3');
@@ -57,8 +62,8 @@ let contracts = cjs.initContracts(web3, contractAddresses);
 ```
 
 Note that the web3 object is passed to `cjs.initContracts` explicitly.  Aside
-from contract initialisation, this is only required when sending transactions
-(more below).
+from contract initialisation, this is typically only required when sending
+transactions (more below).
 
 When interacting with the contract APIs, on the other hand, you'll almost
 always have to pass a contracts object explicitly.  For example:
@@ -78,28 +83,27 @@ argument.  Again, this is almost always the case.
 Most of the exposed contracts API consists of functions that, at most, read
 from the Ethereum chain state, returning some result in a Promise.  The only
 exceptions are some of the functions in the 'constitution' contract; for those
-that modify state, the function will return a transaction object, e.g.:
+that modify chain state, the function will return a transaction object, e.g.:
 
 ```javascript
 let tx = constitution.createGalaxy(contracts, galaxy, owner);
 ```
 
 To modify contract state, you'll have to sign ('signTransaction') and send
-('sendSignedTransaction') the transaction explicitly.  The 'sendTransaction'
-function will do both; given the private key, 'pk', of 'owner', the transaction
-can be forwarded like so:
+('sendSignedTransaction') the transaction explicitly.  For example:
 
 ```javascript
-txn.sendTransaction(web3, tx, pk);
+txn.signTransaction(web3, tx, pk).then(stx =>
+  txn.sendSignedTransaction(web3, stx));
 ```
 
 Note again that, when dealing with transactions, a web3 object must be passed
 as the first argument.
 
-Most of the exposed API for the 'ships' contract will work when the function is
+Many of the exposed API for the 'ships' contract will work when the function is
 passed either a ship identifier (i.e. an unsigned integer), meaning the
-computation will be carried out on-chain, or a ship object (i.e. something
-that has been retrieved via 'ships.getShip'), meaning the computation will be
+computation will be carried out on-chain, or a ship object (i.e. something that
+has been retrieved via 'ships.getShip'), meaning the computation will be
 carried out purely, simply by reference to the ship object.  The result is
 wrapped in a Promise, in either case.
 

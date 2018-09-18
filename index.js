@@ -1,3 +1,8 @@
+/**
+ * constitution-js
+ * @module index
+ */
+
 'use strict';
 
 const accounts = require('./accounts');
@@ -9,8 +14,6 @@ const pool = require('./pool');
 const ships = require('./ships');
 const txn = require('./txn');
 const utils = require('./utils');
-
-// account
 
 const initContracts = contracts.initContracts;
 
