@@ -1,465 +1,403 @@
 'use strict';
 
-var bip39 = require('bip39');
-var hdkey = require('hdkey');
-var expect = require('chai').expect;
-var constitution = require('../index');
+const assert = require('chai').assert;
+const bip39  = require('bip39');
+const hdkey  = require('hdkey');
+const Web3   = require('web3');
+const ethUtil  = require('ethereumjs-util');
 
-var ethAddress;
-var signedTx = '';
+const cjs = require('..');
+const check = cjs.check;
+const constitution = cjs.constitution;
+const ships = cjs.ships;
+const txn = cjs.txn;
 
-describe('#formatShipName', function() {
-  var emptyShipName = '';
-  var oneCharacterShipName = 'z';
-  var twoCharacterShipName = 'ab';
-  var threeCharacterShipNameWithTilde = '~cd';
-  var threeCharacterShipNameWithoutTilde = 'efg';
+const reasons = require('../resources/reasons.json');
 
-  it('return an empty ship name unchanged', function() {
-    var result = constitution.formatShipName(emptyShipName);
-    expect(result).to.equal(emptyShipName);
+// accounts
+
+const mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
+
+const seed = bip39.mnemonicToSeed(mnemonic);
+
+const hd = hdkey.fromMasterSeed(seed);
+
+const path = "m/44'/60'/0'/0";
+
+const pair0 = cjs.getKeyPair(hd, path, 0);
+const pair1 = cjs.getKeyPair(hd, path, 1);
+const pair2 = cjs.getKeyPair(hd, path, 2);
+
+const ac0 = ethUtil.addHexPrefix(pair0.address.toString('hex'));
+const ac1 = ethUtil.addHexPrefix(pair1.address.toString('hex'));
+const ac2 = ethUtil.addHexPrefix(pair2.address.toString('hex'));
+
+const pk0 = pair0.privateKey;
+const pk1 = pair1.privateKey;
+const pk2 = pair2.privateKey;
+
+const zaddr = ethUtil.zeroAddress();
+
+// contract addresses
+
+const contractAddresses = {
+    constitution: '0x56db68f29203ff44a803faa2404a44ecbb7a7480',
+    ships:        '0x863d9c2e5c4c133596cfac29d55255f0d0f86381',
+    polls:        '0x935452c45eda2958976a429c9733c40302995efd',
+    pool:         '0xb71c0b6cee1bcae56dfe95cd9d3e41ddd7eafc43'
+  }
+
+// helpers
+
+function can(res) {
+  return assert.isTrue(res.result, res.reason);
+}
+
+function cant(res, reason) {
+  assert.isFalse(res.result);
+  return assert.equal(res.reason, reason);
+}
+
+function renderAsHex(value) {
+  return ethUtil.addHexPrefix(value.toString('hex'));
+}
+
+async function firstUnownedGalaxy(contracts) {
+  let galaxy = 0;
+  while (await check.hasOwner(contracts, galaxy)) galaxy++;
+  return galaxy;
+}
+
+async function sendTransaction(web3, tx, privateKey) {
+  if (!ethUtil.isValidPrivate(privateKey)) {
+    throw "Invalid key";
+  }
+
+  let addr = ethUtil.privateToAddress(privateKey);
+
+  // NB (jtobin):
+  //
+  //   Explicitly set the tx.from field to whoever owns the supplied private
+  //   key.  We don't want to depend on the state of web3.eth.defaultAccount,
+  //   implicitly or otherwise, ever.
+
+  tx.from = renderAsHex(addr);
+
+  let stx  = await txn.signTransaction(web3, tx, privateKey);
+  return txn.sendSignedTransaction(web3, stx);
+}
+
+
+// tests
+
+function main() {
+
+  let provider  = new Web3.providers.HttpProvider('http://localhost:8545');
+  let web3      = new Web3(provider);
+  let contracts = cjs.initContracts(web3, contractAddresses);
+
+  let galaxy       = 0;
+  let galaxyPlanet = 65536;
+  let star1        = 256;
+  let star2        = 512;
+  let planet1a     = 65792;
+  let planet1b     = 131328;
+
+  it('prepare the environment', async function() {
+    galaxy = await firstUnownedGalaxy(contracts);
+    console.log('using galaxy ' + galaxy + '/255')
+
+    star1    = star1 + galaxy;
+    star2    = star2 + galaxy;
+    planet1a = planet1a + galaxy;
+    planet1b = planet1b + galaxy;
+
+    let tx = constitution.setManager(contracts, zaddr);
+    await sendTransaction(web3, tx, pk0);
   });
 
-  it('return a ship name of less than two characters unchanged', function() {
-    var result = constitution.formatShipName(oneCharacterShipName);
-    expect(result).to.equal(oneCharacterShipName);
+  describe('#createGalaxy', async function() {
+
+    it('can only be done by contract owner', async function() {
+      can(await check.canCreateGalaxy(contracts, galaxy, ac0));
+      cant(await check.canCreateGalaxy(contracts, galaxy, ac1),
+           reasons.permission);
+    });
+
+    it('prevents targeting the zero address', async function() {
+      cant(await check.canCreateGalaxy(contracts, galaxy, zaddr), reasons.zero);
+    });
+
+    it('generates usable transaction', async function() {
+      assert.isFalse(await ships.isOwner(contracts, galaxy, ac0));
+
+      let tx = constitution.createGalaxy(contracts, galaxy, ac0);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.isOwner(contracts, galaxy, ac0));
+    });
+
+    it('prevents creating existing galaxies', async function() {
+      cant(await check.canCreateGalaxy(contracts, galaxy, ac0), reasons.spawned);
+    });
+
   });
 
-  it('append a tilde to a ship name with two characters when the first is not a tilde', function() {
-    var result = constitution.formatShipName(twoCharacterShipName);
-    expect(result).to.equal('~' + twoCharacterShipName);
+  describe('#setManager', async function() {
+
+    it('generates usable transaction', async function() {
+      assert.isFalse(await ships.canManage(contracts, galaxy, ac2));
+
+      let tx = constitution.setManager(contracts, ac2);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.canManage(contracts, galaxy, ac2));
+    });
+
   });
 
-  it('return a ship name with three characters unchanged when the first is a tilde', function() {
-    var result = constitution.formatShipName(threeCharacterShipNameWithTilde);
-    expect(result).to.equal(threeCharacterShipNameWithTilde);
+  describe('#spawn', async function() {
+
+    it('cannot spawn from unbooted ship', async function() {
+      cant(await check.canSpawn(contracts, star1, ac0), reasons.spawnPrefix);
+    });
+
+    it('cannot spawn if not parent owner (or spawn proxy)', async function() {
+      cant(await check.canSpawn(contracts, star1, ac1), reasons.permission);
+    });
+
+    it('cannot spawn galaxy planets', async function() {
+      cant(await check.canSpawn(contracts, galaxyPlanet, ac0),
+           reasons.spawnClass);
+    });
+
+    it('can spawn child to self, directly', async function() {
+      let tx = constitution.configureKeys(
+                 contracts, galaxy, '0xaa', '0xbb', 1, false);
+      await sendTransaction(web3, tx, pk0);
+
+      can(await check.canSpawn(contracts, star1, ac0));
+    });
+
+    it('generates usable transaction', async function() {
+      assert.isFalse(await ships.isOwner(contracts, star1, ac0));
+      assert.isFalse(await ships.isActive(contracts, star1));
+
+      let tx = constitution.spawn(contracts, star1, ac0);
+      await sendTransaction(web3, tx, pk0);
+
+      tx = await constitution.configureKeys(
+             contracts, star1, '0xaa', '0xbb', 1, false);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.isOwner(contracts, star1, ac0));
+      assert.isTrue(await ships.isActive(contracts, star1));
+      assert.isFalse(await ships.isOwner(contracts, star2, ac0));
+      assert.isFalse(await ships.isActive(contracts, star2));
+
+      tx = await constitution.spawn(contracts, star2, ac1);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.isOwner(contracts, star2, ac0));
+      assert.isFalse(await ships.isActive(contracts, star2));
+      assert.isTrue(await ships.isTransferProxy(contracts, star2, ac1));
+    });
+
+    it('prevents spawning spawned ships', async function() {
+      cant(await check.canSpawn(contracts, star2, ac0), reasons.spawned);
+    });
+
+    it('prevents targeting the zero address', async function() {
+      cant(await check.canSpawn(contracts, star2, zaddr), reasons.zero);
+    });
+
   });
 
-  it('append a tilde to a ship name with three characters when the first is not a tilde', function() {
-    var result = constitution.formatShipName(threeCharacterShipNameWithoutTilde);
-    expect(result).to.equal('~' + threeCharacterShipNameWithoutTilde);
-  });
-});
+  describe('#setSpawnProxy', async function() {
 
-describe('#toShipName', function() {
-  var validGalaxyAddress = 118;
-  var validStarAddress = 4788;
-  var validPlanetAddress = 20054784;
+    it('can only be done by owner or operator', async function() {
+      cant(await check.canSetSpawnProxy(contracts, galaxy, ac1),
+           reasons.permission);
+      can(await check.canSetSpawnProxy(contracts, galaxy, ac0));
+    });
 
-  it('get galaxy name from valid galaxy address', function() {
-    var result = constitution.toShipName(validGalaxyAddress);
-    expect(result).to.equal('tex');
-  });
+    it('generates usable transaction', async function() {
+      assert.isFalse(await ships.isSpawnProxy(contracts, galaxy, ac1));
 
-  it('get star name from valid star address', function() {
-    var result = constitution.toShipName(validStarAddress);
-    expect(result).to.equal('doplur');
+      let tx = constitution.setSpawnProxy(contracts, galaxy, ac1);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.isSpawnProxy(contracts, galaxy, ac1));
+    });
+
   });
 
-  it('get planet name from valid planet address', function() {
-    var result = constitution.toShipName(validPlanetAddress);
-    expect(result).to.equal('mirfet-hocbyt');
+  describe('#transferShip', async function() {
+
+    it('can only be done by owner/operator/transfer proxy', async function(){
+      cant(await check.canTransferShip(contracts, star2, ac2, ac1),
+           reasons.permission);
+      can(await check.canTransferShip(contracts, star2, ac1, ac1));
+      can(await check.canTransferShip(contracts, star2, ac0, ac1));
+    });
+
+    it('prevents targeting the zero address', async function() {
+      cant(await check.canTransferShip(contracts, star2, ac0, zaddr),
+           reasons.zero);
+    });
+
+    it('generates usable transaction', async function() {
+      assert.isFalse(await ships.isOwner(contracts, star2, ac1));
+
+      let tx = constitution.transferShip(contracts, star2, ac1);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.isOwner(contracts, star2, ac1));
+    });
+
   });
-});
 
-describe('#create a galaxy and retrieve owned ships', function() {
+  describe('#setTransferProxy', async function() {
 
-  var galaxyAddress;
-  var shipArr;
-  var serverURL = 'http://localhost:8545';
-  var path = "m/44'/60'/0'/0";
+    it('can only be done by owner', async function() {
+      cant(await check.canSetTransferProxy(contracts, galaxy, ac1),
+           reasons.permission);
+      can(await check.canSetTransferProxy(contracts, galaxy, ac0));
+    });
 
-  it('configure web3', function(done) {
-    constitution.setServerUrl(serverURL);
-    var mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
-    var masterKeys = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
-    console.log()
-    constitution.setPrivateKey(masterKeys, path, 0, function(res) {
-      if (!res.error) {
-        if (res.data === '0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d') {
-          ethAddress = res.data;
-          done();
-        }
-      }
+    it('generates usable transaction', async function() {
+      assert.isFalse(await ships.isTransferProxy(contracts, galaxy, ac1));
+
+      let tx = constitution.setTransferProxy(contracts, galaxy, ac1);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.isTransferProxy(contracts, galaxy, ac1));
+    });
+
+  });
+
+  describe('#setManager', async function() {
+
+    it('generates usable transaction, also configureKeys', async function() {
+      cant(await check.canConfigureKeys(contracts, galaxy, ac1),
+           reasons.permission);
+
+      let tx = constitution.setManager(contracts, ac1);
+      await sendTransaction(web3, tx, pk0);
+
+      can(await check.canConfigureKeys(contracts, galaxy, ac1));
+    });
+
+  });
+
+  describe('#escape', async function() {
+
+    it('prevents invalid sponsors', async function() {
+      cant(await check.canEscape(contracts, planet1a, star1, ac1),
+           reasons.permission);
+      cant(await check.canEscape(contracts, star1, planet1a, ac1),
+           reasons.sponsor);
+      cant(await check.canEscape(contracts, star1, galaxy + 1, ac1),
+           reasons.sponsorBoot);
+      can(await check.canEscape(contracts, star1, galaxy, ac1));
+    });
+
+    it('generates usable transaction', async function() {
+      assert.isFalse(await ships.isEscaping(contracts, star2));
+      can(await check.canEscape(contracts, star2, star1, ac1));
+
+      let tx = constitution.escape(contracts, star2, star1);
+      await sendTransaction(web3, tx, pk1);
+
+      assert.isTrue(await ships.isEscaping(contracts, star2));
+    });
+
+  });
+
+  describe('#cancelEscape', async function() {
+
+    it('can only be done by active ship manager', async function() {
+      cant(await check.checkActiveShipManager(contracts, planet1a, ac1),
+           reasons.permission);
+      can(await check.checkActiveShipManager(contracts, star2, ac1));
+    });
+
+    it('generates usable transaction', async function() {
+      let tx = constitution.cancelEscape(contracts, star2);
+      await sendTransaction(web3, tx, pk1);
+
+      assert.isFalse(await ships.isEscaping(contracts, star2));
+    });
+
+  });
+
+  describe('#adopt', async function() {
+
+    it('can only be done for actual escapees', async function() {
+      cant(await check.canAdopt(contracts, star1, star2, ac1),
+           reasons.notEscape);
+
+      let tx = constitution.escape(contracts, star2, star1);
+      await sendTransaction(web3, tx, pk1);
+
+      can(await check.canAdopt(contracts, star1, star2, ac1));
+    });
+
+    it('generates usable transaction', async function() {
+      let sponsor = (await ships.getShip(contracts, star2)).sponsor;
+      assert.notEqual(sponsor, star1);
+
+      let tx = constitution.adopt(contracts, star1, star2);
+      await sendTransaction(web3, tx, pk1);
+
+      sponsor = (await ships.getShip(contracts, star2)).sponsor;
+      assert.equal(sponsor, star1);
+    });
+
+  });
+
+  describe('#reject', async function() {
+
+    it('can only be done for actual escapees', async function() {
+      cant(await check.canReject(contracts, galaxy, star2, ac1),
+           reasons.notEscape);
+
+      let tx = constitution.escape(contracts, star2, galaxy);
+      await sendTransaction(web3, tx, pk1);
+
+      can(await check.canReject(contracts, galaxy, star2, ac1));
+    });
+
+    it('generates usable transaction', async function() {
+      assert.isTrue(await ships.isEscaping(contracts, star2));
+
+      let tx = constitution.reject(contracts, galaxy, star2);
+      await sendTransaction(web3, tx, pk1);
+
+      assert.isFalse(await ships.isEscaping(contracts, star2));
     });
   });
 
-  it('retrieve owned ships', function(done) {
-    function randomIntWithInterval(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
-    };
-    constitution.readOwnedShipsStatus(ethAddress, function(res) {
-      if (!res.error) {
-        shipArr = Object.keys(res.data);
-        var makeRandomGalaxyAddress = function() {
-          galaxyAddress = randomIntWithInterval(2,255);
-          if (shipArr.indexOf(galaxyAddress) > -1) {
-            makeRandomGalaxyAddress();
-          } else { done(); }
-        }
-        makeRandomGalaxyAddress();
-      }
+  describe('#detach', async function() {
+
+    it('can only be done by the sponsor', async function() {
+      cant(await check.canDetach(contracts, star2, star2, ac1),
+           reasons.notSponsor);
+      can(await check.canDetach(contracts, star1, star2, ac1));
     });
+
+    it('generates usable transaction', async function() {
+      assert.isTrue((await ships.getShip(contracts, star2)).hasSponsor);
+
+      let tx = constitution.detach(contracts, star1, star2);
+      await sendTransaction(web3, tx, pk1);
+
+      assert.isFalse((await ships.getShip(contracts, star2)).hasSponsor);
+    });
+
   });
 
-  it('create a signed tx that creates a galaxy', function(done) {
-    constitution.doCreateGalaxy(galaxyAddress, ethAddress, function(res) {
-      if (!res.error) {
-        signedTx = res.signedTx;
-        done();
-      }
-    });
-  });
+}
 
-  it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(res) {
-      if (!res.error) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
+main();
 
-  it('retrieve owned ships to verify new galaxy exists', function(done) {
-    constitution.readOwnedShipsStatus(ethAddress, function(res) {
-      if (!res.error) {
-        var keyArr = Object.keys(res.data);
-        var idx = keyArr.indexOf(galaxyAddress.toString());
-        if (idx > -1) { done(); }
-      }
-    });
-  });
-});
-
-describe('#Spawn two stars, set transfer proxy to the pool, deposit, read balance, withdraw', function() {
-
-  var poolAddress = constitution.contractDetails.pool['address'];
-  var sparksBalance = 0;
-  var poolAssets = 0;
-  var starAddress;
-
-  it('read the starting balance of Sparks held by the wallet', function(done) {
-    constitution.readBalance(ethAddress, function(res) {
-      if (!res.error) {
-        sparksBalance = res.data;
-        done();
-      }
-    });
-  });
-
-  it('read the starting pool assets', function(done) {
-    constitution.readPoolAssets(function(res) {
-      if (!res.error) {
-        poolAssets = res.data.length;
-        done();
-      }
-    });
-  });
-
-  var tests = [
-    { arg: constitution.getSpawnCandidate(0) },
-    { arg: constitution.getSpawnCandidate(0) }
-  ];
-
-  tests.forEach(function(test) {
-
-    it('spawn the star', function(done) {
-      starAddress = test.arg;
-      constitution.doSpawn(starAddress, ethAddress, function(res) {
-        if (!res.error) {
-          signedTx = res.signedTx;
-          done();
-        }
-      });
-    });
-
-    it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(res) {
-        if (!res.error) {
-          var signedTx = '';
-          done();
-        }
-      });
-    });
-
-    it('retrieve owned ships to verify new star', function(done) {
-      constitution.readOwnedShipsStatus(ethAddress, function(res) {
-        if (!res.error) {
-          var keyArr = Object.keys(res.data);
-          var idx = keyArr.indexOf(starAddress.toString());
-          if (idx > -1) { done(); } 
-        }
-      });
-    });
-
-    it('set the pool contract as the transfer proxy for the new star', function(done) {
-      constitution.doSetTransferProxy(starAddress, poolAddress, function(res) {
-        if (!res.error) {
-          signedTx = res.signedTx;
-          done();
-        }
-      });
-    });
-
-    it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(res) {
-        if (!res.error) {
-          var signedTx = '';
-          done();
-        }
-      });
-    });
-
-    it('deposit the star', function(done) {
-      constitution.doDeposit(starAddress, poolAddress, function(res) {
-        if (!res.error) {
-          signedTx = res.signedTx;
-          done();
-        }
-      });
-    });
-
-    it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(res) {
-        if (!res.error) {
-          var signedTx = '';
-          done();
-        }
-      });
-    });
-
-    it('retrieve owned ships to verify star has been deposited', function(done) {
-      constitution.readOwnedShipsStatus(ethAddress, function(res) {
-        if (!res.error) {
-          var keyArr = Object.keys(res.data);
-          var idx = keyArr.indexOf(starAddress.toString());
-          if (idx === -1) { done(); }
-        }
-      });
-    });
-
-    it('verify the new balance of Sparks held by the wallet is 1 more than above', function(done) {
-      constitution.readBalance(ethAddress, function(res) {
-        if (!res.error) {
-          if (res.data === sparksBalance + 1 || res.data === sparksBalance + 2) { done(); } 
-        }
-      });
-    });
-  });
-
-  it('verify pool assets are 2 more than above', function(done) {
-    constitution.readPoolAssets(function(res) {
-      if (!res.error) {
-        if (res.data.length === poolAssets + 2) { done(); }
-      }
-    });
-  });
-
-  it('withdraw the star from the pool', function(done) {
-    constitution.doWithdraw(starAddress, poolAddress, function(res) {
-      if (!res.error) {
-        signedTx = res.signedTx;
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(res) {
-      if (!res.error) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('retrieve owned ships to verify star is back', function(done) {
-    constitution.readOwnedShipsStatus(ethAddress, function(res) {
-      if (!res.error) {
-        var keyArr = Object.keys(res.data);
-        var idx = keyArr.indexOf(starAddress.toString());
-        if (idx > -1) { done(); }
-      }
-    });
-  });
-});
-
-describe('#Spawn a star, configure keys, spawn two planets from it', function() {
-
-  var starAddress;
-  var planetAddress;
-
-  it('spawn a star', function(done) {
-    starAddress = constitution.getSpawnCandidate(0);
-    constitution.doSpawn(starAddress, ethAddress, function(res) {
-      if (!res.error) {
-        signedTx = res.signedTx;
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(res) {
-      if (!res.error) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('configure star\'s keys', function(done) {
-    constitution.doConfigureKeys(starAddress, 123, 456, 1, false, function(res) {
-      if (!res.error) {
-        signedTx = res.signedTx;
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(res) {
-      if (!res.error) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  var planetTests = [
-    { },
-    { }
-  ];
-
-  planetTests.forEach(function(planetData) {
-
-    it('spawn a planet', function(done) {
-      planetAddress = constitution.getSpawnCandidate(starAddress);
-      constitution.doSpawn(planetAddress, ethAddress, function(res) {
-        if (!res.error) {
-          signedTx = res.signedTx;
-          done();
-        }
-      });
-    });
-
-    it('send the signed tx', function(done) {
-      constitution.sendTransaction(signedTx, function(res) {
-        if (!res.error) {
-          var signedTx = '';
-          done();
-        }
-      });
-    });
-  });
-});
-
-describe('#spawn star, approve transfer to other account, switch account, complete safe transfer', function() {
-
-  var otherAccount = "0xD53208cf45fC9bd7938B200BFf8814A26146688f";
-  var starAddress;
-  var path = "m/44'/60'/0'/0";
-
-  it('spawn a star', function(done) {
-    starAddress = constitution.getSpawnCandidate(0);
-    constitution.doSpawn(starAddress, ethAddress, function(res) {
-      if (!res.error) {
-        signedTx = res.signedTx;
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(res) {
-      if (!res.error) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('approve transfer', function(done) {
-    constitution.doApprove(otherAccount, starAddress, function(res) {
-      if (!res.error) {
-        signedTx = res.signedTx;
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(res) {
-      if (!res.error) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('retrieve pending transfers', function(done) {
-    constitution.readTransferringFor(otherAccount, function(res) {
-      if (!res.error) {
-        done();
-      }
-    });
-  });
-
-  it('switch account', function(done) {
-    constitution.setDefaultAccount(path, 1, function(res) {
-      if (!res.error) {
-        if (res.data === otherAccount) {
-          done();
-        }
-      }
-    });
-  });
-
-  it('do transfer', function(done) {
-    constitution.doSafeTransferFrom(ethAddress, otherAccount, starAddress, function(res) {
-      if (!res.error) {
-        signedTx = res.signedTx;
-        done();
-      }
-    });
-  });
-
-  it('send the signed tx', function(done) {
-    constitution.sendTransaction(signedTx, function(res) {
-      if (!res.error) {
-        var signedTx = '';
-        done();
-      }
-    });
-  });
-
-  it('retrieve owned ships to verify transferred star exists in list', function(done) {
-    constitution.readOwnedShipsStatus(otherAccount, function(res) {
-      if (!res.error) {
-        var keyArr = Object.keys(res.data);
-        var idx = keyArr.indexOf(starAddress.toString());
-        if (idx > -1) { done(); } 
-      }
-    });
-  });
-});
-
-describe('#set offline true, retrieve a signed transaction that creates a galaxy', function() {
-
-  var galaxyAddress = 118;  // will fail if galaxy creation test above randomly chose 118
-  var ethAddress = '0x6DEfFb0caFDB11D175F123F6891AA64F01c24F7d';
-  var offlineData = {
-      gas: 232180,
-      gasPrice: 20000000000,
-      nonce: 45,
-    }
-
-  it('create a signed tx that creates a galaxy', function(done) {
-    constitution.setOffline(true);
-    constitution.doCreateGalaxy(galaxyAddress, ethAddress, function(res) {
-      if (!res.error) {
-        done();
-      }
-    }, offlineData);
-  });
-});
