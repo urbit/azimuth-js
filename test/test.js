@@ -38,7 +38,6 @@ const pk2 = pair2.privateKey;
 
 const zaddr = ethUtil.zeroAddress();
 
-
 // contract addresses
 
 const contractAddresses = {
@@ -59,11 +58,35 @@ function cant(res, reason) {
   return assert.equal(res.reason, reason);
 }
 
+function renderAsHex(value) {
+  return ethUtil.addHexPrefix(value.toString('hex'));
+}
+
 async function firstUnownedGalaxy(contracts) {
   let galaxy = 0;
   while (await check.hasOwner(contracts, galaxy)) galaxy++;
   return galaxy;
 }
+
+async function sendTransaction(web3, tx, privateKey) {
+  if (!ethUtil.isValidPrivate(privateKey)) {
+    throw "Invalid key";
+  }
+
+  let addr = ethUtil.privateToAddress(privateKey);
+
+  // NB (jtobin):
+  //
+  //   Explicitly set the tx.from field to whoever owns the supplied private
+  //   key.  We don't want to depend on the state of web3.eth.defaultAccount,
+  //   implicitly or otherwise, ever.
+
+  tx.from = renderAsHex(addr);
+
+  let stx  = await txn.signTransaction(web3, tx, privateKey);
+  return txn.sendSignedTransaction(web3, stx);
+}
+
 
 // tests
 
@@ -90,7 +113,7 @@ function main() {
     planet1b = planet1b + galaxy;
 
     let tx = constitution.setManager(contracts, zaddr);
-    await txn.sendTransaction(web3, tx, pk0);
+    await sendTransaction(web3, tx, pk0);
   });
 
   describe('#createGalaxy', async function() {
@@ -109,7 +132,7 @@ function main() {
       assert.isFalse(await ships.isOwner(contracts, galaxy, ac0));
 
       let tx = constitution.createGalaxy(contracts, galaxy, ac0);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isOwner(contracts, galaxy, ac0));
     });
@@ -126,7 +149,7 @@ function main() {
       assert.isFalse(await ships.canManage(contracts, galaxy, ac2));
 
       let tx = constitution.setManager(contracts, ac2);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.canManage(contracts, galaxy, ac2));
     });
@@ -151,7 +174,7 @@ function main() {
     it('can spawn child to self, directly', async function() {
       let tx = constitution.configureKeys(
                  contracts, galaxy, '0xaa', '0xbb', 1, false);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       can(await check.canSpawn(contracts, star1, ac0));
     });
@@ -161,11 +184,11 @@ function main() {
       assert.isFalse(await ships.isActive(contracts, star1));
 
       let tx = constitution.spawn(contracts, star1, ac0);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       tx = await constitution.configureKeys(
              contracts, star1, '0xaa', '0xbb', 1, false);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isOwner(contracts, star1, ac0));
       assert.isTrue(await ships.isActive(contracts, star1));
@@ -173,7 +196,7 @@ function main() {
       assert.isFalse(await ships.isActive(contracts, star2));
 
       tx = await constitution.spawn(contracts, star2, ac1);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isOwner(contracts, star2, ac0));
       assert.isFalse(await ships.isActive(contracts, star2));
@@ -202,7 +225,7 @@ function main() {
       assert.isFalse(await ships.isSpawnProxy(contracts, galaxy, ac1));
 
       let tx = constitution.setSpawnProxy(contracts, galaxy, ac1);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isSpawnProxy(contracts, galaxy, ac1));
     });
@@ -227,7 +250,7 @@ function main() {
       assert.isFalse(await ships.isOwner(contracts, star2, ac1));
 
       let tx = constitution.transferShip(contracts, star2, ac1);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isOwner(contracts, star2, ac1));
     });
@@ -246,7 +269,7 @@ function main() {
       assert.isFalse(await ships.isTransferProxy(contracts, galaxy, ac1));
 
       let tx = constitution.setTransferProxy(contracts, galaxy, ac1);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isTransferProxy(contracts, galaxy, ac1));
     });
@@ -260,7 +283,7 @@ function main() {
            reasons.permission);
 
       let tx = constitution.setManager(contracts, ac1);
-      await txn.sendTransaction(web3, tx, pk0);
+      await sendTransaction(web3, tx, pk0);
 
       can(await check.canConfigureKeys(contracts, galaxy, ac1));
     });
@@ -284,7 +307,7 @@ function main() {
       can(await check.canEscape(contracts, star2, star1, ac1));
 
       let tx = constitution.escape(contracts, star2, star1);
-      await txn.sendTransaction(web3, tx, pk1);
+      await sendTransaction(web3, tx, pk1);
 
       assert.isTrue(await ships.isEscaping(contracts, star2));
     });
@@ -301,7 +324,7 @@ function main() {
 
     it('generates usable transaction', async function() {
       let tx = constitution.cancelEscape(contracts, star2);
-      await txn.sendTransaction(web3, tx, pk1);
+      await sendTransaction(web3, tx, pk1);
 
       assert.isFalse(await ships.isEscaping(contracts, star2));
     });
@@ -315,7 +338,7 @@ function main() {
            reasons.notEscape);
 
       let tx = constitution.escape(contracts, star2, star1);
-      await txn.sendTransaction(web3, tx, pk1);
+      await sendTransaction(web3, tx, pk1);
 
       can(await check.canAdopt(contracts, star1, star2, ac1));
     });
@@ -325,7 +348,7 @@ function main() {
       assert.notEqual(sponsor, star1);
 
       let tx = constitution.adopt(contracts, star1, star2);
-      await txn.sendTransaction(web3, tx, pk1);
+      await sendTransaction(web3, tx, pk1);
 
       sponsor = (await ships.getShip(contracts, star2)).sponsor;
       assert.equal(sponsor, star1);
@@ -340,7 +363,7 @@ function main() {
            reasons.notEscape);
 
       let tx = constitution.escape(contracts, star2, galaxy);
-      await txn.sendTransaction(web3, tx, pk1);
+      await sendTransaction(web3, tx, pk1);
 
       can(await check.canReject(contracts, galaxy, star2, ac1));
     });
@@ -349,7 +372,7 @@ function main() {
       assert.isTrue(await ships.isEscaping(contracts, star2));
 
       let tx = constitution.reject(contracts, galaxy, star2);
-      await txn.sendTransaction(web3, tx, pk1);
+      await sendTransaction(web3, tx, pk1);
 
       assert.isFalse(await ships.isEscaping(contracts, star2));
     });
@@ -367,7 +390,7 @@ function main() {
       assert.isTrue((await ships.getShip(contracts, star2)).hasSponsor);
 
       let tx = constitution.detach(contracts, star1, star2);
-      await txn.sendTransaction(web3, tx, pk1);
+      await sendTransaction(web3, tx, pk1);
 
       assert.isFalse((await ships.getShip(contracts, star2)).hasSponsor);
     });
