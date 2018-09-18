@@ -284,7 +284,7 @@ async function canSetTransferProxy(contracts, ship, address) {
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canEscape(contracts, ship, sponsor, address) {
-  let asm = await canManageAndShipIsActive(contracts, ship, address);
+  let asm = await canConfigureKeys(contracts, ship, address);
   if (!asm.result) {
     return asm;
   }
@@ -319,7 +319,7 @@ async function canEscape(contracts, ship, sponsor, address) {
  * @param {String} address - Target address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
-async function canManageAndShipIsActive(contracts, ship, address) {
+async function canConfigureKeys(contracts, ship, address) {
   res = { result: false };
   if (!await ships.canManage(contracts, ship, address))
   {
@@ -344,7 +344,7 @@ async function canManageAndShipIsActive(contracts, ship, address) {
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canAdopt(contracts, sponsor, escapee, address) {
-  let asm = await canManageAndShipIsActive(contracts, sponsor, address);
+  let asm = await canConfigureKeys(contracts, sponsor, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
@@ -367,7 +367,7 @@ async function canAdopt(contracts, sponsor, escapee, address) {
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 async function canReject(contracts, sponsor, escapee, address) {
-  let asm = await canManageAndShipIsActive(contracts, sponsor, address);
+  let asm = await canConfigureKeys(contracts, sponsor, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // escapee must currently be trying to escape to sponsor
@@ -391,7 +391,7 @@ async function canReject(contracts, sponsor, escapee, address) {
  */
 async function canDetach(contracts, sponsor, ship, address)
 {
-  let asm = await canManageAndShipIsActive(contracts, ship, address);
+  let asm = await canConfigureKeys(contracts, ship, address);
   if (!asm.result) return asm;
   let res = { result: false };
   // ship must currently be sponsored by sponsor
@@ -424,7 +424,7 @@ module.exports = {
   canSetSpawnProxy,
   canTransferShip,
   canSetTransferProxy,
-  canManageAndShipIsActive,
+  canConfigureKeys,
   canEscape,
   canAdopt,
   canReject,
