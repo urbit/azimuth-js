@@ -317,9 +317,9 @@ function main() {
   describe('#cancelEscape', async function() {
 
     it('can only be done by active ship manager', async function() {
-      cant(await check.canConfigureKeys(contracts, planet1a, ac1),
+      cant(await check.checkActiveShipManager(contracts, planet1a, ac1),
            reasons.permission);
-      can(await check.canConfigureKeys(contracts, star2, ac1));
+      can(await check.checkActiveShipManager(contracts, star2, ac1));
     });
 
     it('generates usable transaction', async function() {
