@@ -3,6 +3,7 @@
  * @module check
  */
 
+const abis = require('./resources/abis.json');
 const constitution = require('./constitution');
 const ships = require('./ships');
 const polls = require('./polls');
@@ -415,8 +416,183 @@ async function canDetach(contracts, sponsor, ship, address)
   return res;
 }
 
+/**
+ * Check if a ship is active and an address can vote for it.
+ * sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} ship - Ship token.
+ * @param {String} voter - Target address.
+ * @return {Promise<Bool>} True if so, false otherwise.
+ */
+async function checkActiveShipVoter(contracts, galaxy, voter) {
+  let res = { result: false }
+  if (ships.getShipClass(galaxy) !== utils.ShipClass.Galaxy)
+  {
+    res.reason = reasons.notGalaxy;
+    return res;
+  }
+  if (!await ships.canVoteAs(contracts, galaxy, voter))
+  {
+    res.reason = reasons.permission;
+    return res;
+  }
+  if (!await ships.isActive(contracts, galaxy))
+  {
+    res.reason = reasons.inactive;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
 
+/**
+ * Check if a target address and ship can initiate the given proposal.
+ * sponsor.
+ * @param {Object} web3 - A web3 object.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Object} proposal - A proposal.
+ * @param {String} address - Target address.
+ * @return {Promise<Bool>} True if so, false otherwise.
+ */
+async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, address) {
+  let asv = await checkActiveShipVoter(contracts, galaxy, address);
+  if (!asv.result) return asv;
+  let res = { result: false};
+  let prop = new web3.eth.Contract(abis.constitution, proposal);
+  let expected;
+  try {
+    expected = await prop.methods.previousConstitution().call()
+  } catch(e) {
+    expected = false;
+  }
+  if (utils.addressEquals(contracts.constitution._address, expected))
+  {
+    res.reason = reasons.upgradePath;
+    return res;
+  }
+  if (await polls.constitutionHasAchievedMajority(contracts, proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  if (!canStartPoll(await polls.getConstitutionPoll(contracts, proposal)))
+  {
+    res.reason = reasons.pollTime;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
 
+/**
+ * Check if a target address and ship can initiate the given proposal.
+ * sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Object} proposal - A proposal.
+ * @param {String} address - Target address.
+ * @return {Promise<Bool>} True if so, false otherwise.
+ */
+async function canStartDocumentPoll(contracts, galaxy, proposal, address) {
+  let asv = await checkActiveShipVoter(contracts, galaxy, address);
+  if (!asv.result) return asv;
+  let res = { result: false };
+  if (await polls.documentHasAchievedMajority(contracts, proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  if (!canStartPoll(await polls.getDocumentPoll(contracts, proposal)))
+  {
+    res.reason = reasons.pollTime;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if a target address and ship can vote on the given proposal.
+ * sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Object} proposal - A proposal.
+ * @param {String} address - Target address.
+ * @return {Promise<Bool>} True if so, false otherwise.
+ */
+async function canCastConstitutionVote(contracts, galaxy, proposal, address)
+{
+  let asv = await checkActiveShipVoter(contracts, galaxy, proposal, address);
+  if (!asv.result) return asv;
+  let res = { result: false };
+  // proposal must not have achieved majority before
+  if (await polls.constitutionHasAchievedMajority(contracts, proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  // may only vote when the poll is open
+  if (!pollIsActive(await polls.getConstitutionPoll(contracts, proposal)))
+  {
+    res.reason = reasons.pollInactive;
+    return res;
+  }
+  // may only vote once
+  if (await polls.hasVotedOnConstitutionPoll(contracts, galaxy, proposal))
+  {
+    res.reason = reasons.pollVoted;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if a target address and ship can vote on the given proposal.
+ * sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Object} proposal - A proposal.
+ * @param {String} address - Target address.
+ * @return {Promise<Bool>} True if so, false otherwise.
+ */
+async function canCastDocumentVote(contracts, galaxy, proposal, address)
+{
+  let asv = await checkActiveShipVoter(contracts, galaxy, address);
+  if (!asv.result) return asv;
+  let res = { result: false };
+  // proposal must not have achieved majority before
+  if (await polls.documentHasAchievedMajority(contracts, proposal))
+  {
+    res.reason = reasons.majority;
+    return res;
+  }
+  // may only vote when the poll is open
+  if (!pollIsActive(await polls.getDocumentPoll(contracts, proposal)))
+  {
+    res.reason = reasons.pollInactive;
+    return res;
+  }
+  // may only vote once
+  if (await polls.hasVotedOnDocumentPoll(contracts, galaxy, proposal))
+  {
+    res.reason = reasons.pollVoted;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the target address can set the DNS domains for the constitution.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - Target address.
+ * @return {Promise<Bool>} True if so, false otherwise.
+ */
+function canSetDnsDomains(contracts, address) {
+  return isConstitutionOwner(contracts, address);
+}
 
 module.exports = {
   constitution,
@@ -443,6 +619,12 @@ module.exports = {
   canAdopt,
   canReject,
   canDetach,
-  checkActiveShipManager
+  checkActiveShipManager,
+  checkActiveShipVoter,
+  canStartConstitutionPoll,
+  canStartDocumentPoll,
+  canCastConstitutionVote,
+  canCastDocumentVote,
+  canSetDnsDomains
 }
 

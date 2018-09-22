@@ -397,6 +397,35 @@ function main() {
 
   });
 
+  describe('#polls', async function() {
+    it('cannot be done by non-voters', async function() {
+      cant(await check.canStartConstitutionPoll(web3, contracts, star1),
+        reasons.notGalaxy);
+
+      cant(await check.canStartConstitutionPoll(web3, contracts, galaxy, {}, ac1),
+        reasons.permission);
+
+      cant(await check.canStartDocumentPoll(contracts, star1),
+        reasons.notGalaxy);
+
+      cant(await check.canStartDocumentPoll(contracts, galaxy, {}, ac1),
+        reasons.permission);
+
+      cant(await check.canCastConstitutionVote(contracts, star1),
+        reasons.notGalaxy);
+
+      cant(await check.canCastConstitutionVote(contracts, galaxy, {}, ac1),
+        reasons.permission);
+
+      cant(await check.canCastDocumentVote(contracts, star1),
+        reasons.notGalaxy);
+
+      cant(await check.canCastDocumentVote(contracts, galaxy, {}, ac1),
+        reasons.permission);
+    });
+
+  });
+
 }
 
 main();
