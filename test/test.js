@@ -397,6 +397,8 @@ function main() {
 
   });
 
+
+
   describe('#polls', async function() {
     it('cannot be done by non-voters', async function() {
       cant(await check.canStartConstitutionPoll(web3, contracts, star1),
@@ -424,8 +426,43 @@ function main() {
         reasons.permission);
     });
 
-  });
+    it('checks for proposal correctness', async function() {
+      cant(await check.canStartConstitutionPoll(web3, contracts, galaxy, ac2, ac0),
+        reasons.upgradePath);
+    });
 
+    it('generates usable transactions', async function() {
+      let fakeHash = '0x';
+      if (galaxy < 10 || galaxy >= 100)
+        fakeHash = fakeHash + '0';
+      fakeHash = fakeHash + galaxy;
+
+    cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash),
+      reasons.pollInactive);
+
+    await sendTransaction(
+      web3,
+      constitution.startDocumentPoll(contracts, galaxy, fakeHash),
+      pk0);
+
+    can(await check.canCastDocumentVote(contracts, galaxy, fakeHash));
+
+    await sendTransaction(
+      web3,
+      constitution.castDocumentVote(contracts, galaxy, fakeHash, true),
+      pk0);
+
+    await sendTransaction(
+      web3,
+      constitution.updateDocumentPoll(contracts, fakeHash),
+      pk0);
+
+    // FIXME (jtobin): see fang-'s comment below
+    // this one depends on how many galaxies have been spawned...
+    cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash),
+      reasons.pollVoted);
+    });
+  })
 }
 
 main();
