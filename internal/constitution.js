@@ -46,13 +46,11 @@ module.exports.canEscapeTo = (contracts, ship, sponsor) => {
 //   Except handling 'method' appropriately.  But, given there are only a
 //   handful of functions, it's probably not worth doing any metaprogramming.
 
-function tx(to, data, value) {
-  return {
-    to:    to,
-    data:  data,
-    value: value || 0x0
-  };
-}
+const tx = (to, data, value) => ({
+  to: to,
+  data: data,
+  value: value || 0x0
+});
 
 module.exports.safeTransferFrom = (contracts, _from, _to, _token) => {
   let addr = contracts.constitution._address;

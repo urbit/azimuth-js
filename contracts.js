@@ -14,30 +14,24 @@ const abis = require('./resources/abis.json');
  *   names.
  * @return {Object} The initialised contracts.
  */
-function initContracts(web3, addresses) {
-  return {
-    constitution: newConstitution(web3, addresses.constitution),
-    ships: newShips(web3, addresses.ships),
-    polls: newPolls(web3, addresses.polls),
-    pool: newPool(web3, addresses.pool),
-  };
-}
+const initContracts = (web3, addresses) => ({
+  constitution: newConstitution(web3, addresses.constitution),
+  ships: newShips(web3, addresses.ships),
+  polls: newPolls(web3, addresses.polls),
+  pool: newPool(web3, addresses.pool)
+});
 
-function newConstitution(web3, address) {
-  return new web3.eth.Contract(abis.constitution, address);
-}
+const newConstitution = (web3, address) =>
+  new web3.eth.Contract(abis.constitution, address);
 
-function newShips(web3, address) {
-  return new web3.eth.Contract(abis.ships, address);
-}
+const newShips = (web3, address) =>
+  new web3.eth.Contract(abis.ships, address);
 
-function newPolls(web3, address) {
-  return new web3.eth.Contract(abis.polls, address);
-}
+const newPolls = (web3, address) =>
+  new web3.eth.Contract(abis.polls, address);
 
-function newPool(web3, address) {
-  return new web3.eth.Contract(abis.pool, address);
-}
+const newPool = (web3, address) =>
+  new web3.eth.Contract(abis.pool, address);
 
 module.exports = {
   initContracts

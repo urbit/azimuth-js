@@ -23,8 +23,8 @@ Require the library via something like:
 const cjs = require('constitution-js');
 ```
 
-Use the functions in `cjs.constitution`, `cjs.ships`, `cjs.polls`, and
-`cjs.pool` to interact with the corresponding Ethereum contracts.  Use
+In general: use the functions in `cjs.constitution`, `cjs.ships`, `cjs.polls`,
+and `cjs.pool` to interact with the corresponding Ethereum contracts.  Use
 `cjs.check` to verify any required state is what you expect it to be.
 `cjs.txn` contains functions for signing and sending transactions, and
 `cjs.utils` mostly re-exports useful utility functions from
@@ -42,7 +42,7 @@ const txn = cjs.txn
 The library exposes a purely-functional API.  This means you'll have to supply
 your own state (e.g. web3 instance, contracts instance) whenever dealing with
 transactions and contract initialisation.  For example, when running a fresh
-local Ganache node with the appropriate (see below) mnemonic, this will get you
+local Ganache node with the appropriate mnemonic (see below), this will get you
 set up:
 
 ```javascript
@@ -81,9 +81,10 @@ Note that the 'contracts' object initialised previously is passed as the first
 argument.  Again, this is almost always the case.
 
 Most of the exposed contracts API consists of functions that, at most, read
-from the Ethereum chain state, returning some result in a Promise.  The only
-exceptions are some of the functions in the 'constitution' contract; for those
-that modify chain state, the function will return a transaction object, e.g.:
+from the Ethereum chain state, returning some result in a Promise.  The primary
+exceptions are some of the functions in the 'constitution' and 'pool'
+contracts; for those that modify chain state, the function will return a
+transaction object, e.g.:
 
 ```javascript
 let tx = constitution.createGalaxy(contracts, galaxy, owner);
@@ -95,6 +96,13 @@ To modify contract state, you'll have to sign ('signTransaction') and send
 ```javascript
 txn.signTransaction(web3, tx, pk).then(stx =>
   txn.sendSignedTransaction(web3, stx));
+```
+
+or, in the body of an `async` function, you can use `await`:
+
+```javascript
+let stx = await txn.signTransaction(web3, tx, pk);
+txn.sendSignedTransaction(web3, stx);
 ```
 
 Note again that, when dealing with transactions, a web3 object must be passed
@@ -117,9 +125,23 @@ result: bool, reason: string }`, where 'reason' is only set when 'result' is
 
 ## Development
 
-### Local testnet
+### Library Structure
 
-You'll need a testnet running the Urbit constitution.
+The modules found in the `internal` directory are intended to be fairly close
+mappings to the public, external, or view functions located in the contracts
+themselves.  Mostly these are re-exported via the user-facing API, defined in
+`constitution.js`, `pool.js`, and so on.
+
+The one notable exception is in the `ships` module, where the behaviour of a
+function can often depend on the type of the argument passed to it.  If one
+passes them a cached `ship` object (retrieved via `getShip`), then these
+functions will compute their values locally; if one supplies them with a ship
+token (i.e., an integer), they will instead hit the network.
+
+### Local Testnet
+
+For debugging and running the tests, you'll need a local testnet running the
+Urbit constitution.
 
 1. Clone [the constitution](https://github.com/urbit/constitution)
 2. `cd` into the repo and `npm install`
@@ -138,6 +160,7 @@ Test pool:
 
 ## Test
 
+Make sure a local testnet is running, and then do:
+
 `npm test`
 
-Make sure a local testnet node is running prior to starting the tests.

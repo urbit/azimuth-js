@@ -10,7 +10,7 @@ const utils = require('./utils');
  * @param {Object} hd - a HD (hdkey) object.
  * @param {String} path - a valid HD path.
  * @param {Number} index - an index into the HD path.
- * @return {Object} The address and private key pair, returned in an object.
+ * @return {Object} The address and private key pair.
  */
 function getKeyPair(hd, path, index) {
   let derived = hd.derive(path + '/' + index);

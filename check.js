@@ -114,12 +114,17 @@ async function isConstitutionOwner(contracts, address) {
   return utils.addressEquals(address, await constitution.owner(contracts));
 }
 
+// NB (jtobin):
+//
+//   Change the { result, reason } objects to use data.either or
+//   folktale.Result at some point.
+
 /**
  * Check if an address can create the specified galaxy.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canCreateGalaxy(contracts, galaxy, address) {
   let res = { result: false };
@@ -147,7 +152,7 @@ async function canCreateGalaxy(contracts, galaxy, address) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canSpawn(contracts, ship, target) {
   let res = { result: false };
@@ -175,8 +180,8 @@ async function canSpawn(contracts, ship, target) {
   }
 
   // only allow spawning of ships of the class directly below the prefix
-  let childClass = ships.getShipClass(contracts, prefix) + 1;
-  let shipClass  = ships.getShipClass(contracts, ship);
+  let childClass = ships.getShipClass(prefix) + 1;
+  let shipClass  = ships.getShipClass(ship);
   if (childClass !== shipClass) {
     res.reason = reasons.spawnClass;
     return res;
@@ -201,7 +206,7 @@ async function canSpawn(contracts, ship, target) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canSetSpawnProxy(contracts, prefix, address) {
   let res = { result: false };
@@ -227,7 +232,7 @@ async function canSetSpawnProxy(contracts, prefix, address) {
  * @param {Number} tokenId - Ship token.
  * @param {String} sender - Sender's address.
  * @param {String} target - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canTransferShip(contracts, ship, source, target) {
   let res     = { result: false };
@@ -259,7 +264,7 @@ async function canTransferShip(contracts, ship, source, target) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} tokenId - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canSetTransferProxy(contracts, ship, address) {
   let res     = { result: false };
@@ -282,7 +287,7 @@ async function canSetTransferProxy(contracts, ship, address) {
  * @param {Number} ship - Ship token.
  * @param {Number} sponsor - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canEscape(contracts, ship, sponsor, address) {
   let asm = await checkActiveShipManager(contracts, ship, address);
@@ -290,8 +295,8 @@ async function canEscape(contracts, ship, sponsor, address) {
     return asm;
   }
   let res = { result: false };
-  let shipClass    = ships.getShipClass(contracts, ship);
-  let sponsorClass = ships.getShipClass(contracts, sponsor);
+  let shipClass    = ships.getShipClass(ship);
+  let sponsorClass = ships.getShipClass(sponsor);
   // can only escape to a ship one class higher than ourselves,
   // except in the special case where the escaping ship hasn't
   // been booted yet -- in that case we may escape to ships of
@@ -318,7 +323,7 @@ async function canEscape(contracts, ship, sponsor, address) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function checkActiveShipManager(contracts, ship, address) {
   res = { result: false };
@@ -341,7 +346,7 @@ async function checkActiveShipManager(contracts, ship, address) {
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canConfigureKeys(contracts, ship, address) {
   return await checkActiveShipManager(contracts, ship, address);
@@ -353,7 +358,7 @@ async function canConfigureKeys(contracts, ship, address) {
  * @param {Number} escapee - Escapee's ship token.
  * @param {Number} sponsor - Sponsor's ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canAdopt(contracts, sponsor, escapee, address) {
   let asm = await checkActiveShipManager(contracts, sponsor, address);
@@ -376,7 +381,7 @@ async function canAdopt(contracts, sponsor, escapee, address) {
  * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} escapee - Escapee's ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canReject(contracts, sponsor, escapee, address) {
   let asm = await checkActiveShipManager(contracts, sponsor, address);
@@ -394,12 +399,11 @@ async function canReject(contracts, sponsor, escapee, address) {
 
 /**
  * Check if the target address can detach a ship from its sponsor.
- * sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} ship - Ship token.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canDetach(contracts, sponsor, ship, address)
 {
@@ -418,15 +422,14 @@ async function canDetach(contracts, sponsor, ship, address)
 
 /**
  * Check if a ship is active and an address can vote for it.
- * sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
  * @param {String} voter - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function checkActiveShipVoter(contracts, galaxy, voter) {
   let res = { result: false }
-  if (ships.getShipClass(galaxy) !== utils.ShipClass.Galaxy)
+  if (ships.getShipClass(galaxy) !== ships.ShipClass.Galaxy)
   {
     res.reason = reasons.notGalaxy;
     return res;
@@ -446,14 +449,14 @@ async function checkActiveShipVoter(contracts, galaxy, voter) {
 }
 
 /**
- * Check if a target address and ship can initiate the given proposal.
- * sponsor.
+ * Check if a target address and ship can initiate a constitution poll at the
+ *  given address.
  * @param {Object} web3 - A web3 object.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} galaxy - A (galaxy) ship token.
- * @param {Object} proposal - A proposal.
+ * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, address) {
   let asv = await checkActiveShipVoter(contracts, galaxy, address);
@@ -466,7 +469,7 @@ async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, addre
   } catch(e) {
     expected = false;
   }
-  if (utils.addressEquals(contracts.constitution._address, expected))
+  if (contracts.constitution._address !== expected) // FIXME (jtobin): inappropriate comparison here
   {
     res.reason = reasons.upgradePath;
     return res;
@@ -487,12 +490,11 @@ async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, addre
 
 /**
  * Check if a target address and ship can initiate the given proposal.
- * sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} galaxy - A (galaxy) ship token.
- * @param {Object} proposal - A proposal.
+ * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canStartDocumentPoll(contracts, galaxy, proposal, address) {
   let asv = await checkActiveShipVoter(contracts, galaxy, address);
@@ -513,17 +515,17 @@ async function canStartDocumentPoll(contracts, galaxy, proposal, address) {
 }
 
 /**
- * Check if a target address and ship can vote on the given proposal.
- * sponsor.
+ * Check if a target address and ship can vote on the proposal at the target
+ * address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} galaxy - A (galaxy) ship token.
- * @param {Object} proposal - A proposal.
+ * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canCastConstitutionVote(contracts, galaxy, proposal, address)
 {
-  let asv = await checkActiveShipVoter(contracts, galaxy, proposal, address);
+  let asv = await checkActiveShipVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false };
   // proposal must not have achieved majority before
@@ -549,13 +551,13 @@ async function canCastConstitutionVote(contracts, galaxy, proposal, address)
 }
 
 /**
- * Check if a target address and ship can vote on the given proposal.
- * sponsor.
+ * Check if a target address and ship can vote on the proposal at the given
+ * address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} galaxy - A (galaxy) ship token.
- * @param {Object} proposal - A proposal.
+ * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
- * @return {Promise<Bool>} True if so, false otherwise.
+ * @return {Promise<Object>} A result and reason pair.
  */
 async function canCastDocumentVote(contracts, galaxy, proposal, address)
 {

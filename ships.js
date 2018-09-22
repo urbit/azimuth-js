@@ -6,12 +6,18 @@
 const internal = require('./internal/ships');
 const utils = require('./utils');
 
-// generic API for ships
+// NB (jtobin):
 //
-// typically:
+//  Generic API for ships
 //
-// * if 'ship' is an object, will compute locally
-// * if 'ship' is a uint, will hit the network
+//  Typically:
+//
+//  * if 'ship' is an object, will compute locally
+//  * if 'ship' is a uint, will hit the network
+//
+//  Note that the type check for 'object' is weak, but intentionally so: the
+//  type branch is intended to provide a generic API, and to work seamlessly
+//  with Promises, rather than to prevent invalid inputs *per se*.
 
 /**
  * Check if an address is the owner of a ship.
@@ -316,7 +322,7 @@ let ShipClass = {
  * @param {Number} ship - Ship token.
  * @return {Number} The ship's class.
  */
-function getShipClass(_, ship) {
+function getShipClass(ship) {
   if (ship < 256)   { return ShipClass.Galaxy; }
   if (ship < 65536) { return ShipClass.Star; }
   return ShipClass.Planet;
@@ -341,7 +347,7 @@ const getShip = internal.getShip;
  * Get the ships that an address owns.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array.<Number>>} An array of owned ships.
+ * @return {Promise<Array<Number>>} An array of owned ships.
  */
 const getOwnedShipsByAddress = internal.getOwnedShipsByAddress;
 
@@ -393,7 +399,7 @@ const getManagingForCount = internal.getManagingForCount;
  * Get the ships an account is managing.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array.<Number>>} The ships being managed.
+ * @return {Promise<Array<Number>>} The ships being managed.
  */
 const getManagingFor = internal.getManagingFor;
 
@@ -410,7 +416,7 @@ const isDelegate = internal.isDelegate;
  * Check if an address can vote for a ship.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
- * @param {String} address - The delegate's address.
+ * @param {String} address - The target address.
  * @return {Promise<Bool>} True is the address can vote for the ship, false
  *  otherwise.
  */
@@ -428,7 +434,7 @@ const getVotingForCount = internal.getVotingForCount;
  * Get the ships an account is voting for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array.<Number>>} The ships being voted for.
+ * @return {Promise<Array<Number>>} The ships being voted for.
  */
 const getVotingFor = internal.getVotingFor;
 
@@ -444,7 +450,7 @@ const getSpawningForCount = internal.getSpawningForCount;
  * Get the ships an account is a spawn proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array.<Number>>} The ships.
+ * @return {Promise<Array<Number>>} The ships.
  */
 const getSpawningFor = internal.getSpawningFor;
 
@@ -460,7 +466,7 @@ const getTransferringForCount = internal.getTransferringForCount;
  * Get the ships an account is a transfer proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array.<Number>>} The ships.
+ * @return {Promise<Array<Number>>} The ships.
  */
 const getTransferringFor = internal.getTransferringFor;
 
@@ -512,6 +518,7 @@ module.exports = {
   getTransferringForCount,
   getTransferringFor,
   getPrefix,
+  ShipClass,
   getShipClass,
   isOperator
 }

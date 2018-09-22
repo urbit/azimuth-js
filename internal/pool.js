@@ -15,13 +15,11 @@ module.exports.getBalance = (contracts, address) => {
   return contracts.pool.methods.balanceOf(address).call();
 }
 
-function tx(to, data, value) {
-  return {
-    to:    to,
-    data:  data,
-    value: value || 0x0
-  };
-}
+const tx = (to, data, value) => ({
+  to: to,
+  data: data,
+  value: value || 0x0
+});
 
 module.exports.deposit = (contracts, _star) => {
   let addr = contracts.pool._address;
