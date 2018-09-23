@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "nyc mocha --reporter spec"
   },
   "keywords": [
     "urbit",
@@ -21,6 +21,7 @@
     "chai": "^4.1.2",
     "hdkey": "^1.0.0",
     "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
     "secp256k1": "^3.5.2"
   },
   "dependencies": {

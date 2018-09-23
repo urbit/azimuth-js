@@ -5,3 +5,4 @@ node_modules/
 *.swo
 ref/
 tags
+.nyc_output
