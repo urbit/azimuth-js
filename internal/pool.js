@@ -16,7 +16,7 @@ module.exports.getBalance = (contracts, address) => {
 }
 
 module.exports.getAssetIndex = (contracts, star) => {
-  return contracts.pool.methods.assetIndexes(star);
+  return contracts.pool.methods.assetIndexes(star).call();
 }
 
 const tx = (to, data, value) => ({
