@@ -1,5 +1,7 @@
 # constitution-js
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/constitution-js/blob/master/LICENSE)
+
 Interact with the Urbit [constitution](https://github.com/urbit/constitution)
 from Javascript.
 
@@ -108,7 +110,7 @@ txn.sendSignedTransaction(web3, stx);
 Note again that, when dealing with transactions, a web3 object must be passed
 as the first argument.
 
-Many of the exposed API for the 'ships' contract will work when the function is
+Many of the functions for the 'ships' contract will work when the function is
 passed either a ship identifier (i.e. an unsigned integer), meaning the
 computation will be carried out on-chain, or a ship object (i.e. something that
 has been retrieved via 'ships.getShip'), meaning the computation will be
