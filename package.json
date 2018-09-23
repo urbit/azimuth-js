@@ -1,6 +1,6 @@
 {
-  "name": "constitution-js",
-  "version": "0.4.1",
+  "name": "@urbit/constitution-js",
+  "version": "0.5.0",
   "description": "Interact with the Urbit constitution",
   "repository": {
     "type": "git",
@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "nyc mocha --reporter spec"
   },
   "keywords": [
     "urbit",
@@ -20,19 +20,20 @@
     "bip39": "^2.5.0",
     "chai": "^4.1.2",
     "hdkey": "^1.0.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
+    "secp256k1": "^3.5.2"
   },
   "dependencies": {
     "ethereumjs-util": "^5.1.2",
-    "urbit-ob": "1.0.0",
     "web3": "^1.0.0-beta.34"
   },
-  "author": "~mirfet-hocbyt",
+  "author": "Tlon",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/urbit/constitution-js/issues"
   },
-  "homepage": "https://github.com/urbit/constitution-js#readme",
+  "homepage": "https://github.com/urbit/constitution-js",
   "directories": {
     "test": "test"
   }
