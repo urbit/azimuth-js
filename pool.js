@@ -35,6 +35,13 @@ module.exports.getAssetCount = internal.getAssetCount;
 module.exports.getBalance = internal.getBalance;
 
 /*
+ * Get the index of the given star in a pool's asset registry.
+ * @param {Object} contracts - The Urbit contracts object.
+ * @param {Number} star - A (star) ship token.
+ * @return {Number} The star index.
+ */
+module.exports.getAssetIndex = internal.getAssetIndex;
+/*
  * Add a star to the pool and receive a spark token in return.
  * @param {Object} contracts - The Urbit contracts object.
  * @param {Number} star - A (star) ship token.

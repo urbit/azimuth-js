@@ -596,6 +596,122 @@ function canSetDnsDomains(contracts, address) {
   return isConstitutionOwner(contracts, address);
 }
 
+/**
+ * Check if the target address can deposit the target star into the pool.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} star - A (star) ship token.
+ * @param {String} address - Target address.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function canDeposit(contracts, star, address)
+{
+  let ship = await ships.getShip(contracts, star);
+  //
+  let case1 = { result: false };
+  let c1 = 0;
+  if (!ships.isOwner(contracts, ship, address))
+  {
+    case1.reason = reasons.permission;
+    c1 = 1;
+  }
+  else if (ships.hasBeenBooted(contracts, ship))
+  {
+    case1.reason = reasons.poolBoot;
+    c1 = 2;
+  }
+  else if (!ships.isTransferProxy(contracts, ship, contracts.pool._address))
+  {
+    case1.reason = reasons.contractCant;
+    c1 = 3;
+  }
+  else
+  {
+    case1.result = true;
+  }
+  if (case1.result) return case1;
+  //
+  let case2 = { result: false };
+  let c2 = 0;
+  let prefix = ships.getPrefix(star);
+  if (!ships.isOwner(contracts, prefix, address))
+  {
+    case2.reason = reasons.permission;
+    c2 = 1;
+  }
+  else if (ships.isActive(contracts, ship))
+  {
+    case2.reason = reasons.poolActive;
+    c2 = 2;
+  }
+  else if (ships.isSpawnProxy(contracts, ship, contracts.pool._address))
+  {
+    case2.reason = reasons.contractCant;
+    c2 = 3;
+  }
+  else
+  {
+    case2.result = true;
+  }
+  if (case2.result) return case2;
+  //
+  // give the error for the case that is closest to being possible,
+  // or case 1 if they're equally close
+  if (c2 > c1) return case2;
+  return case1;
+}
+
+/**
+ * Check if the target address can withdraw any star from the pool.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - Target address.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function canWithdrawAny(contracts, address)
+{
+  let res = { result: false };
+  if (0 == await pool.getAssetCount(contracts))
+  {
+    res.reason = reasons.notInPool;
+    return res;
+  }
+  let oneStar = await pool.getOneStar(contracts);
+  let balance = await pool.getBalance(contracts, address);
+  if (oneStar > balance)
+  {
+    res.reason = reasons.balance;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+
+/**
+ * Check if the target address can withdraw the target star from the pool.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} star - A (star) ship token.
+ * @param {String} address - Target address.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function canWithdraw(contracts, star, address)
+{
+  let res = { result: false };
+  if (0 == await pool.getAssetIndex(contracts, star))
+  {
+    res.reason = reasons.notInPool;
+    return res;
+  }
+  let oneStar = await pool.getOneStar(contracts);
+  let balance = await pool.getBalance(contracts, address);
+  if (oneStar > balance)
+  {
+    res.reason = reasons.balance;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
 module.exports = {
   constitution,
   ships,
@@ -627,6 +743,9 @@ module.exports = {
   canStartDocumentPoll,
   canCastConstitutionVote,
   canCastDocumentVote,
-  canSetDnsDomains
+  canSetDnsDomains,
+  canDeposit,
+  canWithdrawAny,
+  canWithdraw
 }
 
