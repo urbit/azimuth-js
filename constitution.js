@@ -191,7 +191,6 @@ module.exports.cancelEscape = internal.cancelEscape;
 /**
  * As the sponsor, accept the escapee.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} escapee - Escapee's ship token.
  * @return {Object} An unsigned transaction object.
  */
@@ -200,7 +199,6 @@ module.exports.adopt = internal.adopt;
 /**
  * As the sponsor, reject the escapee's escape request.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} escapee - Escapee's ship token.
  * @return {Object} An unsigned transaction object.
  */
@@ -209,7 +207,6 @@ module.exports.reject = internal.reject;
 /**
  * As the sponsor, stop sponsoring the ship.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} ship - Ship token.
  * @return {Object} An unsigned transaction object.
  */
@@ -296,4 +293,3 @@ module.exports.createGalaxy = internal.createGalaxy;
  * @return {Object} An unsigned transaction object.
  */
 module.exports.setDnsDomains = internal.setDnsDomains;
-

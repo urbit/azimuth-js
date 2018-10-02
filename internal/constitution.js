@@ -146,23 +146,23 @@ module.exports.cancelEscape = (contracts, _ship) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.adopt = (contracts, _sponsor, _escapee) => {
+module.exports.adopt = (contracts, _escapee) => {
   let addr = contracts.constitution._address;
-  let data = contracts.constitution.methods.adopt(_sponsor, _escapee);
+  let data = contracts.constitution.methods.adopt(_escapee);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
-module.exports.reject = (contracts, _sponsor, _escapee) => {
+module.exports.reject = (contracts, _escapee) => {
   let addr = contracts.constitution._address;
-  let data = contracts.constitution.methods.reject(_sponsor, _escapee);
+  let data = contracts.constitution.methods.reject(_escapee);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
-module.exports.detach = (contracts, _sponsor, _ship) => {
+module.exports.detach = (contracts, _ship) => {
   let addr = contracts.constitution._address;
-  let data = contracts.constitution.methods.detach(_sponsor, _ship);
+  let data = contracts.constitution.methods.detach(_ship);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }

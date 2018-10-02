@@ -376,68 +376,52 @@ async function canConfigureKeys(contracts, ship, address) {
  * Check if the target address can adopt the escapee as its new sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} escapee - Escapee's ship token.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canAdopt(contracts, sponsor, escapee, address) {
-  let asm = await checkActiveShipManager(contracts, sponsor, address);
-  if (!asm.result) return asm;
+async function canAdopt(contracts, escapee, address) {
   let res = { result: false };
-  // escapee must currently be trying to escape to sponsor
-  if (!await ships.isRequestingEscapeTo(contracts, escapee, sponsor))
-  {
+  // escapee must currently be trying to escape
+  let ship = await ships.getShip(contracts, escapee, 'state');
+  if (!ship.escapeRequested) {
     res.reason = reasons.notEscape;
     return res;
   }
-  res.result = true;
-  return res;
+  // caller must manage the requested sponsor
+  return await checkActiveShipManager(contracts, ship.escapeRequestedTo, address);
 }
 
 /**
  * Check if the target address can reject the escapee's request to the given
  * sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} escapee - Escapee's ship token.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canReject(contracts, sponsor, escapee, address) {
-  let asm = await checkActiveShipManager(contracts, sponsor, address);
-  if (!asm.result) return asm;
-  let res = { result: false };
-  // escapee must currently be trying to escape to sponsor
-  if (!await ships.isRequestingEscapeTo(contracts, escapee, sponsor))
-  {
-    res.reason = reasons.notEscape;
-    return res;
-  }
-  res.result = true;
-  return res;
+async function canReject(contracts, escapee, address) {
+  // check is currently identical to adopt()'s.
+  return await canAdopt(contracts, escapee, address);
 }
 
 /**
  * Check if the target address can detach a ship from its sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} ship - Ship token.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canDetach(contracts, sponsor, ship, address)
+async function canDetach(contracts, ship, address)
 {
-  let asm = await checkActiveShipManager(contracts, ship, address);
-  if (!asm.result) return asm;
   let res = { result: false };
-  // ship must currently be sponsored by sponsor
-  if (!await ships.isSponsor(contracts, ship, sponsor))
-  {
-    res.reason = reasons.notSponsor;
+  // ship must currently have a sponsor
+  let theShip = await ships.getShip(contracts, ship, 'state');
+  if (!theShip.hasSponsor) {
+    res.reason = reasons.sponsorless;
     return res;
   }
-  res.result = true;
-  return res;
+  // caller must manage the requested sponsor
+  return await checkActiveShipManager(contracts, theShip.sponsor, address);
 }
 
 /**

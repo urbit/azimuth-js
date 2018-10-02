@@ -105,7 +105,7 @@ function main() {
 
   it('prepare the environment', async function() {
     galaxy = await firstUnownedGalaxy(contracts);
-    console.log('using galaxy ' + galaxy + '/255')
+    console.log('using galaxy ' + galaxy + '/255');
 
     star1    = star1 + galaxy;
     star2    = star2 + galaxy;
@@ -359,20 +359,20 @@ function main() {
   describe('#adopt', async function() {
 
     it('can only be done for actual escapees', async function() {
-      cant(await check.canAdopt(contracts, star1, star2, ac0),
+      cant(await check.canAdopt(contracts, star2, ac0),
            reasons.notEscape);
 
       let tx = constitution.escape(contracts, star2, star1);
       await sendTransaction(web3, tx, pk1);
 
-      can(await check.canAdopt(contracts, star1, star2, ac0));
+      can(await check.canAdopt(contracts, star2, ac0));
     });
 
     it('generates usable transaction', async function() {
       let sponsor = (await ships.getShip(contracts, star2)).sponsor;
       assert.notEqual(sponsor, star1);
 
-      let tx = constitution.adopt(contracts, star1, star2);
+      let tx = constitution.adopt(contracts, star2);
       await sendTransaction(web3, tx, pk0);
 
       sponsor = (await ships.getShip(contracts, star2)).sponsor;
@@ -384,19 +384,19 @@ function main() {
   describe('#reject', async function() {
 
     it('can only be done for actual escapees', async function() {
-      cant(await check.canReject(contracts, galaxy, star2, ac1),
+      cant(await check.canReject(contracts, star2, ac1),
            reasons.notEscape);
 
       let tx = constitution.escape(contracts, star2, galaxy);
       await sendTransaction(web3, tx, pk1);
 
-      can(await check.canReject(contracts, galaxy, star2, ac1));
+      can(await check.canReject(contracts, star2, ac1));
     });
 
     it('generates usable transaction', async function() {
       assert.isTrue(await ships.isEscaping(contracts, star2));
 
-      let tx = constitution.reject(contracts, galaxy, star2);
+      let tx = constitution.reject(contracts, star2);
       await sendTransaction(web3, tx, pk1);
 
       assert.isFalse(await ships.isEscaping(contracts, star2));
@@ -406,18 +406,20 @@ function main() {
   describe('#detach', async function() {
 
     it('can only be done by the sponsor', async function() {
-      cant(await check.canDetach(contracts, star2, star2, ac1),
-           reasons.notSponsor);
-      can(await check.canDetach(contracts, star1, star2, ac1));
+      cant(await check.canDetach(contracts, star2, ac1),
+           reasons.permission);
+      can(await check.canDetach(contracts, star2, ac0));
     });
 
     it('generates usable transaction', async function() {
       assert.isTrue((await ships.getShip(contracts, star2)).hasSponsor);
 
-      let tx = constitution.detach(contracts, star1, star2);
+      let tx = constitution.detach(contracts, star2);
       await sendTransaction(web3, tx, pk0);
 
       assert.isFalse((await ships.getShip(contracts, star2)).hasSponsor);
+
+      cant(await check.canDetach(contracts, star2, ac1), reasons.sponsorless);
     });
 
   });
