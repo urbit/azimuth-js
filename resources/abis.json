@@ -574,12 +574,16 @@
       {
         "constant": false,
         "inputs": [
+        {
+          "name": "_ship",
+          "type": "uint32"
+        },
           {
             "name": "_manager",
             "type": "address"
           }
         ],
-        "name": "setManager",
+      "name": "setManagementProxy",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
@@ -827,11 +831,15 @@
         "constant": false,
         "inputs": [
           {
-            "name": "_delegate",
+          "name": "_ship",
+          "type": "uint8"
+        },
+        {
+          "name": "_voter",
             "type": "address"
           }
         ],
-        "name": "setDelegate",
+      "name": "setVotingProxy",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
@@ -1003,6 +1011,41 @@
         "outputs": [
           {
             "name": "",
+          "type": "uint32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "name": "rights",
+      "outputs": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "managementProxy",
+          "type": "address"
+        },
+        {
+          "name": "votingProxy",
+          "type": "address"
+        },
+        {
+          "name": "spawnProxy",
+          "type": "address"
+        },
+        {
+          "name": "transferProxy",
             "type": "address"
           }
         ],
@@ -1085,26 +1128,21 @@
           {
             "name": "",
             "type": "address"
+        },
+        {
+          "name": "",
+          "type": "uint32"
           }
         ],
-        "name": "delegates",
+      "name": "votingForIndexes",
         "outputs": [
           {
             "name": "",
-            "type": "address"
+          "type": "uint256"
           }
         ],
         "payable": false,
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [],
-        "name": "renounceOwnership",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -1119,25 +1157,11 @@
             "type": "uint32"
           }
         ],
-        "name": "spawningForIndexes",
+      "name": "managerForIndexes",
         "outputs": [
           {
             "name": "",
             "type": "uint256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-          {
-            "name": "",
-            "type": "address"
           }
         ],
         "payable": false,
@@ -1156,17 +1180,26 @@
             "type": "uint256"
           }
         ],
-        "name": "managingFor",
+      "name": "managerFor",
         "outputs": [
           {
             "name": "",
-            "type": "address"
+          "type": "uint32"
           }
         ],
         "payable": false,
         "stateMutability": "view",
         "type": "function"
       },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
       {
         "constant": true,
         "inputs": [
@@ -1176,10 +1209,10 @@
           },
           {
             "name": "",
-            "type": "address"
+          "type": "uint32"
           }
         ],
-        "name": "managingForIndexes",
+      "name": "spawningForIndexes",
         "outputs": [
           {
             "name": "",
@@ -1190,6 +1223,20 @@
         "stateMutability": "view",
         "type": "function"
       },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
       {
         "constant": true,
         "inputs": [
@@ -1200,10 +1247,6 @@
         ],
         "name": "ships",
         "outputs": [
-          {
-            "name": "owner",
-            "type": "address"
-          },
           {
             "name": "active",
             "type": "bool"
@@ -1247,14 +1290,6 @@
           {
             "name": "escapeRequestedTo",
             "type": "uint32"
-          },
-          {
-            "name": "spawnProxy",
-            "type": "address"
-          },
-          {
-            "name": "transferProxy",
-            "type": "address"
           }
         ],
         "payable": false,
@@ -1316,29 +1351,6 @@
           },
           {
             "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "votingForIndexes",
-        "outputs": [
-          {
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [
-          {
-            "name": "",
-            "type": "address"
-          },
-          {
-            "name": "",
             "type": "uint256"
           }
         ],
@@ -1384,25 +1396,6 @@
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [
-          {
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "managers",
-        "outputs": [
-          {
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -1613,8 +1606,8 @@
         "inputs": [
           {
             "indexed": true,
-            "name": "owner",
-            "type": "address"
+          "name": "ship",
+          "type": "uint32"
           },
           {
             "indexed": true,
@@ -1622,7 +1615,7 @@
             "type": "address"
           }
         ],
-        "name": "ChangedManager",
+      "name": "ChangedManagementProxy",
         "type": "event"
       },
       {
@@ -1630,16 +1623,16 @@
         "inputs": [
           {
             "indexed": true,
-            "name": "owner",
-            "type": "address"
+          "name": "ship",
+          "type": "uint32"
           },
           {
             "indexed": true,
-            "name": "delegate",
+          "name": "voter",
             "type": "address"
           }
         ],
-        "name": "ChangedDelegate",
+      "name": "ChangedVotingProxy",
         "type": "event"
       },
       {
@@ -1854,15 +1847,15 @@
         "constant": true,
         "inputs": [
           {
-            "name": "_owner",
-            "type": "address"
+          "name": "_ship",
+          "type": "uint32"
           },
           {
             "name": "_manager",
             "type": "address"
           }
         ],
-        "name": "isManager",
+      "name": "isManagementProxy",
         "outputs": [
           {
             "name": "result",
@@ -1873,6 +1866,25 @@
         "stateMutability": "view",
         "type": "function"
       },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_ship",
+          "type": "uint32"
+        }
+      ],
+      "name": "getManagementProxy",
+      "outputs": [
+        {
+          "name": "manager",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
       {
         "constant": true,
         "inputs": [
@@ -1900,15 +1912,15 @@
         "constant": false,
         "inputs": [
           {
-            "name": "_owner",
-            "type": "address"
+          "name": "_ship",
+          "type": "uint32"
           },
           {
             "name": "_manager",
             "type": "address"
           }
         ],
-        "name": "setManager",
+      "name": "setManagementProxy",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
@@ -1922,7 +1934,7 @@
             "type": "address"
           }
         ],
-        "name": "getManagingForCount",
+      "name": "getManagerForCount",
         "outputs": [
           {
             "name": "count",
@@ -1941,11 +1953,11 @@
             "type": "address"
           }
         ],
-        "name": "getManagingFor",
+      "name": "getManagerFor",
         "outputs": [
           {
             "name": "mfor",
-            "type": "address[]"
+          "type": "uint32[]"
           }
         ],
         "payable": false,
@@ -1956,15 +1968,15 @@
         "constant": true,
         "inputs": [
           {
-            "name": "_owner",
-            "type": "address"
+          "name": "_ship",
+          "type": "uint32"
           },
           {
-            "name": "_delegate",
+          "name": "_voter",
             "type": "address"
           }
         ],
-        "name": "isDelegate",
+      "name": "isVotingProxy",
         "outputs": [
           {
             "name": "result",
@@ -1975,6 +1987,25 @@
         "stateMutability": "view",
         "type": "function"
       },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_ship",
+          "type": "uint32"
+        }
+      ],
+      "name": "getVotingProxy",
+      "outputs": [
+        {
+          "name": "voter",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
       {
         "constant": true,
         "inputs": [
@@ -2002,15 +2033,15 @@
         "constant": false,
         "inputs": [
           {
-            "name": "_owner",
-            "type": "address"
+          "name": "_ship",
+          "type": "uint32"
           },
           {
-            "name": "_delegate",
+          "name": "_voter",
             "type": "address"
           }
         ],
-        "name": "setDelegate",
+      "name": "setVotingProxy",
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
@@ -2020,7 +2051,7 @@
         "constant": true,
         "inputs": [
           {
-            "name": "_delegate",
+          "name": "_voter",
             "type": "address"
           }
         ],
@@ -2039,7 +2070,7 @@
         "constant": true,
         "inputs": [
           {
-            "name": "_delegate",
+          "name": "_voter",
             "type": "address"
           }
         ],
@@ -2047,7 +2078,7 @@
         "outputs": [
           {
             "name": "vfor",
-            "type": "address[]"
+          "type": "uint32[]"
           }
         ],
         "payable": false,

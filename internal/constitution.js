@@ -82,9 +82,9 @@ module.exports.setApprovalForAll = (contracts, _operator, _approved) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.setManager = (contracts, _manager) => {
+module.exports.setManagementProxy = (contracts, _ship, _manager) => {
   let addr = contracts.constitution._address;
-  let data = contracts.constitution.methods.setManager(_manager);
+  let data = contracts.constitution.methods.setManagementProxy(_ship, _manager);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
@@ -167,9 +167,9 @@ module.exports.detach = (contracts, _sponsor, _ship) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.setDelegate = (contracts, _delegate) => {
+module.exports.setVotingProxy = (contracts, _galaxy, _proxy) => {
   let addr = contracts.constitution._address;
-  let data = contracts.constitution.methods.setDelegate(_delegate);
+  let data = contracts.constitution.methods.setVotingProxy(_galaxy, _proxy);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
@@ -236,4 +236,3 @@ module.exports.setDnsDomains =
     let abi  = data.encodeABI();
     return tx(addr, abi, 0);
 }
-

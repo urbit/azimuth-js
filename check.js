@@ -201,6 +201,15 @@ async function canSpawn(contracts, ship, target) {
   return res;
 }
 
+async function canSetManagementProxy(contracts, ship, address) {
+  return checkActiveShipOwner(contracts, ship, address);
+}
+
+async function canSetVotingProxy(contracts, ship, address) {
+  if (!isGalaxy(ship)) return { result: false, reason: reasons.notGalaxy };
+  return checkActiveShipOwner(contracts, ship, address);
+}
+
 /**
  * Check if an address can set a spawn proxy for the given ship.
  * @param {Object} contracts - An Urbit contracts object.
@@ -209,20 +218,7 @@ async function canSpawn(contracts, ship, target) {
  * @return {Promise<Object>} A result and reason pair.
  */
 async function canSetSpawnProxy(contracts, prefix, address) {
-  let res = { result: false };
-  let parentShip = await ships.getShip(contracts, prefix);
-  // must be the owner of the ship
-  if (!await ships.isOwner(contracts, parentShip, address)) {
-    res.reason = reasons.permission;
-    return res;
-  }
-  // the ship must be active
-  if (!await ships.isActive(contracts, parentShip)) {
-    res.reason = reasons.inactive;
-    return res;
-  }
-  res.result = true;
-  return res;
+  return checkActiveShipOwner(contracts, prefix, address);
 }
 
 /**
@@ -312,6 +308,30 @@ async function canEscape(contracts, ship, sponsor, address) {
   if (!await ships.hasBeenBooted(contracts, sponsor))
   {
     res.reason = reasons.sponsorBoot;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if a ship is active and the target address is its owner.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} ship - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function checkActiveShipOwner(contracts, ship, address) {
+  let res = { result: false };
+  let theShip = await ships.getShip(contracts, ship);
+  // must be the owner of the ship
+  if (!await ships.isOwner(contracts, theShip, address)) {
+    res.reason = reasons.permission;
+    return res;
+  }
+  // the ship must be active
+  if (!await ships.isActive(contracts, theShip)) {
+    res.reason = reasons.inactive;
     return res;
   }
   res.result = true;
@@ -729,6 +749,8 @@ module.exports = {
   isConstitutionOwner,
   canCreateGalaxy,
   canSpawn,
+  canSetManagementProxy,
+  canSetVotingProxy,
   canSetSpawnProxy,
   canTransferShip,
   canSetTransferProxy,
@@ -748,4 +770,3 @@ module.exports = {
   canWithdrawAny,
   canWithdraw
 }
-

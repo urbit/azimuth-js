@@ -111,12 +111,13 @@ module.exports.approve = internal.approve;
 module.exports.setApprovalForAll = internal.setApprovalForAll;
 
 /**
- * Configure the management address for all ships owned by the message sender.
+ * Configure the management address for a ship owned by the message sender.
  * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} ship - The ship to manage.
  * @param {String} manager - The management address.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.setManager = internal.setManager;
+module.exports.setManagementProxy = internal.setManagementProxy;
 
 /**
  * Configure a ship with Urbit public keys, incrementing the ship's continuity
@@ -215,12 +216,13 @@ module.exports.reject = internal.reject;
 module.exports.detach = internal.detach;
 
 /**
- * Configure the delegate address for all ships owned by the message sender.
+ * Configure the voting proxy address for the galaxy.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {String} delegate - The delegate's address.
+ * @param {Number} galaxy - Ship number.
+ * @param {String} proxy - The proxy's address.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.setDelegate = internal.setDelegate;
+module.exports.setVotingProxy = internal.setVotingProxy;
 
 /**
  * As a galaxy, start a poll for the constitution upgrade proposal.
