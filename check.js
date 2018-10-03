@@ -716,6 +716,120 @@ async function canWithdraw(contracts, star, address)
   return res;
 }
 
+/**
+ * Check if the address can withdraw a star from their batch at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - The participant/registered address for the batch.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function lsrCanWithdraw(contracts, address) {
+  let res = { result: false };
+  let rem = await linearSR.getRemainingStars(contracts, address);
+  if (rem.length === 0) {
+    res.reason = reasons.noRemaining;
+    return res;
+  }
+  let bas = await linearSR.getBatch(contracts, address);
+  let lim = await linearSR.getWithdrawLimit(contracts, address);
+  if (bas.withdrawn >= lim) {
+    res.reason = reasons.withdrawLimit;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can withdraw a star from their batch at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} from - The participant/registered address for the batch.
+ * @param {String} to - The intended new address of the participant.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function lsrCanTransferBatch(contracts, from, to) {
+  let res = { result: false };
+  let apr = await linearSR.getApprovedTransfer(contracts, from);
+  if (to !== apr) {
+    res.reason = reasons.notApproved;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can withdraw a star from their commitment at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - The participant/registered address for the commitment.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function csrCanWithdraw(contracts, address) {
+  let res = { result: false };
+  let rem = await conditionalSR.getRemainingStars(contracts, address);
+  if (rem.length === 0) {
+    res.reason = reasons.noRemaining;
+    return res;
+  }
+  let com = await conditionalSR.getCommitment(contracts, address);
+  let lim = await conditionalSR.getWithdrawLimit(contracts, address);
+  // cannot withdraw more than the limit
+  if (com.withdrawn >= lim) {
+    res.reason = reasons.withdrawLimit;
+    return res;
+  }
+  // cannot withdraw forfeited stars
+  if (com.forfeit && rem.length <= com.forfeited) {
+    res.reason = reasons.forfeitLimit;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can withdraw a star from their commitment at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} from - The participant/registered address for the commitment.
+ * @param {String} to - The intended new address of the participant.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function csrCanTransferBatch(contracts, from, to) {
+  let res = { result: false };
+  let apr = await conditionalSR.getApprovedTransfer(contracts, from);
+  if (to !== apr) {
+    res.reason = reasons.notApproved;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can forfeit their commitment starting at the batch.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} batch - The batch they want to forfeit from.
+ * @param {String} address - The participant/registered address for the
+ * commitment.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function csrCanForfeit(contracts, batch, address) {
+  let res = { result: false };
+  let com = await conditionalSR.getCommitment(contracts, address);
+  // can only forfeit if not yet forfeited,
+  if (com.forfeit) {
+    res.reason = reasons.hasForfeited;
+    return res;
+  }
+  let det = await conditionalSR.getConditionsState(contracts);
+  // and deadline has been missed.
+  if (det.deadlines[batch] !== det.timestamps[batch]) {
+    res.reason = reasons.notMissed;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
 module.exports = {
   constitution,
   ships,
@@ -752,5 +866,10 @@ module.exports = {
   canSetDnsDomains,
   canDeposit,
   canWithdrawAny,
-  canWithdraw
+  canWithdraw,
+  lsrCanWithdraw,
+  lsrCanTransferBatch,
+  csrCanWithdraw,
+  csrCanTransferBatch,
+  csrCanForfeit
 }

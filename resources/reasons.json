@@ -19,5 +19,11 @@
   "poolBoot":     "Booted stars are not eligible for pools",
   "poolActive":   "Active stars can't be spawned into pools",
   "notInPool":    "Star is not held by pool",
+  "noRemaining":  "No stars remaining in the contract",
+  "withdrawLimit":"Withdraw limit reached",
+  "forfeitLimit": "Remaining stars have all been forfeited",
+  "hasForfeited": "Commitment has already forfeited",
+  "notMissed":    "Deadline has not been missed",
+  "notApproved":  "Not approved for transfer",
   "empty":        ""
 }
