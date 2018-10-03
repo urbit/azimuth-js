@@ -7,8 +7,10 @@
 
 const accounts = require('./accounts');
 const check = require('./check');
+const conditionalSR = require('./conditionalSR');
 const constitution = require('./constitution');
 const contracts = require('./contracts');
+const linearSR = require('./linearSR');
 const polls = require('./polls');
 const pool = require('./pool');
 const ships = require('./ships');
@@ -21,7 +23,9 @@ const getKeyPair = accounts.getKeyPair;
 
 module.exports = {
   check,
+  condititionalSR,
   constitution,
+  linearSR,
   polls,
   pool,
   ships,
@@ -30,4 +34,3 @@ module.exports = {
   initContracts,
   getKeyPair
 }
-
