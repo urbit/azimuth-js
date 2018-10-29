@@ -1,7 +1,7 @@
 {
-  "name": "@urbit/constitution-js",
+  "name": "urbit-constitution-js",
   "version": "0.5.0",
-  "description": "Interact with the Urbit constitution",
+  "description": "Functions for interacting with the Urbit constitution",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/urbit/constitution-js.git"
