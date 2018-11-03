@@ -175,7 +175,7 @@ function main() {
 
       assert.isTrue(await ships.canVoteAs(contracts, galaxy, ac2));
 
-      tx = constitution.setVotingProxy(contracts, galaxy, 0);
+      tx = constitution.setVotingProxy(contracts, galaxy, ac0);
       await sendTransaction(web3, tx, pk0);
     });
 
