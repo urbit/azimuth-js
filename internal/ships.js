@@ -7,6 +7,10 @@ module.exports.getShip = (contracts, ship) => {
   return contracts.ships.methods.ships(ship).call();
 }
 
+module.exports.getRights = (contracts, ship) => {
+  return contracts.ships.methods.rights(ship).call();
+}
+
 module.exports.getOwnedShipsByAddress = (contracts, address) => {
   return contracts.ships.methods.getOwnedShipsByAddress(address).call();
 }
@@ -27,24 +31,24 @@ module.exports.getOwner = (contracts, ship) => {
   return contracts.ships.methods.getOwner(ship).call();
 }
 
-module.exports.isManager = (contracts, owner, manager) => {
-  return contracts.ships.methods.isManager(owner, manager).call();
+module.exports.isManagementProxy = (contracts, owner, manager) => {
+  return contracts.ships.methods.isManagementProxy(owner, manager).call();
 }
 
 module.exports.canManage = (contracts, ship, address) => {
   return contracts.ships.methods.canManage(ship, address).call();
 }
 
-module.exports.getManagingForCount = (contracts, address) => {
-  return contracts.ships.methods.getManagingForCount(address).call();
+module.exports.getManagerForCount = (contracts, address) => {
+  return contracts.ships.methods.getManagerForCount(address).call();
 }
 
-module.exports.getManagingFor = (contracts, address) => {
-  return contracts.ships.methods.getManagingFor(address).call();
+module.exports.getManagerFor = (contracts, address) => {
+  return contracts.ships.methods.getManagerFor(address).call();
 }
 
-module.exports.isDelegate = (contracts, owner, delegate) => {
-  return contracts.ships.methods.isDelegate(owner, delegate).call();
+module.exports.isVotingProxy = (contracts, owner, delegate) => {
+  return contracts.ships.methods.isVotingProxy(owner, delegate).call();
 }
 
 module.exports.canVoteAs = (contracts, ship, address) => {
@@ -150,4 +154,3 @@ module.exports.getTransferringFor = (contracts, address) => {
 module.exports.isOperator = (contracts, owner, operator) => {
   return contracts.ships.methods.isOperator(owner, operator).call();
 }
-

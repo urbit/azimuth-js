@@ -201,6 +201,15 @@ async function canSpawn(contracts, ship, target) {
   return res;
 }
 
+async function canSetManagementProxy(contracts, ship, address) {
+  return checkActiveShipOwner(contracts, ship, address);
+}
+
+async function canSetVotingProxy(contracts, ship, address) {
+  if (!isGalaxy(ship)) return { result: false, reason: reasons.notGalaxy };
+  return checkActiveShipOwner(contracts, ship, address);
+}
+
 /**
  * Check if an address can set a spawn proxy for the given ship.
  * @param {Object} contracts - An Urbit contracts object.
@@ -209,20 +218,7 @@ async function canSpawn(contracts, ship, target) {
  * @return {Promise<Object>} A result and reason pair.
  */
 async function canSetSpawnProxy(contracts, prefix, address) {
-  let res = { result: false };
-  let parentShip = await ships.getShip(contracts, prefix);
-  // must be the owner of the ship
-  if (!await ships.isOwner(contracts, parentShip, address)) {
-    res.reason = reasons.permission;
-    return res;
-  }
-  // the ship must be active
-  if (!await ships.isActive(contracts, parentShip)) {
-    res.reason = reasons.inactive;
-    return res;
-  }
-  res.result = true;
-  return res;
+  return checkActiveShipOwner(contracts, prefix, address);
 }
 
 /**
@@ -319,6 +315,30 @@ async function canEscape(contracts, ship, sponsor, address) {
 }
 
 /**
+ * Check if a ship is active and the target address is its owner.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} ship - Ship token.
+ * @param {String} address - Target address.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function checkActiveShipOwner(contracts, ship, address) {
+  let res = { result: false };
+  let theShip = await ships.getShip(contracts, ship);
+  // must be the owner of the ship
+  if (!await ships.isOwner(contracts, theShip, address)) {
+    res.reason = reasons.permission;
+    return res;
+  }
+  // the ship must be active
+  if (!await ships.isActive(contracts, theShip)) {
+    res.reason = reasons.inactive;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
  * Check if a ship is active and the target address can manage it.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
@@ -356,68 +376,52 @@ async function canConfigureKeys(contracts, ship, address) {
  * Check if the target address can adopt the escapee as its new sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} escapee - Escapee's ship token.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canAdopt(contracts, sponsor, escapee, address) {
-  let asm = await checkActiveShipManager(contracts, sponsor, address);
-  if (!asm.result) return asm;
+async function canAdopt(contracts, escapee, address) {
   let res = { result: false };
-  // escapee must currently be trying to escape to sponsor
-  if (!await ships.isRequestingEscapeTo(contracts, escapee, sponsor))
-  {
+  // escapee must currently be trying to escape
+  let ship = await ships.getShip(contracts, escapee, 'state');
+  if (!ship.escapeRequested) {
     res.reason = reasons.notEscape;
     return res;
   }
-  res.result = true;
-  return res;
+  // caller must manage the requested sponsor
+  return await checkActiveShipManager(contracts, ship.escapeRequestedTo, address);
 }
 
 /**
  * Check if the target address can reject the escapee's request to the given
  * sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} escapee - Escapee's ship token.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canReject(contracts, sponsor, escapee, address) {
-  let asm = await checkActiveShipManager(contracts, sponsor, address);
-  if (!asm.result) return asm;
-  let res = { result: false };
-  // escapee must currently be trying to escape to sponsor
-  if (!await ships.isRequestingEscapeTo(contracts, escapee, sponsor))
-  {
-    res.reason = reasons.notEscape;
-    return res;
-  }
-  res.result = true;
-  return res;
+async function canReject(contracts, escapee, address) {
+  // check is currently identical to adopt()'s.
+  return await canAdopt(contracts, escapee, address);
 }
 
 /**
  * Check if the target address can detach a ship from its sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} sponsor - Sponsor's ship token.
  * @param {Number} ship - Ship token.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canDetach(contracts, sponsor, ship, address)
+async function canDetach(contracts, ship, address)
 {
-  let asm = await checkActiveShipManager(contracts, ship, address);
-  if (!asm.result) return asm;
   let res = { result: false };
-  // ship must currently be sponsored by sponsor
-  if (!await ships.isSponsor(contracts, ship, sponsor))
-  {
-    res.reason = reasons.notSponsor;
+  // ship must currently have a sponsor
+  let theShip = await ships.getShip(contracts, ship, 'state');
+  if (!theShip.hasSponsor) {
+    res.reason = reasons.sponsorless;
     return res;
   }
-  res.result = true;
-  return res;
+  // caller must manage the requested sponsor
+  return await checkActiveShipManager(contracts, theShip.sponsor, address);
 }
 
 /**
@@ -712,6 +716,120 @@ async function canWithdraw(contracts, star, address)
   return res;
 }
 
+/**
+ * Check if the address can withdraw a star from their batch at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - The participant/registered address for the batch.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function lsrCanWithdraw(contracts, address) {
+  let res = { result: false };
+  let rem = await linearSR.getRemainingStars(contracts, address);
+  if (rem.length === 0) {
+    res.reason = reasons.noRemaining;
+    return res;
+  }
+  let bas = await linearSR.getBatch(contracts, address);
+  let lim = await linearSR.getWithdrawLimit(contracts, address);
+  if (bas.withdrawn >= lim) {
+    res.reason = reasons.withdrawLimit;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can withdraw a star from their batch at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} from - The participant/registered address for the batch.
+ * @param {String} to - The intended new address of the participant.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function lsrCanTransferBatch(contracts, from, to) {
+  let res = { result: false };
+  let apr = await linearSR.getApprovedTransfer(contracts, from);
+  if (to !== apr) {
+    res.reason = reasons.notApproved;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can withdraw a star from their commitment at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - The participant/registered address for the commitment.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function csrCanWithdraw(contracts, address) {
+  let res = { result: false };
+  let rem = await conditionalSR.getRemainingStars(contracts, address);
+  if (rem.length === 0) {
+    res.reason = reasons.noRemaining;
+    return res;
+  }
+  let com = await conditionalSR.getCommitment(contracts, address);
+  let lim = await conditionalSR.getWithdrawLimit(contracts, address);
+  // cannot withdraw more than the limit
+  if (com.withdrawn >= lim) {
+    res.reason = reasons.withdrawLimit;
+    return res;
+  }
+  // cannot withdraw forfeited stars
+  if (com.forfeit && rem.length <= com.forfeited) {
+    res.reason = reasons.forfeitLimit;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can withdraw a star from their commitment at this moment.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} from - The participant/registered address for the commitment.
+ * @param {String} to - The intended new address of the participant.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function csrCanTransferBatch(contracts, from, to) {
+  let res = { result: false };
+  let apr = await conditionalSR.getApprovedTransfer(contracts, from);
+  if (to !== apr) {
+    res.reason = reasons.notApproved;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+/**
+ * Check if the address can forfeit their commitment starting at the batch.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} batch - The batch they want to forfeit from.
+ * @param {String} address - The participant/registered address for the
+ * commitment.
+ * @return {Promise<Object>} A result and reason pair.
+ */
+async function csrCanForfeit(contracts, batch, address) {
+  let res = { result: false };
+  let com = await conditionalSR.getCommitment(contracts, address);
+  // can only forfeit if not yet forfeited,
+  if (com.forfeit) {
+    res.reason = reasons.hasForfeited;
+    return res;
+  }
+  let det = await conditionalSR.getConditionsState(contracts);
+  // and deadline has been missed.
+  if (det.deadlines[batch] !== det.timestamps[batch]) {
+    res.reason = reasons.notMissed;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
 module.exports = {
   constitution,
   ships,
@@ -729,6 +847,8 @@ module.exports = {
   isConstitutionOwner,
   canCreateGalaxy,
   canSpawn,
+  canSetManagementProxy,
+  canSetVotingProxy,
   canSetSpawnProxy,
   canTransferShip,
   canSetTransferProxy,
@@ -746,6 +866,10 @@ module.exports = {
   canSetDnsDomains,
   canDeposit,
   canWithdrawAny,
-  canWithdraw
+  canWithdraw,
+  lsrCanWithdraw,
+  lsrCanTransferBatch,
+  csrCanWithdraw,
+  csrCanTransferBatch,
+  csrCanForfeit
 }
-

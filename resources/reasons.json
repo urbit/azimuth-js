@@ -7,7 +7,8 @@
   "spawnPrefix":  "Prefix is unable to spawn children",
   "sponsorBoot":  "Sponsor has not been booted",
   "sponsor":      "Invalid sponsor for ship",
-  "notEscape":    "Ship is not escaping to sponsor",
+  "sponsorless":  "Ship has no sponsor",
+  "notEscape":    "Ship is not escaping",
   "notGalaxy":    "Only galaxies may vote",
   "upgradePath":  "Unexpected upgrade path",
   "majority":     "Proposal has already achieved majority",
@@ -18,5 +19,11 @@
   "poolBoot":     "Booted stars are not eligible for pools",
   "poolActive":   "Active stars can't be spawned into pools",
   "notInPool":    "Star is not held by pool",
+  "noRemaining":  "No stars remaining in the contract",
+  "withdrawLimit":"Withdraw limit reached",
+  "forfeitLimit": "Remaining stars have all been forfeited",
+  "hasForfeited": "Commitment has already forfeited",
+  "notMissed":    "Deadline has not been missed",
+  "notApproved":  "Not approved for transfer",
   "empty":        ""
 }

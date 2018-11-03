@@ -105,15 +105,12 @@ function main() {
 
   it('prepare the environment', async function() {
     galaxy = await firstUnownedGalaxy(contracts);
-    console.log('using galaxy ' + galaxy + '/255')
+    console.log('using galaxy ' + galaxy + '/255');
 
     star1    = star1 + galaxy;
     star2    = star2 + galaxy;
     planet1a = planet1a + galaxy;
     planet1b = planet1b + galaxy;
-
-    let tx = constitution.setManager(contracts, zaddr);
-    await sendTransaction(web3, tx, pk0);
   });
 
   describe('#createGalaxy', async function() {
@@ -143,15 +140,43 @@ function main() {
 
   });
 
-  describe('#setManager', async function() {
+  describe('#setManagementProxy', async function() {
+
+    it('can only be done by owner', async function() {
+      assert.isFalse(await ships.canManage(contracts, galaxy, ac2));
+      cant(await check.canSetManagementProxy(contracts, galaxy, ac1),
+           reasons.permission);
+      can(await check.canSetManagementProxy(contracts, galaxy, ac0));
+    });
 
     it('generates usable transaction', async function() {
-      assert.isFalse(await ships.canManage(contracts, galaxy, ac2));
-
-      let tx = constitution.setManager(contracts, ac2);
+      let tx = constitution.setManagementProxy(contracts, galaxy, ac2);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.canManage(contracts, galaxy, ac2));
+    });
+
+  });
+
+  describe('#setVotingProxy', async function() {
+
+    it('can only be done by owner of galaxy', async function() {
+      assert.isFalse(await ships.canVoteAs(contracts, galaxy, ac2));
+      cant(await check.canSetVotingProxy(contracts, galaxy, ac1),
+           reasons.permission);
+      cant(await check.canSetVotingProxy(contracts, star1, ac0),
+           reasons.notGalaxy);
+      can(await check.canSetVotingProxy(contracts, galaxy, ac0));
+    });
+
+    it('generates usable transaction', async function() {
+      let tx = constitution.setVotingProxy(contracts, galaxy, ac2);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await ships.canVoteAs(contracts, galaxy, ac2));
+
+      tx = constitution.setVotingProxy(contracts, galaxy, ac0);
+      await sendTransaction(web3, tx, pk0);
     });
 
   });
@@ -180,6 +205,8 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
+      this.timeout(10000) // this one can take awhile
+
       assert.isFalse(await ships.isOwner(contracts, star1, ac0));
       assert.isFalse(await ships.isActive(contracts, star1));
 
@@ -276,13 +303,13 @@ function main() {
 
   });
 
-  describe('#setManager', async function() {
+  describe('#setManagementProxy', async function() {
 
     it('generates usable transaction, also configureKeys', async function() {
       cant(await check.canConfigureKeys(contracts, galaxy, ac1),
            reasons.permission);
 
-      let tx = constitution.setManager(contracts, ac1);
+      let tx = constitution.setManagementProxy(contracts, galaxy, ac1);
       await sendTransaction(web3, tx, pk0);
 
       can(await check.canConfigureKeys(contracts, galaxy, ac1));
@@ -293,13 +320,13 @@ function main() {
   describe('#escape', async function() {
 
     it('prevents invalid sponsors', async function() {
-      cant(await check.canEscape(contracts, planet1a, star1, ac1),
+      cant(await check.canEscape(contracts, planet1a, star1, ac0),
            reasons.permission);
-      cant(await check.canEscape(contracts, star1, planet1a, ac1),
+      cant(await check.canEscape(contracts, star1, planet1a, ac0),
            reasons.sponsor);
-      cant(await check.canEscape(contracts, star1, galaxy + 1, ac1),
+      cant(await check.canEscape(contracts, star1, galaxy + 1, ac0),
            reasons.sponsorBoot);
-      can(await check.canEscape(contracts, star1, galaxy, ac1));
+      can(await check.canEscape(contracts, star1, galaxy, ac0));
     });
 
     it('generates usable transaction', async function() {
@@ -334,21 +361,21 @@ function main() {
   describe('#adopt', async function() {
 
     it('can only be done for actual escapees', async function() {
-      cant(await check.canAdopt(contracts, star1, star2, ac1),
+      cant(await check.canAdopt(contracts, star2, ac0),
            reasons.notEscape);
 
       let tx = constitution.escape(contracts, star2, star1);
       await sendTransaction(web3, tx, pk1);
 
-      can(await check.canAdopt(contracts, star1, star2, ac1));
+      can(await check.canAdopt(contracts, star2, ac0));
     });
 
     it('generates usable transaction', async function() {
       let sponsor = (await ships.getShip(contracts, star2)).sponsor;
       assert.notEqual(sponsor, star1);
 
-      let tx = constitution.adopt(contracts, star1, star2);
-      await sendTransaction(web3, tx, pk1);
+      let tx = constitution.adopt(contracts, star2);
+      await sendTransaction(web3, tx, pk0);
 
       sponsor = (await ships.getShip(contracts, star2)).sponsor;
       assert.equal(sponsor, star1);
@@ -359,19 +386,19 @@ function main() {
   describe('#reject', async function() {
 
     it('can only be done for actual escapees', async function() {
-      cant(await check.canReject(contracts, galaxy, star2, ac1),
+      cant(await check.canReject(contracts, star2, ac1),
            reasons.notEscape);
 
       let tx = constitution.escape(contracts, star2, galaxy);
       await sendTransaction(web3, tx, pk1);
 
-      can(await check.canReject(contracts, galaxy, star2, ac1));
+      can(await check.canReject(contracts, star2, ac1));
     });
 
     it('generates usable transaction', async function() {
       assert.isTrue(await ships.isEscaping(contracts, star2));
 
-      let tx = constitution.reject(contracts, galaxy, star2);
+      let tx = constitution.reject(contracts, star2);
       await sendTransaction(web3, tx, pk1);
 
       assert.isFalse(await ships.isEscaping(contracts, star2));
@@ -381,18 +408,20 @@ function main() {
   describe('#detach', async function() {
 
     it('can only be done by the sponsor', async function() {
-      cant(await check.canDetach(contracts, star2, star2, ac1),
-           reasons.notSponsor);
-      can(await check.canDetach(contracts, star1, star2, ac1));
+      cant(await check.canDetach(contracts, star2, ac1),
+           reasons.permission);
+      can(await check.canDetach(contracts, star2, ac0));
     });
 
     it('generates usable transaction', async function() {
       assert.isTrue((await ships.getShip(contracts, star2)).hasSponsor);
 
-      let tx = constitution.detach(contracts, star1, star2);
-      await sendTransaction(web3, tx, pk1);
+      let tx = constitution.detach(contracts, star2);
+      await sendTransaction(web3, tx, pk0);
 
       assert.isFalse((await ships.getShip(contracts, star2)).hasSponsor);
+
+      cant(await check.canDetach(contracts, star2, ac1), reasons.sponsorless);
     });
 
   });
@@ -430,38 +459,39 @@ function main() {
     });
 
     it('generates usable transactions', async function() {
+      this.timeout(10000) // this one can take awhile
+
       let fakeHash = '0x';
       if (galaxy < 10 || galaxy >= 100)
         fakeHash = fakeHash + '0';
       fakeHash = fakeHash + galaxy;
 
-    cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash),
-      reasons.pollInactive);
+      cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
+        reasons.pollInactive);
 
-    await sendTransaction(
-      web3,
-      constitution.startDocumentPoll(contracts, galaxy, fakeHash),
-      pk0);
+      await sendTransaction(
+        web3,
+        constitution.startDocumentPoll(contracts, galaxy, fakeHash),
+        pk0);
 
-    can(await check.canCastDocumentVote(contracts, galaxy, fakeHash));
+      can(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0));
 
-    await sendTransaction(
-      web3,
-      constitution.castDocumentVote(contracts, galaxy, fakeHash, true),
-      pk0);
+      await sendTransaction(
+        web3,
+        constitution.castDocumentVote(contracts, galaxy, fakeHash, true),
+        pk0);
 
-    await sendTransaction(
-      web3,
-      constitution.updateDocumentPoll(contracts, fakeHash),
-      pk0);
+      await sendTransaction(
+        web3,
+        constitution.updateDocumentPoll(contracts, fakeHash),
+        pk0);
 
-    // FIXME (jtobin): see fang-'s comment below
-    // this one depends on how many galaxies have been spawned...
-    cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash),
-      reasons.pollVoted);
+      // FIXME (jtobin): see fang-'s comment below
+      // this one depends on how many galaxies have been spawned...
+      cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
+        reasons.pollVoted);
     });
   })
 }
 
 main();
-

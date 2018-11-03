@@ -6,8 +6,6 @@
 const internal = require('./internal/ships');
 const utils = require('./utils');
 
-// NB (jtobin):
-//
 //  Generic API for ships
 //
 //  Typically:
@@ -339,9 +337,20 @@ const owner = internal.owner;
  * Get a ship object, given its token id.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} ship - Ship token.
- * @return {Promise<Object>} A ship object.
+ * @param {string} what - 'state', 'rights', defaults to 'both'
+ * @return {Promise<Object>} A ship object with the requested data.
  */
-const getShip = internal.getShip;
+async function getShip(contracts, ship, what) {
+  what = what || 'both';
+  let data = {};
+  if (what === 'both' || what === 'state') {
+    data = await internal.getShip(contracts, ship);
+  }
+  if (what === 'both' || what === 'rights') {
+    Object.assign(data, await internal.getRights(contracts, ship));
+  }
+  return data;
+}
 
 /**
  * Get the ships that an address owns.
@@ -375,7 +384,7 @@ const getOwnedShipAtIndex = internal.getOwnedShipAtIndex;
  * @param {String} manager - The manager's address.
  * @return {Promise<Bool>} True if the address is a manager, false otherwise.
  */
-const isManager = internal.isManager;
+const isManagementProxy = internal.isManagementProxy;
 
 /**
  * Check if an address can manage a ship.
@@ -393,7 +402,7 @@ const canManage = internal.canManage;
  * @param {String} address - The target address.
  * @return {Promise<Number>} The count of ships being managed.
  */
-const getManagingForCount = internal.getManagingForCount;
+const getManagerForCount = internal.getManagerForCount;
 
 /**
  * Get the ships an account is managing.
@@ -401,16 +410,16 @@ const getManagingForCount = internal.getManagingForCount;
  * @param {String} address - The target address.
  * @return {Promise<Array<Number>>} The ships being managed.
  */
-const getManagingFor = internal.getManagingFor;
+const getManagerFor = internal.getManagerFor;
 
 /**
- * Check if an address is a delegate for an owner.
+ * Check if an address is a voting proxy for an owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The owner's address.
- * @param {String} address - The delegate's address.
- * @return {Promise<Bool>} True is delegate, false otherwise.
+ * @param {String} address - The voting proxy's address.
+ * @return {Promise<Bool>} True is voting proxy, false otherwise.
  */
-const isDelegate = internal.isDelegate;
+const isVotingProxy = internal.isVotingProxy;
 
 /**
  * Check if an address can vote for a ship.
@@ -485,11 +494,11 @@ module.exports = {
   getOwnedShipsByAddress,
   getOwnedShipCount,
   getOwnedShipAtIndex,
-  isManager,
+  isManagementProxy,
   canManage,
-  getManagingForCount,
-  getManagingFor,
-  isDelegate,
+  getManagerForCount,
+  getManagerFor,
+  isVotingProxy,
   canVoteAs,
   getVotingForCount,
   getVotingFor,
@@ -522,4 +531,3 @@ module.exports = {
   getShipClass,
   isOperator
 }
-

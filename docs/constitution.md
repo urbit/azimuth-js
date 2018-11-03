@@ -17,7 +17,7 @@ Constitution API
     * [.transferFrom](#module_constitution.transferFrom) ⇒ <code>Object</code>
     * [.approve](#module_constitution.approve) ⇒ <code>Object</code>
     * [.setApprovalForAll](#module_constitution.setApprovalForAll) ⇒ <code>Object</code>
-    * [.setManager](#module_constitution.setManager) ⇒ <code>Object</code>
+    * [.setManagementProxy](#module_constitution.setManagementProxy) ⇒ <code>Object</code>
     * [.configureKeys](#module_constitution.configureKeys) ⇒ <code>Object</code>
     * [.spawn](#module_constitution.spawn) ⇒ <code>Object</code>
     * [.setSpawnProxy](#module_constitution.setSpawnProxy) ⇒ <code>Object</code>
@@ -203,9 +203,9 @@ the message sender.
 | operator | <code>Address</code> | The operator's address. |
 | approved | <code>Bool</code> | Whether the operator is approved or not. |
 
-<a name="module_constitution.setManager"></a>
+<a name="module_constitution.setManagementProxy"></a>
 
-### constitution.setManager ⇒ <code>Object</code>
+### constitution.setManagementProxy ⇒ <code>Object</code>
 Configure the management address for all ships owned by the message sender.
 
 **Kind**: static property of [<code>constitution</code>](#module_constitution)  
