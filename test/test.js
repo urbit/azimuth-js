@@ -459,35 +459,37 @@ function main() {
     });
 
     it('generates usable transactions', async function() {
+      this.timeout(10000) // this one can take awhile
+
       let fakeHash = '0x';
       if (galaxy < 10 || galaxy >= 100)
         fakeHash = fakeHash + '0';
       fakeHash = fakeHash + galaxy;
 
-    cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash),
-      reasons.pollInactive);
+      cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
+        reasons.pollInactive);
 
-    await sendTransaction(
-      web3,
-      constitution.startDocumentPoll(contracts, galaxy, fakeHash),
-      pk0);
+      await sendTransaction(
+        web3,
+        constitution.startDocumentPoll(contracts, galaxy, fakeHash),
+        pk0);
 
-    can(await check.canCastDocumentVote(contracts, galaxy, fakeHash));
+      can(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0));
 
-    await sendTransaction(
-      web3,
-      constitution.castDocumentVote(contracts, galaxy, fakeHash, true),
-      pk0);
+      await sendTransaction(
+        web3,
+        constitution.castDocumentVote(contracts, galaxy, fakeHash, true),
+        pk0);
 
-    await sendTransaction(
-      web3,
-      constitution.updateDocumentPoll(contracts, fakeHash),
-      pk0);
+      await sendTransaction(
+        web3,
+        constitution.updateDocumentPoll(contracts, fakeHash),
+        pk0);
 
-    // FIXME (jtobin): see fang-'s comment below
-    // this one depends on how many galaxies have been spawned...
-    cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash),
-      reasons.pollVoted);
+      // FIXME (jtobin): see fang-'s comment below
+      // this one depends on how many galaxies have been spawned...
+      cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
+        reasons.pollVoted);
     });
   })
 }
