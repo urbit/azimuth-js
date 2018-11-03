@@ -205,6 +205,8 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
+      this.timeout(10000) // this one can take awhile
+
       assert.isFalse(await ships.isOwner(contracts, star1, ac0));
       assert.isFalse(await ships.isActive(contracts, star1));
 
