@@ -23,7 +23,7 @@ const getKeyPair = accounts.getKeyPair;
 
 module.exports = {
   check,
-  condititionalSR,
+  conditionalSR,
   constitution,
   linearSR,
   polls,
