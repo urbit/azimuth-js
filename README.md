@@ -1,17 +1,18 @@
 # urbit-constitution-js
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/constitution-js/blob/master/LICENSE)
+[![npm](https://img.shields.io/npm/v/urbit-constitution-js.svg)](https://www.npmjs.com/package/urbit-constitution-js)
 
 Interact with the Urbit [constitution](https://github.com/urbit/constitution)
 from Javascript.
 
 ## Install
 
-Clone the repo, then do a simple:
+Just grab from npm like so:
 
-`npm install --save`
-
-Older versions are on npm.  This one will show up soon.
+```
+npm install urbit-constitution-js
+```
 
 ## API Reference
 
