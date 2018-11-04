@@ -140,10 +140,18 @@ passes them a cached `ship` object (retrieved via `getShip`), then these
 functions will compute their values locally; if one supplies them with a ship
 token (i.e., an integer), they will instead hit the network.
 
+## Testing
+
+Use a simple:
+
+`npm test`
+
+to run the tests on a one-off local Ganache node.
+
 ### Local Testnet
 
-For debugging and running the tests, you'll need a local testnet running the
-Urbit constitution.
+For debugging and custom testing, you'll need a local testnet running the Urbit
+constitution.
 
 1. Clone [the constitution](https://github.com/urbit/constitution)
 2. `cd` into the repo and `npm install`
@@ -159,10 +167,4 @@ Constitution owner (is allowed to create galaxies):
 
 Test pool:
 `0xb71c0b6cee1bcae56dfe95cd9d3e41ddd7eafc43`
-
-## Test
-
-Make sure a local testnet is running, and then do:
-
-`npm test`
 
