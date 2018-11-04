@@ -1,4 +1,4 @@
-# constitution-js
+# urbit-constitution-js
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/constitution-js/blob/master/LICENSE)
 
@@ -19,10 +19,14 @@ Older versions are on npm.  This one will show up soon.
 
 ## Usage
 
+(Note: you will currently require a local copy of the constitution that you'll
+have to include via `npm link`.  This is a very temporary situation, so no
+details here.)
+
 Require the library via something like:
 
 ```javascript
-const cjs = require('constitution-js');
+const cjs = require('urbit-constitution-js');
 ```
 
 In general: use the functions in `cjs.constitution`, `cjs.ships`, `cjs.polls`,
