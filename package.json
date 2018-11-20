@@ -1,6 +1,6 @@
 {
   "name": "urbit-constitution-js",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "Functions for interacting with Azimuth",
   "repository": {
     "type": "git",

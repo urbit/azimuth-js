@@ -12,7 +12,6 @@ const constitution = require('./constitution');
 const contracts = require('./contracts');
 const linearSR = require('./linearSR');
 const polls = require('./polls');
-const pool = require('./pool');
 const ships = require('./ships');
 const txn = require('./txn');
 const utils = require('./utils');
@@ -27,7 +26,6 @@ module.exports = {
   constitution,
   linearSR,
   polls,
-  pool,
   ships,
   txn,
   utils,
