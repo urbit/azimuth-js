@@ -53,5 +53,8 @@ const newPolls = (web3, address) =>
 
 module.exports = {
   initContracts,
-  initContractsPartial
+  initContractsPartial,
+  constitutionAbi,
+  shipsAbi,
+  pollsAbi
 }

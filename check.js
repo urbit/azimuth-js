@@ -3,7 +3,7 @@
  * @module check
  */
 
-const abis = require('./resources/abis.json');
+const { constitutionAbi } = require('./contracts');
 const constitution = require('./constitution');
 const ships = require('./ships');
 const polls = require('./polls');
@@ -465,7 +465,7 @@ async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, addre
   let asv = await checkActiveShipVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false};
-  let prop = new web3.eth.Contract(abis.constitution, proposal);
+  let prop = new web3.eth.Contract(constitutionAbi, proposal);
   let expected;
   try {
     expected = await prop.methods.previousConstitution().call()
