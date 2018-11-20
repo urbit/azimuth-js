@@ -134,13 +134,10 @@ function getContinuityNumber(contracts, ship) {
 /**
  * Get a ship's spawn count.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number} ship - Ship token.
  * @return {Promise<Number>} The ship's spawn count.
  */
 function getSpawnCount(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.spawnCount;
-  }
   return internal.getSpawnCount(contracts, ship);
 }
 

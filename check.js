@@ -191,7 +191,7 @@ async function canSpawn(contracts, ship, target) {
   let ts         = Math.round(new Date().getTime() / 1000);
   let spawnLimit = await constitution.getSpawnLimit(contracts, prefix, ts);
   if (!ships.hasBeenBooted(contracts, parentShipObj) ||
-      parentShipObj.spawnCount >= spawnLimit)
+      (await ships.getSpawnCount(contracts, ship)) >= spawnLimit)
   {
     res.reason = reasons.spawnPrefix;
     return res;
