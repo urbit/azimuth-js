@@ -1,7 +1,7 @@
 {
   "name": "urbit-constitution-js",
-  "version": "0.5.1",
-  "description": "Functions for interacting with the Urbit constitution",
+  "version": "0.5.2",
+  "description": "Functions for interacting with Azimuth",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/urbit/constitution-js.git"

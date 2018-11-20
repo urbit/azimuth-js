@@ -3,8 +3,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/constitution-js/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/urbit-constitution-js.svg)](https://www.npmjs.com/package/urbit-constitution-js)
 
-Interact with the Urbit [constitution](https://github.com/urbit/constitution)
-from Javascript.
+Interact with [Azimuth](https://github.com/urbit/azimuth) from Javascript.
 
 ## Install
 
@@ -155,10 +154,9 @@ to run the tests on a one-off local Ganache node.
 
 ### Local Testnet
 
-For debugging and custom testing, you'll need a local testnet running the Urbit
-constitution.
+For debugging and custom testing, you'll need a local testnet running Azimuth.
 
-1. Clone [the constitution](https://github.com/urbit/constitution)
+1. Clone [Azimuth](https://github.com/urbit/azimuth)
 2. `cd` into the repo and `npm install`
 3. `npm install -g ganache-cli`
 3. Run a local `ganache` node, boot using the following command to ensure a matching seed:
