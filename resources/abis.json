@@ -988,6 +988,29 @@
       "inputs": [
         {
           "name": "",
+          "type": "uint32"
+        },
+        {
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "name": "escapeRequestsIndexes",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
           "type": "address"
         },
         {
@@ -1092,6 +1115,29 @@
       "inputs": [
         {
           "name": "",
+          "type": "uint32"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "sponsoring",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
           "type": "address"
         },
         {
@@ -1104,6 +1150,29 @@
         {
           "name": "",
           "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint32"
+        },
+        {
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "name": "sponsoringIndexes",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
         }
       ],
       "payable": false,
@@ -1231,6 +1300,29 @@
         {
           "name": "",
           "type": "uint32"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "escapeRequests",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint32"
         }
       ],
       "name": "ships",
@@ -1257,10 +1349,6 @@
         },
         {
           "name": "continuityNumber",
-          "type": "uint32"
-        },
-        {
-          "name": "spawnCount",
           "type": "uint32"
         },
         {
@@ -2485,6 +2573,82 @@
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_sponsor",
+          "type": "uint32"
+        }
+      ],
+      "name": "getSponsoringCount",
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_sponsor",
+          "type": "uint32"
+        }
+      ],
+      "name": "getSponsoring",
+      "outputs": [
+        {
+          "name": "sponsees",
+          "type": "uint32[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_sponsor",
+          "type": "uint32"
+        }
+      ],
+      "name": "getEscapeRequestsCount",
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_sponsor",
+          "type": "uint32"
+        }
+      ],
+      "name": "getEscapeRequests",
+      "outputs": [
+        {
+          "name": "requests",
+          "type": "uint32[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
       "type": "function"
     },
     {
