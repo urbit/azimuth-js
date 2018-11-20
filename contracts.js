@@ -3,7 +3,10 @@
  * @module contracts
  */
 
-const abis = require('./resources/abis.json');
+const compiled = './node_modules/azimuth/build/contracts';
+const constitutionAbi = require(`${compiled}/Constitution.json`).abi;
+const shipsAbi = require(`${compiled}/Ships.json`).abi;
+const pollsAbi = require(`${compiled}/Polls.json`).abi;
 
 /**
  * Create a collection of Urbit contracts, given a web3 instance and their
@@ -40,13 +43,13 @@ const initContractsPartial = async (web3, shipsAddress) => {
 }
 
 const newConstitution = (web3, address) =>
-  new web3.eth.Contract(abis.constitution, address);
+  new web3.eth.Contract(constitutionAbi, address);
 
 const newShips = (web3, address) =>
-  new web3.eth.Contract(abis.ships, address);
+  new web3.eth.Contract(shipsAbi, address);
 
 const newPolls = (web3, address) =>
-  new web3.eth.Contract(abis.polls, address);
+  new web3.eth.Contract(pollsAbi, address);
 
 module.exports = {
   initContracts,
