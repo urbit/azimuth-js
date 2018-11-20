@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test:deploy": "cd node_modules/urbit-constitution && truffle compile && truffle deploy",
+    "test:deploy": "cd node_modules/azimuth && truffle compile && truffle deploy",
     "test:ganache": "ganache-cli -m 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten' > /dev/null &",
     "test:setup": "npm run test:ganache && npm run test:deploy",
     "test:mocha": "nyc mocha --reporter spec",
