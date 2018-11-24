@@ -19,10 +19,6 @@ npm install urbit-constitution-js
 
 ## Usage
 
-(Note: you will currently require a local copy of the constitution that you'll
-have to include via `npm link`.  This is a very temporary situation, so no
-details here.)
-
 Require the library via something like:
 
 ```javascript
