@@ -3,7 +3,7 @@
  * @module contracts
  */
 
-const compiled = './node_modules/azimuth/build/contracts';
+const compiled = 'urbit-azimuth/build/contracts';
 const constitutionAbi = require(`${compiled}/Constitution.json`).abi;
 const shipsAbi = require(`${compiled}/Ships.json`).abi;
 const pollsAbi = require(`${compiled}/Polls.json`).abi;
