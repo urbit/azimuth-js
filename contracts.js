@@ -3,10 +3,14 @@
  * @module contracts
  */
 
-const compiled = 'urbit-azimuth/build/contracts';
-const constitutionAbi = require(`${compiled}/Constitution.json`).abi;
-const shipsAbi = require(`${compiled}/Ships.json`).abi;
-const pollsAbi = require(`${compiled}/Polls.json`).abi;
+const constitutionAbi =
+  require('urbit-azimuth/build/contracts/Constitution.json').abi;
+
+const shipsAbi =
+  require('urbit-azimuth/build/contracts/Ships.json').abi;
+
+const pollsAbi =
+  require('urbit-azimuth/build/contracts/Polls.json').abi;
 
 /**
  * Create a collection of Urbit contracts, given a web3 instance and their
