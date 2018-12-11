@@ -5,43 +5,43 @@ Contract checks, assertions, and verifications
 
 
 * [check](#module_check)
-    * [~isShip(ship)](#module_check..isShip) ⇒ <code>Bool</code>
-    * [~isGalaxy(ship)](#module_check..isGalaxy) ⇒ <code>Bool</code>
-    * [~isStar(ship)](#module_check..isStar) ⇒ <code>Bool</code>
-    * [~isPlanet(ship)](#module_check..isPlanet) ⇒ <code>Bool</code>
-    * [~isParent(ship)](#module_check..isParent) ⇒ <code>Bool</code>
-    * [~isChild(ship)](#module_check..isChild) ⇒ <code>Bool</code>
+    * [~isPoint(point)](#module_check..isPoint) ⇒ <code>Bool</code>
+    * [~isGalaxy(point)](#module_check..isGalaxy) ⇒ <code>Bool</code>
+    * [~isStar(point)](#module_check..isStar) ⇒ <code>Bool</code>
+    * [~isPlanet(point)](#module_check..isPlanet) ⇒ <code>Bool</code>
+    * [~isParent(point)](#module_check..isParent) ⇒ <code>Bool</code>
+    * [~isChild(point)](#module_check..isChild) ⇒ <code>Bool</code>
     * [~pollIsActive(poll)](#module_check..pollIsActive) ⇒ <code>Bool</code>
     * [~canStartPoll(poll)](#module_check..canStartPoll) ⇒ <code>Bool</code>
-    * [~hasOwner(contracts, tokenId)](#module_check..hasOwner) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~hasOwner(contracts, pointId)](#module_check..hasOwner) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~isEclipticOwner(contracts, address)](#module_check..isEclipticOwner) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canCreateGalaxy(contracts, tokenId, address)](#module_check..canCreateGalaxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canSpawn(contracts, tokenId, address)](#module_check..canSpawn) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canSetSpawnProxy(contracts, tokenId, address)](#module_check..canSetSpawnProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canTransferShip(contracts, tokenId, sender, target)](#module_check..canTransferShip) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canSetTransferProxy(contracts, tokenId, address)](#module_check..canSetTransferProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canConfigureKeys(contracts, tokenId, address)](#module_check..canConfigureKeys) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canEscape(contracts, ship, sponsor, address)](#module_check..canEscape) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~checkActiveShipManager(contracts, ship, address)](#module_check..checkActiveShipManager) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canCreateGalaxy(contracts, pointId, address)](#module_check..canCreateGalaxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canSpawn(contracts, pointId, address)](#module_check..canSpawn) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canSetSpawnProxy(contracts, pointId, address)](#module_check..canSetSpawnProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canTransferPoint(contracts, pointId, sender, target)](#module_check..canTransferPoint) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canSetTransferProxy(contracts, pointId, address)](#module_check..canSetTransferProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canConfigureKeys(contracts, pointId, address)](#module_check..canConfigureKeys) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canEscape(contracts, point, sponsor, address)](#module_check..canEscape) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~checkActivePointManager(contracts, point, address)](#module_check..checkActivePointManager) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~canAdopt(contracts, escapee, sponsor, address)](#module_check..canAdopt) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~canReject(contracts, sponsor, escapee, address)](#module_check..canReject) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~canDetach(contracts, sponsor, ship, address)](#module_check..canDetach) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~canDetach(contracts, sponsor, point, address)](#module_check..canDetach) ⇒ <code>Promise.&lt;Bool&gt;</code>
 
-<a name="module_check..isShip"></a>
+<a name="module_check..isPoint"></a>
 
-### check~isShip(ship) ⇒ <code>Bool</code>
-Check if something is a ship.
+### check~isPoint(point) ⇒ <code>Bool</code>
+Check if something is a point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
-**Returns**: <code>Bool</code> - True if a ship, false otherwise.  
+**Returns**: <code>Bool</code> - True if a point, false otherwise.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 
 <a name="module_check..isGalaxy"></a>
 
-### check~isGalaxy(ship) ⇒ <code>Bool</code>
+### check~isGalaxy(point) ⇒ <code>Bool</code>
 Check if something is a galaxy.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
@@ -49,11 +49,11 @@ Check if something is a galaxy.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 
 <a name="module_check..isStar"></a>
 
-### check~isStar(ship) ⇒ <code>Bool</code>
+### check~isStar(point) ⇒ <code>Bool</code>
 Check if something is a star.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
@@ -61,11 +61,11 @@ Check if something is a star.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 
 <a name="module_check..isPlanet"></a>
 
-### check~isPlanet(ship) ⇒ <code>Bool</code>
+### check~isPlanet(point) ⇒ <code>Bool</code>
 Check if something is a planet.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
@@ -73,31 +73,31 @@ Check if something is a planet.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 
 <a name="module_check..isParent"></a>
 
-### check~isParent(ship) ⇒ <code>Bool</code>
-Check if a ship is a parent of another ship.
+### check~isParent(point) ⇒ <code>Bool</code>
+Check if a point is a parent of another point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Bool</code> - True if a parent, false otherwise.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 
 <a name="module_check..isChild"></a>
 
-### check~isChild(ship) ⇒ <code>Bool</code>
-Check if a ship is a child of another ship.
+### check~isChild(point) ⇒ <code>Bool</code>
+Check if a point is a child of another point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Bool</code> - True if a child, false otherwise.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 
 <a name="module_check..pollIsActive"></a>
 
@@ -125,8 +125,8 @@ Check if a poll can be started.
 
 <a name="module_check..hasOwner"></a>
 
-### check~hasOwner(contracts, tokenId) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if a ship has an owner.
+### check~hasOwner(contracts, pointId) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if a point has an owner.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  
@@ -134,7 +134,7 @@ Check if a ship has an owner.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 
 <a name="module_check..isEclipticOwner"></a>
 
@@ -151,7 +151,7 @@ Check if an address is the ecliptic owner.
 
 <a name="module_check..canCreateGalaxy"></a>
 
-### check~canCreateGalaxy(contracts, tokenId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+### check~canCreateGalaxy(contracts, pointId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
 Check if an address can create the specified galaxy.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
@@ -160,13 +160,13 @@ Check if an address can create the specified galaxy.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 
 <a name="module_check..canSpawn"></a>
 
-### check~canSpawn(contracts, tokenId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if an address can spawn the given ship.
+### check~canSpawn(contracts, pointId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if an address can spawn the given point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  
@@ -174,13 +174,13 @@ Check if an address can spawn the given ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 
 <a name="module_check..canSetSpawnProxy"></a>
 
-### check~canSetSpawnProxy(contracts, tokenId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if an address can set a spawn proxy for the given ship.
+### check~canSetSpawnProxy(contracts, pointId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if an address can set a spawn proxy for the given point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  
@@ -188,13 +188,13 @@ Check if an address can set a spawn proxy for the given ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 
-<a name="module_check..canTransferShip"></a>
+<a name="module_check..canTransferPoint"></a>
 
-### check~canTransferShip(contracts, tokenId, sender, target) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if the sender address can send the provided ship to the target
+### check~canTransferPoint(contracts, pointId, sender, target) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if the sender address can send the provided point to the target
 address.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
@@ -203,14 +203,14 @@ address.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 | sender | <code>String</code> | Sender's address. |
 | target | <code>String</code> | Target address. |
 
 <a name="module_check..canSetTransferProxy"></a>
 
-### check~canSetTransferProxy(contracts, tokenId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if the address can set a transfer proxy for the ship.
+### check~canSetTransferProxy(contracts, pointId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if the address can set a transfer proxy for the point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  
@@ -218,13 +218,13 @@ Check if the address can set a transfer proxy for the ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 
 <a name="module_check..canConfigureKeys"></a>
 
-### check~canConfigureKeys(contracts, tokenId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if the address can configure public keys for the ship.
+### check~canConfigureKeys(contracts, pointId, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if the address can configure public keys for the point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  
@@ -232,13 +232,13 @@ Check if the address can configure public keys for the ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 
 <a name="module_check..canEscape"></a>
 
-### check~canEscape(contracts, ship, sponsor, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if the target address can make a ship escape to the given sponsor.
+### check~canEscape(contracts, point, sponsor, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if the target address can make a point escape to the given sponsor.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  
@@ -246,14 +246,14 @@ Check if the target address can make a ship escape to the given sponsor.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Ship token. |
-| sponsor | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
+| sponsor | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 
-<a name="module_check..checkActiveShipManager"></a>
+<a name="module_check..checkActivePointManager"></a>
 
-### check~checkActiveShipManager(contracts, ship, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if a ship is active and the target address can manage it.
+### check~checkActivePointManager(contracts, point, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if a point is active and the target address can manage it.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  
@@ -261,7 +261,7 @@ Check if a ship is active and the target address can manage it.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 
 <a name="module_check..canAdopt"></a>
@@ -275,8 +275,8 @@ Check if the target address can adopt the escapee as its new sponsor.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| escapee | <code>Number</code> | Escapee's ship token. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
+| escapee | <code>Number</code> | Escapee's point number. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
 | address | <code>String</code> | Target address. |
 
 <a name="module_check..canReject"></a>
@@ -291,14 +291,14 @@ sponsor.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
-| escapee | <code>Number</code> | Escapee's ship token. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
+| escapee | <code>Number</code> | Escapee's point number. |
 | address | <code>String</code> | Target address. |
 
 <a name="module_check..canDetach"></a>
 
-### check~canDetach(contracts, sponsor, ship, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if the target address can detach a ship from its sponsor.
+### check~canDetach(contracts, sponsor, point, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if the target address can detach a point from its sponsor.
 sponsor.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
@@ -307,7 +307,7 @@ sponsor.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
-| ship | <code>Number</code> | Ship token. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
+| point | <code>Number</code> | Point number. |
 | address | <code>String</code> | Target address. |
 

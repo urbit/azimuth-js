@@ -1,378 +1,378 @@
 /**
- * Ships API
- * @module ships
+ * Azimuth API
+ * @module azimuth
  */
 
-const internal = require('./internal/ships');
+const internal = require('./internal/azimuth');
 const utils = require('./utils');
 
-//  Generic API for ships
+//  Generic API for azimuth
 //
 //  Typically:
 //
-//  * if 'ship' is an object, will compute locally
-//  * if 'ship' is a uint, will hit the network
+//  * if 'point' is an object, will compute locally
+//  * if 'point' is a uint, will hit the network
 //
 //  Note that the type check for 'object' is weak, but intentionally so: the
 //  type branch is intended to provide a generic API, and to work seamlessly
 //  with Promises, rather than to prevent invalid inputs *per se*.
 
 /**
- * Check if an address is the owner of a ship.
+ * Check if an address is the owner of a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number | Object} point - Point number or point object.
  * @param {Number} address - Owner's address.
- * @return {Promise<Bool>} True if owner of the ship, false otherwise.
+ * @return {Promise<Bool>} True if owner of the point, false otherwise.
  */
-function isOwner(contracts, ship, address) {
-  if (typeof ship === 'object') {
-    return utils.addressEquals(ship.owner, address);
+function isOwner(contracts, point, address) {
+  if (typeof point === 'object') {
+    return utils.addressEquals(point.owner, address);
   }
-  return internal.isOwner(contracts, ship, address);
+  return internal.isOwner(contracts, point, address);
 }
 
 /**
- * Get the owner of a ship.
+ * Get the owner of a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Address>} The ship's owner.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Address>} The point's owner.
  */
-function getOwner(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.owner;
+function getOwner(contracts, point) {
+  if (typeof point === 'object') {
+    return point.owner;
   }
-  return internal.getOwner(contracts, ship);
+  return internal.getOwner(contracts, point);
 }
 
 /**
- * Check if a ship is active.
+ * Check if a point is active.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Bool>} True if the ship is active, false otherwise.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Bool>} True if the point is active, false otherwise.
  */
-function isActive(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.active;
+function isActive(contracts, point) {
+  if (typeof point === 'object') {
+    return point.active;
   }
-  return internal.isActive(contracts, ship);
+  return internal.isActive(contracts, point);
 }
 
 /**
- * Get the key configuration for a ship.
+ * Get the key configuration for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Object>} The ship's key configuration.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Object>} The point's key configuration.
  */
-function getKeys(contracts, ship) {
-  if (typeof ship === 'object') {
+function getKeys(contracts, point) {
+  if (typeof point === 'object') {
     return {
-      encryptionKey:      ship.encryptionKey,
-      authenticationKey:  ship.authenticationKey,
-      cryptoSuiteVersion: ship.cryptoSuiteVersion,
-      keyRevisionNumber:  ship.keyRevisionNumber
+      encryptionKey:      point.encryptionKey,
+      authenticationKey:  point.authenticationKey,
+      cryptoSuiteVersion: point.cryptoSuiteVersion,
+      keyRevisionNumber:  point.keyRevisionNumber
     };
   }
-  return internal.getKeys(contracts, ship);
+  return internal.getKeys(contracts, point);
 }
 
 /**
- * Get the key revision number of a ship.
+ * Get the key revision number of a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Number>} The ship's key revision number.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Number>} The point's key revision number.
  */
-function getKeyRevisionNumber(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.keyRevisionNumber;
+function getKeyRevisionNumber(contracts, point) {
+  if (typeof point === 'object') {
+    return point.keyRevisionNumber;
   }
-  return internal.getKeyRevisionNumber(contracts, ship);
+  return internal.getKeyRevisionNumber(contracts, point);
 }
 
 /**
- * Check if a ship has been booted.
+ * Check if a point has been booted.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number | Object} point - Point number or point object.
  * @return {Promise<Bool>} True if it has been booted, false otherwise.
  */
-function hasBeenBooted(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.keyRevisionNumber > 0;
+function hasBeenBooted(contracts, point) {
+  if (typeof point === 'object') {
+    return point.keyRevisionNumber > 0;
   }
-  return internal.hasBeenBooted(contracts, ship);
+  return internal.hasBeenBooted(contracts, point);
 }
 
 /**
- * Check if a ship is live.
+ * Check if a point is live.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Bool>} True if the ship is live, false otherwise.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Bool>} True if the point is live, false otherwise.
  */
-function isLive(contracts, ship) {
-  if (typeof ship === 'object') {
-    let ekey = ship.encryptionKey;
-    let akey = ship.authenticationKey;
-    let crsv = ship.cryptoSuiteVersion;
+function isLive(contracts, point) {
+  if (typeof point === 'object') {
+    let ekey = point.encryptionKey;
+    let akey = point.authenticationKey;
+    let crsv = point.cryptoSuiteVersion;
 
     return ekey !== 0 && akey !== 0 && crsv !== 0;
   }
-  return internal.isLive(contracts, ship);
+  return internal.isLive(contracts, point);
 }
 
 /**
- * Get a ship's continuity number.
+ * Get a point's continuity number.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Number>} The ship's continuity number.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Number>} The point's continuity number.
  */
-function getContinuityNumber(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.continuityNumber;
+function getContinuityNumber(contracts, point) {
+  if (typeof point === 'object') {
+    return point.continuityNumber;
   }
-  return internal.getContinuityNumber(contracts, ship);
+  return internal.getContinuityNumber(contracts, point);
 }
 
 /**
- * Get a ship's spawn count.
+ * Get a point's spawn count.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
- * @return {Promise<Number>} The ship's spawn count.
+ * @param {Number} point - Point number.
+ * @return {Promise<Number>} The point's spawn count.
  */
-function getSpawnCount(contracts, ship) {
-  return internal.getSpawnCount(contracts, ship);
+function getSpawnCount(contracts, point) {
+  return internal.getSpawnCount(contracts, point);
 }
 
 /**
- * Check if a ship has been spawned.
+ * Check if a point has been spawned.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Bool>} True if the ship has been spawned, false
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Bool>} True if the point has been spawned, false
  *  otherwise.
  */
-function getSpawned(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.spawned;
+function getSpawned(contracts, point) {
+  if (typeof point === 'object') {
+    return point.spawned;
   }
-  return internal.getSpawned(contracts, ship);
+  return internal.getSpawned(contracts, point);
 }
 
 /**
- * Get a ship's sponsor.
+ * Get a point's sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Number>} The ship's sponsor.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Number>} The point's sponsor.
  */
-function getSponsor(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.sponsor;
+function getSponsor(contracts, point) {
+  if (typeof point === 'object') {
+    return point.sponsor;
   }
-  return internal.getSponsor(contracts, ship);
+  return internal.getSponsor(contracts, point);
 }
 
 /**
- * Check if a ship has a sponsor.
+ * Check if a point has a sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Bool>} True if the ship has a sponsor, false otherwise.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Bool>} True if the point has a sponsor, false otherwise.
  */
-function hasSponsor(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.hasSponsor;
+function hasSponsor(contracts, point) {
+  if (typeof point === 'object') {
+    return point.hasSponsor;
   }
-  return internal.hasSponsor(contracts, ship);
+  return internal.hasSponsor(contracts, point);
 }
 
 /**
- * Check if a ship is the sponsor of another.
+ * Check if a point is the sponsor of another.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @param {Number} sponsor - The sponsor's ship token.
+ * @param {Number | Object} point - Point number or point object.
+ * @param {Number} sponsor - The sponsor's point number.
  * @return {Promise<Bool>} True if a sponsor, false otherwise.
  */
-function isSponsor(contracts, ship, sponsor) {
-  if (typeof ship === 'object') {
-    return ship.hasSponsor && ship.sponsor === sponsor;
+function isSponsor(contracts, point, sponsor) {
+  if (typeof point === 'object') {
+    return point.hasSponsor && point.sponsor === sponsor;
   }
-  return internal.isSponsor(contracts, ship, sponsor);
+  return internal.isSponsor(contracts, point, sponsor);
 }
 
 /**
- * Check if a ship is requesting escape.
+ * Check if a point is requesting escape.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number | Object} point - Point number or point object.
  * @return {Promise<Bool>} True if requesting escape, false otherwise.
  */
-function isEscaping(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.escapeRequested;
+function isEscaping(contracts, point) {
+  if (typeof point === 'object') {
+    return point.escapeRequested;
   }
-  return internal.isEscaping(contracts, ship);
+  return internal.isEscaping(contracts, point);
 }
 
 /**
- * Get the sponsor that another ship is requesting escape to.
+ * Get the sponsor that another point is requesting escape to.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @return {Promise<Number>} The sponsor ship token.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<Number>} The sponsor point number.
  */
-function getEscapeRequest(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.escapeRequestedTo;
+function getEscapeRequest(contracts, point) {
+  if (typeof point === 'object') {
+    return point.escapeRequestedTo;
   }
-  return internal.getEscapeRequest(contracts, ship);
+  return internal.getEscapeRequest(contracts, point);
 }
 
 /**
- * Check if a ship is requesting escape to another ship.
+ * Check if a point is requesting escape to another point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
- * @param {Number} sponsor - Sponsor's ship token.
+ * @param {Number | Object} point - Point number or point object.
+ * @param {Number} sponsor - Sponsor's point number.
  * @return {Promise<Bool>} True if escape to sponsor requested, false
  *  otherwise.
  */
-function isRequestingEscapeTo(contracts, ship, sponsor) {
-  if (typeof ship === 'object') {
-    return ship.escapeRequested && ship.escapeRequestedTo === sponsor;
+function isRequestingEscapeTo(contracts, point, sponsor) {
+  if (typeof point === 'object') {
+    return point.escapeRequested && point.escapeRequestedTo === sponsor;
   }
-  return internal.isRequestingEscapeTo(contracts, ship, sponsor);
+  return internal.isRequestingEscapeTo(contracts, point, sponsor);
 }
 
 /**
- * Check if an address is a spawn proxy for a ship.
+ * Check if an address is a spawn proxy for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number | Object} point - Point number or point object.
  * @param {String} address - Target address.
  * @return {Promise<Bool>} True if address is spawn proxy, false otherwise.
  */
-function isSpawnProxy(contracts, ship, address) {
-  if (typeof ship === 'object') {
-    return utils.addressEquals(ship.spawnProxy, address);
+function isSpawnProxy(contracts, point, address) {
+  if (typeof point === 'object') {
+    return utils.addressEquals(point.spawnProxy, address);
   }
-  return internal.isSpawnProxy(contracts, ship, address);
+  return internal.isSpawnProxy(contracts, point, address);
 }
 
 /**
- * Get the spawn proxy for a ship.
+ * Get the spawn proxy for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number | Object} point - Point number or point object.
  * @return {Promise<String>} The spawn proxy's address.
  */
-function getSpawnProxy(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.spawnProxy;
+function getSpawnProxy(contracts, point) {
+  if (typeof point === 'object') {
+    return point.spawnProxy;
   }
-  return internal.getSpawnProxy(contracts, ship);
+  return internal.getSpawnProxy(contracts, point);
 }
 
 /**
- * Check if an address is a transfer proxy for a ship.
+ * Check if an address is a transfer proxy for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number | Object} point - Point number or point object.
  * @param {String} address - Target address.
  * @return {Promise<Bool>} True if the address is a transfer proxy, false
  *  otherwise.
  */
-function isTransferProxy(contracts, ship, address) {
-  if (typeof ship === 'object') {
-    return utils.addressEquals(ship.transferProxy, address);
+function isTransferProxy(contracts, point, address) {
+  if (typeof point === 'object') {
+    return utils.addressEquals(point.transferProxy, address);
   }
-  return internal.isTransferProxy(contracts, ship, address);
+  return internal.isTransferProxy(contracts, point, address);
 }
 
 /**
- * Get the transfer proxy for a ship.
+ * Get the transfer proxy for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} ship - Ship token or ship object.
+ * @param {Number | Object} point - Point number or point object.
  * @return {Promise<String>} The transfer proxy's address.
  */
-function getTransferProxy(contracts, ship) {
-  if (typeof ship === 'object') {
-    return ship.transferProxy;
+function getTransferProxy(contracts, point) {
+  if (typeof point === 'object') {
+    return point.transferProxy;
   }
-  return internal.getTransferProxy(contracts, ship);
+  return internal.getTransferProxy(contracts, point);
 }
 
 // NB (jtobin):
 //
-//   The following do not work with cached ship types, and AFAICT can not be
+//   The following do not work with cached point types, and AFAICT can not be
 //   made to.
 
 /**
- * Calculate the prefix of a ship.
- * @param {Number} ship - Ship token.
- * @return {Number} The ship's prefix.
+ * Calculate the prefix of a point.
+ * @param {Number} point - Point number.
+ * @return {Number} The point's prefix.
  */
-function getPrefix(ship) {
-  if (ship < 65536) { return ship % 256; }
-  return ship % 65536;
+function getPrefix(point) {
+  if (point < 65536) { return point % 256; }
+  return point % 65536;
 }
 
-let ShipClass = {
+let PointClass = {
   Galaxy: 0,
   Star:   1,
   Planet: 2
 }
 
 /**
- * Calculate the class of a ship.
- * @param {Number} ship - Ship token.
- * @return {Number} The ship's class.
+ * Calculate the class of a point.
+ * @param {Number} point - Point number.
+ * @return {Number} The point's class.
  */
-function getShipClass(ship) {
-  if (ship < 256)   { return ShipClass.Galaxy; }
-  if (ship < 65536) { return ShipClass.Star; }
-  return ShipClass.Planet;
+function getPointClass(point) {
+  if (point < 256)   { return PointClass.Galaxy; }
+  if (point < 65536) { return PointClass.Star; }
+  return PointClass.Planet;
 }
 
 /**
- * Get the ships contract owner.
+ * Get the azimuth contract owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<String>} The contract owner's address.
  */
 const owner = internal.owner;
 
 /**
- * Get a ship object, given its token id.
+ * Get a point object, given its point id.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {string} what - 'state', 'rights', defaults to 'both'
- * @return {Promise<Object>} A ship object with the requested data.
+ * @return {Promise<Object>} A point object with the requested data.
  */
-async function getShip(contracts, ship, what) {
+async function getPoint(contracts, point, what) {
   what = what || 'both';
   let data = {};
   if (what === 'both' || what === 'state') {
-    data = await internal.getShip(contracts, ship);
+    data = await internal.getPoint(contracts, point);
   }
   if (what === 'both' || what === 'rights') {
-    Object.assign(data, await internal.getRights(contracts, ship));
+    Object.assign(data, await internal.getRights(contracts, point));
   }
   return data;
 }
 
 /**
- * Get the ships that an address owns.
+ * Get the points that an address owns.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array<Number>>} An array of owned ships.
+ * @return {Promise<Array<Number>>} An array of owned azimuth.
  */
-const getOwnedShipsByAddress = internal.getOwnedShipsByAddress;
+const getOwnedPointsByAddress = internal.getOwnedPointsByAddress;
 
 /**
- * Get a count of ships owned by an address.
+ * Get a count of points owned by an address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Number>} Owned ship count for the address.
+ * @return {Promise<Number>} Owned point count for the address.
  */
-const getOwnedShipCount = internal.getOwnedShipCount;
+const getOwnedPointCount = internal.getOwnedPointCount;
 
 /**
- * Get the ship at the given index of the array containing an owner's ships.
+ * Get the point at the given index of the array containing an owner's azimuth.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
  * @param {Number} index - The index of the array.
- * @return {Promise<Number>} The ship at the provided index.
+ * @return {Promise<Number>} The point at the provided index.
  */
-const getOwnedShipAtIndex = internal.getOwnedShipAtIndex;
+const getOwnedPointAtIndex = internal.getOwnedPointAtIndex;
 
 /**
  * Check if an address is a manager for an owner.
@@ -384,28 +384,28 @@ const getOwnedShipAtIndex = internal.getOwnedShipAtIndex;
 const isManagementProxy = internal.isManagementProxy;
 
 /**
- * Check if an address can manage a ship.
+ * Check if an address can manage a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} address - The manager's address.
- * @return {Promise<Bool>} True if the address can manage the ship, false
+ * @return {Promise<Bool>} True if the address can manage the point, false
  *  otherwise.
  */
 const canManage = internal.canManage;
 
 /**
- * Get a count of the ships an address is managing.
+ * Get a count of the points an address is managing.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Number>} The count of ships being managed.
+ * @return {Promise<Number>} The count of points being managed.
  */
 const getManagerForCount = internal.getManagerForCount;
 
 /**
- * Get the ships an account is managing.
+ * Get the points an account is managing.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array<Number>>} The ships being managed.
+ * @return {Promise<Array<Number>>} The points being managed.
  */
 const getManagerFor = internal.getManagerFor;
 
@@ -419,60 +419,60 @@ const getManagerFor = internal.getManagerFor;
 const isVotingProxy = internal.isVotingProxy;
 
 /**
- * Check if an address can vote for a ship.
+ * Check if an address can vote for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} address - The target address.
- * @return {Promise<Bool>} True is the address can vote for the ship, false
+ * @return {Promise<Bool>} True is the address can vote for the point, false
  *  otherwise.
  */
 const canVoteAs = internal.canVoteAs;
 
 /**
- * Get a count of the ships an address can vote for.
+ * Get a count of the points an address can vote for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Number>} The count of ships that can be voted for.
+ * @return {Promise<Number>} The count of points that can be voted for.
  */
 const getVotingForCount = internal.getVotingForCount;
 
 /**
- * Get the ships an account is voting for.
+ * Get the points an account is voting for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array<Number>>} The ships being voted for.
+ * @return {Promise<Array<Number>>} The points being voted for.
  */
 const getVotingFor = internal.getVotingFor;
 
 /**
- * Get a count of the ships an address is a spawn proxy for.
+ * Get a count of the points an address is a spawn proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Number>} The count of ships.
+ * @return {Promise<Number>} The count of azimuth.
  */
 const getSpawningForCount = internal.getSpawningForCount;
 
 /**
- * Get the ships an account is a spawn proxy for.
+ * Get the points an account is a spawn proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array<Number>>} The ships.
+ * @return {Promise<Array<Number>>} The azimuth.
  */
 const getSpawningFor = internal.getSpawningFor;
 
 /**
- * Get a count of the ships an address is a transfer proxy for.
+ * Get a count of the points an address is a transfer proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Number>} The count of ships.
+ * @return {Promise<Number>} The count of azimuth.
  */
 const getTransferringForCount = internal.getTransferringForCount;
 
 /**
- * Get the ships an account is a transfer proxy for.
+ * Get the points an account is a transfer proxy for.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
- * @return {Promise<Array<Number>>} The ships.
+ * @return {Promise<Array<Number>>} The azimuth.
  */
 const getTransferringFor = internal.getTransferringFor;
 
@@ -487,10 +487,10 @@ const isOperator = internal.isOperator;
 
 module.exports = {
   owner,
-  getShip,
-  getOwnedShipsByAddress,
-  getOwnedShipCount,
-  getOwnedShipAtIndex,
+  getPoint,
+  getOwnedPointsByAddress,
+  getOwnedPointCount,
+  getOwnedPointAtIndex,
   isManagementProxy,
   canManage,
   getManagerForCount,
@@ -524,7 +524,7 @@ module.exports = {
   getTransferringForCount,
   getTransferringFor,
   getPrefix,
-  ShipClass,
-  getShipClass,
+  PointClass,
+  getPointClass,
   isOperator
 }

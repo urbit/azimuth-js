@@ -25,7 +25,7 @@ Require the library via something like:
 const cjs = require('urbit-constitution-js');
 ```
 
-In general: use the functions in `cjs.ecliptic`, `cjs.ships`, and
+In general: use the functions in `cjs.ecliptic`, `cjs.azimuth`, and
 `cjs.polls` to interact with the corresponding Ethereum contracts.  Use
 `cjs.check` to verify any required state is what you expect it to be.
 `cjs.txn` contains functions for signing and sending transactions, and
@@ -36,7 +36,7 @@ You might want to define something like the following, for convenience:
 
 ```javascript
 const ecliptic = cjs.ecliptic;
-const ships = cjs.ships;
+const azimuth = cjs.azimuth;
 const check = cjs.check;
 const txn = cjs.txn
 ```
@@ -55,8 +55,8 @@ let web3 = new Web3(provider);
 
 let contractAddresses = {
     ecliptic: '0x56db68f29203ff44a803faa2404a44ecbb7a7480',
-    ships: '0x863d9c2e5c4c133596cfac29d55255f0d0f86381',
-    polls: '0x935452c45eda2958976a429c9733c40302995efd'
+    azimuth:  '0x863d9c2e5c4c133596cfac29d55255f0d0f86381',
+    polls:    '0x935452c45eda2958976a429c9733c40302995efd'
   }
 
 let contracts = cjs.initContracts(web3, contractAddresses);
@@ -108,11 +108,11 @@ txn.sendSignedTransaction(web3, stx);
 Note again that, when dealing with transactions, a web3 object must be passed
 as the first argument.
 
-Many of the functions for the 'ships' contract will work when the function is
-passed either a ship identifier (i.e. an unsigned integer), meaning the
-computation will be carried out on-chain, or a ship object (i.e. something that
-has been retrieved via 'ships.getShip'), meaning the computation will be
-carried out purely, simply by reference to the ship object.  The result is
+Many of the functions for the 'azimuth' contract will work when the function is
+passed either a point identifier (i.e. an unsigned integer), meaning the
+computation will be carried out on-chain, or a point object (i.e. something that
+has been retrieved via 'azimuth.getPoint'), meaning the computation will be
+carried out purely, simply by reference to the point object.  The result is
 wrapped in a Promise, in either case.
 
 Functions that use Web3 may throw. The thrown object will always contain at
@@ -132,11 +132,11 @@ mappings to the public, external, or view functions located in the contracts
 themselves.  Mostly these are re-exported via the user-facing API, defined in
 `ecliptic.js` and friends.
 
-The one notable exception is in the `ships` module, where the behaviour of a
+The one notable exception is in the `azimuth` module, where the behaviour of a
 function can often depend on the type of the argument passed to it.  If one
-passes them a cached `ship` object (retrieved via `getShip`), then these
-functions will compute their values locally; if one supplies them with a ship
-token (i.e., an integer), they will instead hit the network.
+passes them a cached `point` object (retrieved via `getPoint`), then these
+functions will compute their values locally; if one supplies them with a point
+number (i.e., an integer), they will instead hit the network.
 
 ## Testing
 

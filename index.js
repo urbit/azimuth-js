@@ -12,7 +12,7 @@ const ecliptic = require('./ecliptic');
 const contracts = require('./contracts');
 const linearSR = require('./linearSR');
 const polls = require('./polls');
-const ships = require('./ships');
+const azimuth = require('./azimuth');
 const txn = require('./txn');
 const utils = require('./utils');
 
@@ -26,7 +26,7 @@ module.exports = {
   ecliptic,
   linearSR,
   polls,
-  ships,
+  azimuth,
   txn,
   utils,
   initContracts,

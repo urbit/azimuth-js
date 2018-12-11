@@ -7,28 +7,28 @@ module.exports.balanceOf = (contracts, address) => {
   return contracts.ecliptic.methods.balanceOf(address).call();
 }
 
-module.exports.ownerOf = (contracts, token) => {
-  return contracts.ecliptic.methods.ownerOf(token).call();
+module.exports.ownerOf = (contracts, point) => {
+  return contracts.ecliptic.methods.ownerOf(point).call();
 }
 
-module.exports.exists = (contracts, token) => {
-  return contracts.ecliptic.methods.exists(token).call();
+module.exports.exists = (contracts, point) => {
+  return contracts.ecliptic.methods.exists(point).call();
 }
 
-module.exports.getApproved = (contracts, token) => {
-  return contracts.ecliptic.methods.getApproved(token).call();
+module.exports.getApproved = (contracts, point) => {
+  return contracts.ecliptic.methods.getApproved(point).call();
 }
 
 module.exports.isApprovedForAll = (contracts, owner, operator) => {
   return contracts.ecliptic.methods.isApprovedForAll(owner, operator).call();
 }
 
-module.exports.getSpawnLimit = (contracts, ship, time) => {
-  return contracts.ecliptic.methods.getSpawnLimit(ship, time).call();
+module.exports.getSpawnLimit = (contracts, point, time) => {
+  return contracts.ecliptic.methods.getSpawnLimit(point, time).call();
 }
 
-module.exports.canEscapeTo = (contracts, ship, sponsor) => {
-  return contracts.ecliptic.methods.canEscapeTo(ship, sponsor).call();
+module.exports.canEscapeTo = (contracts, point, sponsor) => {
+  return contracts.ecliptic.methods.canEscapeTo(point, sponsor).call();
 }
 
 // NB (jtobin):
@@ -52,24 +52,24 @@ const tx = (to, data, value) => ({
   value: value || 0x0
 });
 
-module.exports.safeTransferFrom = (contracts, _from, _to, _token) => {
+module.exports.safeTransferFrom = (contracts, _from, _to, _point) => {
   let addr = contracts.ecliptic._address;
   let data = contracts.ecliptic.methods.safeTransferFrom(
-               _from, _to, _token);
+               _from, _to, _point);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
-module.exports.transferFrom = (contracts, _from, _to, _token) => {
+module.exports.transferFrom = (contracts, _from, _to, _point) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.transferFrom(_from, _to, _token);
+  let data = contracts.ecliptic.methods.transferFrom(_from, _to, _point);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
-module.exports.approve = (contracts, _approved, _token) => {
+module.exports.approve = (contracts, _approved, _point) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.approve(_approved, _token);
+  let data = contracts.ecliptic.methods.approve(_approved, _point);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
@@ -82,28 +82,28 @@ module.exports.setApprovalForAll = (contracts, _operator, _approved) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.setManagementProxy = (contracts, _ship, _manager) => {
+module.exports.setManagementProxy = (contracts, _point, _manager) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.setManagementProxy(_ship, _manager);
+  let data = contracts.ecliptic.methods.setManagementProxy(_point, _manager);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
 module.exports.configureKeys =
-  (contracts, _ship,
+  (contracts, _point,
    _encryptionKey, _authenticationKey,
    _cryptoSuiteVersion, _discontinuous) => {
     let addr = contracts.ecliptic._address;
     let data = contracts.ecliptic.methods.configureKeys(
-                 _ship, _encryptionKey, _authenticationKey,
+                 _point, _encryptionKey, _authenticationKey,
                  _cryptoSuiteVersion, _discontinuous);
     let abi  = data.encodeABI();
     return tx(addr, abi, 0);
 }
 
-module.exports.spawn = (contracts, _ship, _target) => {
+module.exports.spawn = (contracts, _point, _target) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.spawn(_ship, _target);
+  let data = contracts.ecliptic.methods.spawn(_point, _target);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
@@ -116,32 +116,32 @@ module.exports.setSpawnProxy = (contracts, _prefix, _spawnProxy) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.transferShip = (contracts, _ship, _target, _reset) => {
+module.exports.transferPoint = (contracts, _point, _target, _reset) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.transferShip(
-               _ship, _target, _reset);
+  let data = contracts.ecliptic.methods.transferPoint(
+               _point, _target, _reset);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
-module.exports.setTransferProxy = (contracts, _ship, _transferProxy) => {
+module.exports.setTransferProxy = (contracts, _point, _transferProxy) => {
   let addr = contracts.ecliptic._address;
   let data = contracts.ecliptic.methods.setTransferProxy(
-               _ship, _transferProxy);
+               _point, _transferProxy);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
-module.exports.escape = (contracts, _ship, _sponsor) => {
+module.exports.escape = (contracts, _point, _sponsor) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.escape(_ship, _sponsor);
+  let data = contracts.ecliptic.methods.escape(_point, _sponsor);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
 
-module.exports.cancelEscape = (contracts, _ship) => {
+module.exports.cancelEscape = (contracts, _point) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.cancelEscape(_ship);
+  let data = contracts.ecliptic.methods.cancelEscape(_point);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
@@ -160,9 +160,9 @@ module.exports.reject = (contracts, _escapee) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.detach = (contracts, _ship) => {
+module.exports.detach = (contracts, _point) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.detach(_ship);
+  let data = contracts.ecliptic.methods.detach(_point);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }

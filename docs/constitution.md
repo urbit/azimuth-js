@@ -21,7 +21,7 @@ Ecliptic API
     * [.configureKeys](#module_ecliptic.configureKeys) ⇒ <code>Object</code>
     * [.spawn](#module_ecliptic.spawn) ⇒ <code>Object</code>
     * [.setSpawnProxy](#module_ecliptic.setSpawnProxy) ⇒ <code>Object</code>
-    * [.transferShip](#module_ecliptic.transferShip) ⇒ <code>Object</code>
+    * [.transferPoint](#module_ecliptic.transferPoint) ⇒ <code>Object</code>
     * [.setTransferProxy](#module_ecliptic.setTransferProxy) ⇒ <code>Object</code>
     * [.escape](#module_ecliptic.escape) ⇒ <code>Object</code>
     * [.cancelEscape](#module_ecliptic.cancelEscape) ⇒ <code>Object</code>
@@ -53,10 +53,10 @@ Get ecliptic contract owner.
 <a name="module_ecliptic.balanceOf"></a>
 
 ### ecliptic.balanceOf ⇒ <code>Promise.&lt;Number&gt;</code>
-Get the amount of ships owned by an address.
+Get the amount of points owned by an address.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
-**Returns**: <code>Promise.&lt;Number&gt;</code> - Number of ships.  
+**Returns**: <code>Promise.&lt;Number&gt;</code> - Number of points.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ Get the amount of ships owned by an address.
 <a name="module_ecliptic.ownerOf"></a>
 
 ### ecliptic.ownerOf ⇒ <code>Promise.&lt;String&gt;</code>
-Get the current owner of a ship.
+Get the current owner of a point.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;String&gt;</code> - Owner's address.  
@@ -74,25 +74,25 @@ Get the current owner of a ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 
 <a name="module_ecliptic.exists"></a>
 
 ### ecliptic.exists ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if a ship is active.
+Check if a point is active.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
-**Returns**: <code>Promise.&lt;Bool&gt;</code> - true if ship is active, false otherwise.  
+**Returns**: <code>Promise.&lt;Bool&gt;</code> - true if point is active, false otherwise.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 
 <a name="module_ecliptic.getApproved"></a>
 
 ### ecliptic.getApproved ⇒ <code>Promise.&lt;String&gt;</code>
-Get the transfer proxy for a ship.
+Get the transfer proxy for a point.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;String&gt;</code> - The transfer proxy's address.  
@@ -100,7 +100,7 @@ Get the transfer proxy for a ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 
 <a name="module_ecliptic.isApprovedForAll"></a>
 
@@ -119,7 +119,7 @@ Check if an address is an operator for an owner.
 <a name="module_ecliptic.getSpawnLimit"></a>
 
 ### ecliptic.getSpawnLimit ⇒ <code>Promise.&lt;Number&gt;</code>
-Return the total number of children a ship is allowed to spawn at some time.
+Return the total number of children a point is allowed to spawn at some time.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;Number&gt;</code> - The spawn limit.  
@@ -127,27 +127,27 @@ Return the total number of children a ship is allowed to spawn at some time.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 | time | <code>Number</code> | Time (uint256). |
 
 <a name="module_ecliptic.canEscapeTo"></a>
 
 ### ecliptic.canEscapeTo ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if a ship can escape to a sponsor.
+Check if a point can escape to a sponsor.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
-**Returns**: <code>Promise.&lt;Bool&gt;</code> - True if ship can escape, false otherwise.  
+**Returns**: <code>Promise.&lt;Bool&gt;</code> - True if point can escape, false otherwise.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Ship token. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
+| point | <code>Number</code> | Point number. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
 
 <a name="module_ecliptic.safeTransferFrom"></a>
 
 ### ecliptic.safeTransferFrom ⇒ <code>Object</code>
-Safely transfer a ship between addresses (call recipient if it's a contract).
+Safely transfer a point between addresses (call recipient if it's a contract).
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -157,12 +157,12 @@ Safely transfer a ship between addresses (call recipient if it's a contract).
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | from | <code>String</code> | Sender's address. |
 | to | <code>String</code> | Receiver's address. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 
 <a name="module_ecliptic.transferFrom"></a>
 
 ### ecliptic.transferFrom ⇒ <code>Object</code>
-Transfer a ship between addresses (without notifying recipient contract).
+Transfer a point between addresses (without notifying recipient contract).
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -172,12 +172,12 @@ Transfer a ship between addresses (without notifying recipient contract).
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | from | <code>String</code> | Sender's address. |
 | to | <code>String</code> | Receiver's address. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 
 <a name="module_ecliptic.approve"></a>
 
 ### ecliptic.approve ⇒ <code>Object</code>
-Allow an address to transfer ownership of a ship.
+Allow an address to transfer ownership of a point.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -186,12 +186,12 @@ Allow an address to transfer ownership of a ship.
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | approved | <code>String</code> | The approved address. |
-| tokenId | <code>Number</code> | Ship token. |
+| pointId | <code>Number</code> | Point number. |
 
 <a name="module_ecliptic.setApprovalForAll"></a>
 
 ### ecliptic.setApprovalForAll ⇒ <code>Object</code>
-Allow or disallow an operator to transfer ownership of alL ships owner by
+Allow or disallow an operator to transfer ownership of all points owner by
 the message sender.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
@@ -206,7 +206,7 @@ the message sender.
 <a name="module_ecliptic.setManagementProxy"></a>
 
 ### ecliptic.setManagementProxy ⇒ <code>Object</code>
-Configure the management address for all ships owned by the message sender.
+Configure the management address for all points owned by the message sender.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -219,7 +219,7 @@ Configure the management address for all ships owned by the message sender.
 <a name="module_ecliptic.configureKeys"></a>
 
 ### ecliptic.configureKeys ⇒ <code>Object</code>
-Configure a ship with Urbit public keys, incrementing the ship's continuity
+Configure a point with Urbit public keys, incrementing the point's continuity
 number if needed.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
@@ -228,7 +228,7 @@ number if needed.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 | encryptionKey | <code>String</code> | The encryption key. |
 | authenticationKey | <code>String</code> | The auth key. |
 | cryptoSuiteVersion | <code>Number</code> | The crypto suite version. |
@@ -237,7 +237,7 @@ number if needed.
 <a name="module_ecliptic.spawn"></a>
 
 ### ecliptic.spawn ⇒ <code>Object</code>
-Spawn a ship, giving ownership of it to the target address.
+Spawn a point, giving ownership of it to the target address.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -245,13 +245,13 @@ Spawn a ship, giving ownership of it to the target address.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | A ship token. |
+| point | <code>Number</code> | A point number. |
 | target | <code>String</code> | The target address. |
 
 <a name="module_ecliptic.setSpawnProxy"></a>
 
 ### ecliptic.setSpawnProxy ⇒ <code>Object</code>
-Give an address the right to spawn ships with the given prefix.
+Give an address the right to spawn points with the given prefix.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -259,13 +259,13 @@ Give an address the right to spawn ships with the given prefix.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| prefix | <code>Number</code> | A (prefix) ship token. |
+| prefix | <code>Number</code> | A (prefix) point number. |
 | address | <code>String</code> | The address to designate as a spawn proxy. |
 
-<a name="module_ecliptic.transferShip"></a>
+<a name="module_ecliptic.transferPoint"></a>
 
-### ecliptic.transferShip ⇒ <code>Object</code>
-Transfer a ship to a target address, optionally clearing all permissions
+### ecliptic.transferPoint ⇒ <code>Object</code>
+Transfer a point to a target address, optionally clearing all permissions
 data and keys.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
@@ -274,14 +274,14 @@ data and keys.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Ship token. |
+| point | <code>Number</code> | Point number. |
 | address | <code>String</code> | The target address. |
-| reset | <code>Bool</code> | True to reset ship's keys. |
+| reset | <code>Bool</code> | True to reset point's keys. |
 
 <a name="module_ecliptic.setTransferProxy"></a>
 
 ### ecliptic.setTransferProxy ⇒ <code>Object</code>
-Give an address the right to transfer the given ship.
+Give an address the right to transfer the given point.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -289,13 +289,13 @@ Give an address the right to transfer the given ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| prefix | <code>Number</code> | Ship token. |
+| prefix | <code>Number</code> | Point number. |
 | address | <code>String</code> | The address to designate as a transfer proxy. |
 
 <a name="module_ecliptic.escape"></a>
 
 ### ecliptic.escape ⇒ <code>Object</code>
-Request escape from 'ship' to 'sponsor'.
+Request escape from 'point' to 'sponsor'.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -303,13 +303,13 @@ Request escape from 'ship' to 'sponsor'.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Escapee's ship token. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
+| point | <code>Number</code> | Escapee's point number. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
 
 <a name="module_ecliptic.cancelEscape"></a>
 
 ### ecliptic.cancelEscape ⇒ <code>Object</code>
-Cancel the currently set escape for a ship.
+Cancel the currently set escape for a point.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -317,7 +317,7 @@ Cancel the currently set escape for a ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| ship | <code>Number</code> | Escapee's ship token. |
+| point | <code>Number</code> | Escapee's point number. |
 
 <a name="module_ecliptic.adopt"></a>
 
@@ -330,8 +330,8 @@ As the sponsor, accept the escapee.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
-| escapee | <code>Number</code> | Escapee's ship token. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
+| escapee | <code>Number</code> | Escapee's point number. |
 
 <a name="module_ecliptic.reject"></a>
 
@@ -344,13 +344,13 @@ As the sponsor, reject the escapee's escape request.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
-| escapee | <code>Number</code> | Escapee's ship token. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
+| escapee | <code>Number</code> | Escapee's point number. |
 
 <a name="module_ecliptic.detach"></a>
 
 ### ecliptic.detach ⇒ <code>Object</code>
-As the sponsor, stop sponsoring the ship.
+As the sponsor, stop sponsoring the point.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -358,13 +358,13 @@ As the sponsor, stop sponsoring the ship.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| sponsor | <code>Number</code> | Sponsor's ship token. |
-| ship | <code>Number</code> | Ship token. |
+| sponsor | <code>Number</code> | Sponsor's point number. |
+| point | <code>Number</code> | Point number. |
 
 <a name="module_ecliptic.setDelegate"></a>
 
 ### ecliptic.setDelegate ⇒ <code>Object</code>
-Configure the delegate address for all ships owned by the message sender.
+Configure the delegate address for all points owned by the message sender.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -385,7 +385,7 @@ As a galaxy, start a poll for the ecliptic upgrade proposal.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| galaxy | <code>Number</code> | A (galaxy) ship token. |
+| galaxy | <code>Number</code> | A (galaxy) point number. |
 | proposal | <code>Object</code> | The ecliptic upgrade proposal. |
 
 <a name="module_ecliptic.startDocumentPoll"></a>
@@ -399,7 +399,7 @@ As a galaxy, start a poll for a proposal.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| galaxy | <code>Number</code> | A (galaxy) ship token. |
+| galaxy | <code>Number</code> | A (galaxy) point number. |
 | proposal | <code>String</code> | The proposal document. |
 
 <a name="module_ecliptic.castEclipticVote"></a>
@@ -413,7 +413,7 @@ As a galaxy, cast a vote on the ecliptic upgrade proposal.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| galaxy | <code>Number</code> | A (galaxy) ship token. |
+| galaxy | <code>Number</code> | A (galaxy) point number. |
 | proposal | <code>Object</code> | The upgrade proposal. |
 | vote | <code>Bool</code> | True if yes, false otherwise. |
 
@@ -428,7 +428,7 @@ As a galaxy, cast a vote on the proposal.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| galaxy | <code>Number</code> | A (galaxy) ship token. |
+| galaxy | <code>Number</code> | A (galaxy) point number. |
 | proposal | <code>String</code> | The proposal document. |
 | vote | <code>Bool</code> | True if yes, false otherwise. |
 
@@ -469,7 +469,7 @@ Grant the target address ownership of the galaxy and register it for voting.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
-| galaxy | <code>Number</code> | A (galaxy) ship token. |
+| galaxy | <code>Number</code> | A (galaxy) point number. |
 | target | <code>String</code> | The target address. |
 
 <a name="module_ecliptic.setDnsDomains"></a>
