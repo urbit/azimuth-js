@@ -228,7 +228,7 @@ module.exports.setVotingProxy = internal.setVotingProxy;
  * @param {Object} proposal - The ecliptic upgrade proposal.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.startEclipticPoll = internal.startEclipticPoll;
+module.exports.startUpgradePoll = internal.startUpgradePoll;
 
 /**
  * As a galaxy, start a poll for a proposal.
@@ -247,7 +247,7 @@ module.exports.startDocumentPoll = internal.startDocumentPoll;
  * @param {Bool} vote - True if yes, false otherwise.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.castEclipticVote = internal.castEclipticVote;
+module.exports.castUpgradeVote = internal.castUpgradeVote;
 
 /**
  * As a galaxy, cast a vote on the proposal.
@@ -265,7 +265,7 @@ module.exports.castDocumentVote = internal.castDocumentVote;
  * @param {Object} proposal - The upgrade proposal.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.updateEclipticPoll = internal.updateEclipticPoll;
+module.exports.updateUpgradePoll = internal.updateUpgradePoll;
 
 /**
  * Check whether the proposal has achieved majority.

@@ -1,6 +1,6 @@
 
-module.exports.getEclipticPoll = (contracts, proposal) => {
-  return contracts.polls.methods.eclipticPolls(proposal).call();
+module.exports.getUpgradePoll = (contracts, proposal) => {
+  return contracts.polls.methods.upgradePolls(proposal).call();
 }
 
 module.exports.getDocumentPoll = (contracts, proposal) => {
@@ -15,8 +15,8 @@ module.exports.documentHasAchievedMajority = (contracts, proposal) => {
   return contracts.polls.methods.documentHasAchievedMajority(proposal).call();
 }
 
-module.exports.hasVotedOnEclipticPoll = (contracts, galaxy, proposal) => {
-  return contracts.polls.methods.hasVotedOnEclipticPoll(galaxy, proposal).call();
+module.exports.hasVotedOnUpgradePoll = (contracts, galaxy, proposal) => {
+  return contracts.polls.methods.hasVotedOnUpgradePoll(galaxy, proposal).call();
 }
 
 module.exports.hasVotedOnDocumentPoll = (contracts, galaxy, proposal) => {

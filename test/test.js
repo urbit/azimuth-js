@@ -187,13 +187,13 @@ function main() {
       cant(await check.canSpawn(contracts, star1, ac0), reasons.spawnPrefix);
     });
 
-    it('cannot spawn if not parent owner (or spawn proxy)', async function() {
+    it('cannot spawn if not prefix owner (or spawn proxy)', async function() {
       cant(await check.canSpawn(contracts, star1, ac1), reasons.permission);
     });
 
     it('cannot spawn galaxy planets', async function() {
       cant(await check.canSpawn(contracts, galaxyPlanet, ac0),
-           reasons.spawnClass);
+           reasons.spawnSize);
     });
 
     it('can spawn child to self, directly', async function() {
@@ -428,10 +428,10 @@ function main() {
 
   describe('#polls', async function() {
     it('cannot be done by non-voters', async function() {
-      cant(await check.canStartEclipticPoll(web3, contracts, star1),
+      cant(await check.canStartUpgradePoll(web3, contracts, star1),
         reasons.notGalaxy);
 
-      cant(await check.canStartEclipticPoll(web3, contracts, galaxy, zaddr, ac1),
+      cant(await check.canStartUpgradePoll(web3, contracts, galaxy, zaddr, ac1),
         reasons.permission);
 
       cant(await check.canStartDocumentPoll(contracts, star1),
@@ -440,10 +440,10 @@ function main() {
       cant(await check.canStartDocumentPoll(contracts, galaxy, zaddr, ac1),
         reasons.permission);
 
-      cant(await check.canCastEclipticVote(contracts, star1),
+      cant(await check.canCastUpgradeVote(contracts, star1),
         reasons.notGalaxy);
 
-      cant(await check.canCastEclipticVote(contracts, galaxy, zaddr, ac1),
+      cant(await check.canCastUpgradeVote(contracts, galaxy, zaddr, ac1),
         reasons.permission);
 
       cant(await check.canCastDocumentVote(contracts, star1),
@@ -454,7 +454,7 @@ function main() {
     });
 
     it('checks for proposal correctness', async function() {
-      cant(await check.canStartEclipticPoll(web3, contracts, galaxy, ac2, ac0),
+      cant(await check.canStartUpgradePoll(web3, contracts, galaxy, ac2, ac0),
         reasons.upgradePath);
     });
 

@@ -174,9 +174,9 @@ module.exports.setVotingProxy = (contracts, _galaxy, _proxy) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.startEclipticPoll = (contracts, _galaxy, _proposal) => {
+module.exports.startUpgradePoll = (contracts, _galaxy, _proposal) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.startEclipticPoll(
+  let data = contracts.ecliptic.methods.startUpgradePoll(
                _galaxy, _proposal);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
@@ -190,10 +190,10 @@ module.exports.startDocumentPoll = (contracts, _galaxy, _proposal) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.castEclipticVote =
+module.exports.castUpgradeVote =
   (contracts, _galaxy, _proposal, _vote) => {
     let addr = contracts.ecliptic._address;
-    let data = contracts.ecliptic.methods.castEclipticVote(
+    let data = contracts.ecliptic.methods.castUpgradeVote(
                  _galaxy, _proposal, _vote);
     let abi  = data.encodeABI();
     return tx(addr, abi, 0);
@@ -207,9 +207,9 @@ module.exports.castDocumentVote = (contracts, _galaxy, _proposal, _vote) => {
   return tx(addr, abi, 0);
 }
 
-module.exports.updateEclipticPoll = (contracts, _proposal) => {
+module.exports.updateUpgradePoll = (contracts, _proposal) => {
   let addr = contracts.ecliptic._address;
-  let data = contracts.ecliptic.methods.updateEclipticPoll(_proposal);
+  let data = contracts.ecliptic.methods.updateUpgradePoll(_proposal);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }

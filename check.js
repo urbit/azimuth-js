@@ -51,11 +51,11 @@ function isPlanet(point) {
 }
 
 /**
- * Check if a point is a parent of another point.
+ * Check if a point is a prefix of another point.
  * @param {Number} point - Point number.
- * @return {Bool} True if a parent, false otherwise.
+ * @return {Bool} True if a prefix, false otherwise.
  */
-function isParent(point) {
+function isPrefix(point) {
   return (typeof point === 'number' && point > 0 && point <= MAXSTAR);
 }
 
@@ -162,11 +162,11 @@ async function canSpawn(contracts, point, target) {
     return res;
   }
   let prefix        = azimuth.getPrefix(point);
-  let parentPointObj = await azimuth.getPoint(contracts, prefix);
+  let prefixPointObj = await azimuth.getPoint(contracts, prefix);
 
-  // must either be the owner of the parentPointObj, or a spawn proxy for it
-  if (!azimuth.isOwner(contracts, parentPointObj, target) &&
-      !azimuth.isSpawnProxy(contracts, parentPointObj, target))
+  // must either be the owner of the prefixPointObj, or a spawn proxy for it
+  if (!azimuth.isOwner(contracts, prefixPointObj, target) &&
+      !azimuth.isSpawnProxy(contracts, prefixPointObj, target))
   {
     res.reason = reasons.permission;
     return res;
@@ -178,18 +178,18 @@ async function canSpawn(contracts, point, target) {
     return res;
   }
 
-  // only allow spawning of points of the class directly below the prefix
-  let childClass = azimuth.getPointClass(prefix) + 1;
-  let pointClass  = azimuth.getPointClass(point);
-  if (childClass !== pointClass) {
-    res.reason = reasons.spawnClass;
+  // only allow spawning of points of the size directly below the prefix
+  let childSize = azimuth.getPointSize(prefix) + 1;
+  let pointSize  = azimuth.getPointSize(point);
+  if (childSize !== pointSize) {
+    res.reason = reasons.spawnSize;
     return res;
   }
 
-  // parent must be live and able to spawn
+  // prefix must be linked and able to spawn
   let ts         = Math.round(new Date().getTime() / 1000);
   let spawnLimit = await ecliptic.getSpawnLimit(contracts, prefix, ts);
-  if (!azimuth.hasBeenBooted(contracts, parentPointObj) ||
+  if (!azimuth.hasBeenLinked(contracts, prefixPointObj) ||
       (await azimuth.getSpawnCount(contracts, point)) >= spawnLimit)
   {
     res.reason = reasons.spawnPrefix;
@@ -290,21 +290,21 @@ async function canEscape(contracts, point, sponsor, address) {
     return asm;
   }
   let res = { result: false };
-  let pointClass    = azimuth.getPointClass(point);
-  let sponsorClass = azimuth.getPointClass(sponsor);
-  // can only escape to a point one class higher than ourselves,
+  let pointSize    = azimuth.getPointSize(point);
+  let sponsorSize = azimuth.getPointSize(sponsor);
+  // can only escape to a point one size higher than ourselves,
   // except in the special case where the escaping point hasn't
   // been booted yet -- in that case we may escape to points of
-  // the same class, to support lightweight invitation chains.
-  if (sponsorClass + 1 !== pointClass &&
-      !(sponsorClass === pointClass &&
-        !await azimuth.hasBeenBooted(contracts, point)))
+  // the same size, to support lightweight invitation chains.
+  if (sponsorSize + 1 !== pointSize &&
+      !(sponsorSize === pointSize &&
+        !await azimuth.hasBeenLinked(contracts, point)))
   {
     res.reason = reasons.sponsor;
     return res;
   }
   // can't escape to a sponsor that hasn't been booted
-  if (!await azimuth.hasBeenBooted(contracts, sponsor))
+  if (!await azimuth.hasBeenLinked(contracts, sponsor))
   {
     res.reason = reasons.sponsorBoot;
     return res;
@@ -432,7 +432,7 @@ async function canDetach(contracts, point, address)
  */
 async function checkActivePointVoter(contracts, galaxy, voter) {
   let res = { result: false }
-  if (azimuth.getPointClass(galaxy) !== azimuth.PointClass.Galaxy)
+  if (azimuth.getPointSize(galaxy) !== azimuth.PointSize.Galaxy)
   {
     res.reason = reasons.notGalaxy;
     return res;
@@ -452,7 +452,7 @@ async function checkActivePointVoter(contracts, galaxy, voter) {
 }
 
 /**
- * Check if a target address and point can initiate a ecliptic poll at the
+ * Check if a target address and point can initiate a upgrade poll at the
  *  given address.
  * @param {Object} web3 - A web3 object.
  * @param {Object} contracts - An Urbit contracts object.
@@ -461,7 +461,7 @@ async function checkActivePointVoter(contracts, galaxy, voter) {
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canStartEclipticPoll(web3, contracts, galaxy, proposal, address) {
+async function canStartUpgradePoll(web3, contracts, galaxy, proposal, address) {
   let asv = await checkActivePointVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false};
@@ -482,7 +482,7 @@ async function canStartEclipticPoll(web3, contracts, galaxy, proposal, address) 
     res.reason = reasons.majority;
     return res;
   }
-  if (!canStartPoll(await polls.getEclipticPoll(contracts, proposal)))
+  if (!canStartPoll(await polls.getUpgradePoll(contracts, proposal)))
   {
     res.reason = reasons.pollTime;
     return res;
@@ -526,7 +526,7 @@ async function canStartDocumentPoll(contracts, galaxy, proposal, address) {
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canCastEclipticVote(contracts, galaxy, proposal, address)
+async function canCastUpgradeVote(contracts, galaxy, proposal, address)
 {
   let asv = await checkActivePointVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
@@ -538,13 +538,13 @@ async function canCastEclipticVote(contracts, galaxy, proposal, address)
     return res;
   }
   // may only vote when the poll is open
-  if (!pollIsActive(await polls.getEclipticPoll(contracts, proposal)))
+  if (!pollIsActive(await polls.getUpgradePoll(contracts, proposal)))
   {
     res.reason = reasons.pollInactive;
     return res;
   }
   // may only vote once
-  if (await polls.hasVotedOnEclipticPoll(contracts, galaxy, proposal))
+  if (await polls.hasVotedOnUpgradePoll(contracts, galaxy, proposal))
   {
     res.reason = reasons.pollVoted;
     return res;
@@ -722,7 +722,7 @@ module.exports = {
   isGalaxy,
   isStar,
   isPlanet,
-  isParent,
+  isPrefix,
   isChild,
   pollIsActive,
   canStartPoll,
@@ -742,9 +742,9 @@ module.exports = {
   canDetach,
   checkActivePointManager,
   checkActivePointVoter,
-  canStartEclipticPoll,
+  canStartUpgradePoll,
   canStartDocumentPoll,
-  canCastEclipticVote,
+  canCastUpgradeVote,
   canCastDocumentVote,
   canSetDnsDomains,
   lsrCanWithdraw,

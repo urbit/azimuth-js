@@ -29,11 +29,11 @@ Ecliptic API
     * [.reject](#module_ecliptic.reject) ⇒ <code>Object</code>
     * [.detach](#module_ecliptic.detach) ⇒ <code>Object</code>
     * [.setDelegate](#module_ecliptic.setDelegate) ⇒ <code>Object</code>
-    * [.startEclipticPoll](#module_ecliptic.startEclipticPoll) ⇒ <code>Object</code>
+    * [.startUpgradePoll](#module_ecliptic.startUpgradePoll) ⇒ <code>Object</code>
     * [.startDocumentPoll](#module_ecliptic.startDocumentPoll) ⇒ <code>Object</code>
-    * [.castEclipticVote](#module_ecliptic.castEclipticVote) ⇒ <code>Object</code>
+    * [.castUpgradeVote](#module_ecliptic.castUpgradeVote) ⇒ <code>Object</code>
     * [.castDocumentVote](#module_ecliptic.castDocumentVote) ⇒ <code>Object</code>
-    * [.updateEclipticPoll](#module_ecliptic.updateEclipticPoll) ⇒ <code>Object</code>
+    * [.updateUpgradePoll](#module_ecliptic.updateUpgradePoll) ⇒ <code>Object</code>
     * [.updateDocumentPoll](#module_ecliptic.updateDocumentPoll) ⇒ <code>Object</code>
     * [.createGalaxy](#module_ecliptic.createGalaxy) ⇒ <code>Object</code>
     * [.setDnsDomains](#module_ecliptic.setDnsDomains) ⇒ <code>Object</code>
@@ -374,9 +374,9 @@ Configure the delegate address for all points owned by the message sender.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | delegate | <code>String</code> | The delegate's address. |
 
-<a name="module_ecliptic.startEclipticPoll"></a>
+<a name="module_ecliptic.startUpgradePoll"></a>
 
-### ecliptic.startEclipticPoll ⇒ <code>Object</code>
+### ecliptic.startUpgradePoll ⇒ <code>Object</code>
 As a galaxy, start a poll for the ecliptic upgrade proposal.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
@@ -402,9 +402,9 @@ As a galaxy, start a poll for a proposal.
 | galaxy | <code>Number</code> | A (galaxy) point number. |
 | proposal | <code>String</code> | The proposal document. |
 
-<a name="module_ecliptic.castEclipticVote"></a>
+<a name="module_ecliptic.castUpgradeVote"></a>
 
-### ecliptic.castEclipticVote ⇒ <code>Object</code>
+### ecliptic.castUpgradeVote ⇒ <code>Object</code>
 As a galaxy, cast a vote on the ecliptic upgrade proposal.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
@@ -432,9 +432,9 @@ As a galaxy, cast a vote on the proposal.
 | proposal | <code>String</code> | The proposal document. |
 | vote | <code>Bool</code> | True if yes, false otherwise. |
 
-<a name="module_ecliptic.updateEclipticPoll"></a>
+<a name="module_ecliptic.updateUpgradePoll"></a>
 
-### ecliptic.updateEclipticPoll ⇒ <code>Object</code>
+### ecliptic.updateUpgradePoll ⇒ <code>Object</code>
 Check whether the proposal has achieved majority, upgrading to it if so.
 
 **Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  

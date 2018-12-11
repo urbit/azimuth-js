@@ -28,7 +28,7 @@ Azimuth API
     * [~isActive(contracts, point)](#module_azimuth..isActive) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~getKeys(contracts, point)](#module_azimuth..getKeys) ⇒ <code>Promise.&lt;Object&gt;</code>
     * [~getKeyRevisionNumber(contracts, point)](#module_azimuth..getKeyRevisionNumber) ⇒ <code>Promise.&lt;Number&gt;</code>
-    * [~hasBeenBooted(contracts, point)](#module_azimuth..hasBeenBooted) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~hasBeenLinked(contracts, point)](#module_azimuth..hasBeenLinked) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~isLive(contracts, point)](#module_azimuth..isLive) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~getContinuityNumber(contracts, point)](#module_azimuth..getContinuityNumber) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [~getSpawnCount(contracts, point)](#module_azimuth..getSpawnCount) ⇒ <code>Promise.&lt;Number&gt;</code>
@@ -44,7 +44,7 @@ Azimuth API
     * [~isTransferProxy(contracts, point, address)](#module_azimuth..isTransferProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~getTransferProxy(contracts, point)](#module_azimuth..getTransferProxy) ⇒ <code>Promise.&lt;String&gt;</code>
     * [~getPrefix(point)](#module_azimuth..getPrefix) ⇒ <code>Number</code>
-    * [~getPointClass(point)](#module_azimuth..getPointClass) ⇒ <code>Number</code>
+    * [~getPointSize(point)](#module_azimuth..getPointSize) ⇒ <code>Number</code>
 
 <a name="module_azimuth..owner"></a>
 
@@ -353,9 +353,9 @@ Get the key revision number of a point.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | point | <code>Number</code> \| <code>Object</code> | Point number or point object. |
 
-<a name="module_azimuth..hasBeenBooted"></a>
+<a name="module_azimuth..hasBeenLinked"></a>
 
-### azimuth~hasBeenBooted(contracts, point) ⇒ <code>Promise.&lt;Bool&gt;</code>
+### azimuth~hasBeenLinked(contracts, point) ⇒ <code>Promise.&lt;Bool&gt;</code>
 Check if a point has been booted.
 
 **Kind**: inner method of [<code>azimuth</code>](#module_azimuth)  
@@ -567,13 +567,13 @@ Calculate the prefix of a point.
 | --- | --- | --- |
 | point | <code>Number</code> | Point number. |
 
-<a name="module_azimuth..getPointClass"></a>
+<a name="module_azimuth..getPointSize"></a>
 
-### azimuth~getPointClass(point) ⇒ <code>Number</code>
-Calculate the class of a point.
+### azimuth~getPointSize(point) ⇒ <code>Number</code>
+Calculate the size of a point.
 
 **Kind**: inner method of [<code>azimuth</code>](#module_azimuth)  
-**Returns**: <code>Number</code> - The point's class.  
+**Returns**: <code>Number</code> - The point's size.  
 
 | Param | Type | Description |
 | --- | --- | --- |

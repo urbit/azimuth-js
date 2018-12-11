@@ -9,7 +9,7 @@ Contract checks, assertions, and verifications
     * [~isGalaxy(point)](#module_check..isGalaxy) ⇒ <code>Bool</code>
     * [~isStar(point)](#module_check..isStar) ⇒ <code>Bool</code>
     * [~isPlanet(point)](#module_check..isPlanet) ⇒ <code>Bool</code>
-    * [~isParent(point)](#module_check..isParent) ⇒ <code>Bool</code>
+    * [~isPrefix(point)](#module_check..isPrefix) ⇒ <code>Bool</code>
     * [~isChild(point)](#module_check..isChild) ⇒ <code>Bool</code>
     * [~pollIsActive(poll)](#module_check..pollIsActive) ⇒ <code>Bool</code>
     * [~canStartPoll(poll)](#module_check..canStartPoll) ⇒ <code>Bool</code>
@@ -75,13 +75,13 @@ Check if something is a planet.
 | --- | --- | --- |
 | point | <code>Number</code> | Point number. |
 
-<a name="module_check..isParent"></a>
+<a name="module_check..isPrefix"></a>
 
-### check~isParent(point) ⇒ <code>Bool</code>
-Check if a point is a parent of another point.
+### check~isPrefix(point) ⇒ <code>Bool</code>
+Check if a point is a prefix of another point.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
-**Returns**: <code>Bool</code> - True if a parent, false otherwise.  
+**Returns**: <code>Bool</code> - True if a prefix, false otherwise.  
 
 | Param | Type | Description |
 | --- | --- | --- |

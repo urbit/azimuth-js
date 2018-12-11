@@ -94,11 +94,11 @@ function getKeyRevisionNumber(contracts, point) {
  * @param {Number | Object} point - Point number or point object.
  * @return {Promise<Bool>} True if it has been booted, false otherwise.
  */
-function hasBeenBooted(contracts, point) {
+function hasBeenLinked(contracts, point) {
   if (typeof point === 'object') {
     return point.keyRevisionNumber > 0;
   }
-  return internal.hasBeenBooted(contracts, point);
+  return internal.hasBeenLinked(contracts, point);
 }
 
 /**
@@ -306,21 +306,21 @@ function getPrefix(point) {
   return point % 65536;
 }
 
-let PointClass = {
+let PointSize = {
   Galaxy: 0,
   Star:   1,
   Planet: 2
 }
 
 /**
- * Calculate the class of a point.
+ * Calculate the size of a point.
  * @param {Number} point - Point number.
- * @return {Number} The point's class.
+ * @return {Number} The point's size.
  */
-function getPointClass(point) {
-  if (point < 256)   { return PointClass.Galaxy; }
-  if (point < 65536) { return PointClass.Star; }
-  return PointClass.Planet;
+function getPointSize(point) {
+  if (point < 256)   { return PointSize.Galaxy; }
+  if (point < 65536) { return PointSize.Star; }
+  return PointSize.Planet;
 }
 
 /**
@@ -504,7 +504,7 @@ module.exports = {
   isActive,
   getKeys,
   getKeyRevisionNumber,
-  hasBeenBooted,
+  hasBeenLinked,
   isLive,
   getContinuityNumber,
   getSpawnCount,
@@ -524,7 +524,7 @@ module.exports = {
   getTransferringForCount,
   getTransferringFor,
   getPrefix,
-  PointClass,
-  getPointClass,
+  PointSize,
+  getPointSize,
   isOperator
 }

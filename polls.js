@@ -6,12 +6,12 @@
 const internal = require('./internal/polls');
 
 /*
- * Get the ecliptic poll at the target address.
+ * Get the upgrade poll at the target address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} proposal - The target proposal address.
  * @return {Promise<Object>} The specified poll.
  */
-module.exports.getEclipticPoll = internal.getEclipticPoll;
+module.exports.getUpgradePoll = internal.getUpgradePoll;
 
 /*
  * Get the document poll at the target address.
@@ -43,7 +43,7 @@ module.exports.documentHasAchievedMajority = internal.documentHasAchievedMajorit
  * @param {String} proposal - The target proposal address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
-module.exports.hasVotedOnEclipticPoll = internal.hasVotedOnEclipticPoll;
+module.exports.hasVotedOnUpgradePoll = internal.hasVotedOnUpgradePoll;
 
 /*
  * Check if a galaxy has voted on a proposal.

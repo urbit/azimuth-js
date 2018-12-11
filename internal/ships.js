@@ -75,8 +75,8 @@ module.exports.getKeyRevisionNumber = (contracts, point) => {
   return contracts.azimuth.methods.getKeyRevisionNumber(point).call();
 }
 
-module.exports.hasBeenBooted = (contracts, point) => {
-  return contracts.azimuth.methods.hasBeenBooted(point).call();
+module.exports.hasBeenLinked = (contracts, point) => {
+  return contracts.azimuth.methods.hasBeenLinked(point).call();
 }
 
 module.exports.isLive = (contracts, point) => {

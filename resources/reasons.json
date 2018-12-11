@@ -3,7 +3,7 @@
   "zero":         "Cannot target the zero address",
   "inactive":     "Point is not active",
   "spawned":      "Point already spawned",
-  "spawnClass":   "Spawning galaxy planets is not supported",
+  "spawnSize":    "Spawning galaxy planets is not supported",
   "spawnPrefix":  "Prefix is unable to spawn children",
   "sponsorBoot":  "Sponsor has not been booted",
   "sponsor":      "Invalid sponsor for point",
