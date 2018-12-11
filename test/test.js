@@ -8,7 +8,7 @@ const ethUtil  = require('ethereumjs-util');
 
 const cjs = require('..');
 const check = cjs.check;
-const constitution = cjs.constitution;
+const ecliptic = cjs.ecliptic;
 const ships = cjs.ships;
 const txn = cjs.txn;
 
@@ -41,7 +41,7 @@ const zaddr = ethUtil.zeroAddress();
 // contract addresses
 
 const contractAddresses = {
-    constitution: '0x56db68f29203ff44a803faa2404a44ecbb7a7480',
+    ecliptic: '0x56db68f29203ff44a803faa2404a44ecbb7a7480',
     ships:        '0x863d9c2e5c4c133596cfac29d55255f0d0f86381',
     polls:        '0x935452c45eda2958976a429c9733c40302995efd',
     pool:         '0xb71c0b6cee1bcae56dfe95cd9d3e41ddd7eafc43'
@@ -128,7 +128,7 @@ function main() {
     it('generates usable transaction', async function() {
       assert.isFalse(await ships.isOwner(contracts, galaxy, ac0));
 
-      let tx = constitution.createGalaxy(contracts, galaxy, ac0);
+      let tx = ecliptic.createGalaxy(contracts, galaxy, ac0);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isOwner(contracts, galaxy, ac0));
@@ -150,7 +150,7 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
-      let tx = constitution.setManagementProxy(contracts, galaxy, ac2);
+      let tx = ecliptic.setManagementProxy(contracts, galaxy, ac2);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.canManage(contracts, galaxy, ac2));
@@ -170,12 +170,12 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
-      let tx = constitution.setVotingProxy(contracts, galaxy, ac2);
+      let tx = ecliptic.setVotingProxy(contracts, galaxy, ac2);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.canVoteAs(contracts, galaxy, ac2));
 
-      tx = constitution.setVotingProxy(contracts, galaxy, ac0);
+      tx = ecliptic.setVotingProxy(contracts, galaxy, ac0);
       await sendTransaction(web3, tx, pk0);
     });
 
@@ -197,7 +197,7 @@ function main() {
     });
 
     it('can spawn child to self, directly', async function() {
-      let tx = constitution.configureKeys(
+      let tx = ecliptic.configureKeys(
                  contracts, galaxy, '0xaa', '0xbb', 1, false);
       await sendTransaction(web3, tx, pk0);
 
@@ -210,10 +210,10 @@ function main() {
       assert.isFalse(await ships.isOwner(contracts, star1, ac0));
       assert.isFalse(await ships.isActive(contracts, star1));
 
-      let tx = constitution.spawn(contracts, star1, ac0);
+      let tx = ecliptic.spawn(contracts, star1, ac0);
       await sendTransaction(web3, tx, pk0);
 
-      tx = await constitution.configureKeys(
+      tx = await ecliptic.configureKeys(
              contracts, star1, '0xaa', '0xbb', 1, false);
       await sendTransaction(web3, tx, pk0);
 
@@ -222,7 +222,7 @@ function main() {
       assert.isFalse(await ships.isOwner(contracts, star2, ac0));
       assert.isFalse(await ships.isActive(contracts, star2));
 
-      tx = await constitution.spawn(contracts, star2, ac1);
+      tx = await ecliptic.spawn(contracts, star2, ac1);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isOwner(contracts, star2, ac0));
@@ -251,7 +251,7 @@ function main() {
     it('generates usable transaction', async function() {
       assert.isFalse(await ships.isSpawnProxy(contracts, galaxy, ac1));
 
-      let tx = constitution.setSpawnProxy(contracts, galaxy, ac1);
+      let tx = ecliptic.setSpawnProxy(contracts, galaxy, ac1);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isSpawnProxy(contracts, galaxy, ac1));
@@ -276,7 +276,7 @@ function main() {
     it('generates usable transaction', async function() {
       assert.isFalse(await ships.isOwner(contracts, star2, ac1));
 
-      let tx = constitution.transferShip(contracts, star2, ac1);
+      let tx = ecliptic.transferShip(contracts, star2, ac1);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isOwner(contracts, star2, ac1));
@@ -295,7 +295,7 @@ function main() {
     it('generates usable transaction', async function() {
       assert.isFalse(await ships.isTransferProxy(contracts, galaxy, ac1));
 
-      let tx = constitution.setTransferProxy(contracts, galaxy, ac1);
+      let tx = ecliptic.setTransferProxy(contracts, galaxy, ac1);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await ships.isTransferProxy(contracts, galaxy, ac1));
@@ -309,7 +309,7 @@ function main() {
       cant(await check.canConfigureKeys(contracts, galaxy, ac1),
            reasons.permission);
 
-      let tx = constitution.setManagementProxy(contracts, galaxy, ac1);
+      let tx = ecliptic.setManagementProxy(contracts, galaxy, ac1);
       await sendTransaction(web3, tx, pk0);
 
       can(await check.canConfigureKeys(contracts, galaxy, ac1));
@@ -333,7 +333,7 @@ function main() {
       assert.isFalse(await ships.isEscaping(contracts, star2));
       can(await check.canEscape(contracts, star2, star1, ac1));
 
-      let tx = constitution.escape(contracts, star2, star1);
+      let tx = ecliptic.escape(contracts, star2, star1);
       await sendTransaction(web3, tx, pk1);
 
       assert.isTrue(await ships.isEscaping(contracts, star2));
@@ -350,7 +350,7 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
-      let tx = constitution.cancelEscape(contracts, star2);
+      let tx = ecliptic.cancelEscape(contracts, star2);
       await sendTransaction(web3, tx, pk1);
 
       assert.isFalse(await ships.isEscaping(contracts, star2));
@@ -364,7 +364,7 @@ function main() {
       cant(await check.canAdopt(contracts, star2, ac0),
            reasons.notEscape);
 
-      let tx = constitution.escape(contracts, star2, star1);
+      let tx = ecliptic.escape(contracts, star2, star1);
       await sendTransaction(web3, tx, pk1);
 
       can(await check.canAdopt(contracts, star2, ac0));
@@ -374,7 +374,7 @@ function main() {
       let sponsor = (await ships.getShip(contracts, star2)).sponsor;
       assert.notEqual(sponsor, star1);
 
-      let tx = constitution.adopt(contracts, star2);
+      let tx = ecliptic.adopt(contracts, star2);
       await sendTransaction(web3, tx, pk0);
 
       sponsor = (await ships.getShip(contracts, star2)).sponsor;
@@ -389,7 +389,7 @@ function main() {
       cant(await check.canReject(contracts, star2, ac1),
            reasons.notEscape);
 
-      let tx = constitution.escape(contracts, star2, galaxy);
+      let tx = ecliptic.escape(contracts, star2, galaxy);
       await sendTransaction(web3, tx, pk1);
 
       can(await check.canReject(contracts, star2, ac1));
@@ -398,7 +398,7 @@ function main() {
     it('generates usable transaction', async function() {
       assert.isTrue(await ships.isEscaping(contracts, star2));
 
-      let tx = constitution.reject(contracts, star2);
+      let tx = ecliptic.reject(contracts, star2);
       await sendTransaction(web3, tx, pk1);
 
       assert.isFalse(await ships.isEscaping(contracts, star2));
@@ -416,7 +416,7 @@ function main() {
     it('generates usable transaction', async function() {
       assert.isTrue((await ships.getShip(contracts, star2)).hasSponsor);
 
-      let tx = constitution.detach(contracts, star2);
+      let tx = ecliptic.detach(contracts, star2);
       await sendTransaction(web3, tx, pk0);
 
       assert.isFalse((await ships.getShip(contracts, star2)).hasSponsor);
@@ -428,10 +428,10 @@ function main() {
 
   describe('#polls', async function() {
     it('cannot be done by non-voters', async function() {
-      cant(await check.canStartConstitutionPoll(web3, contracts, star1),
+      cant(await check.canStartEclipticPoll(web3, contracts, star1),
         reasons.notGalaxy);
 
-      cant(await check.canStartConstitutionPoll(web3, contracts, galaxy, zaddr, ac1),
+      cant(await check.canStartEclipticPoll(web3, contracts, galaxy, zaddr, ac1),
         reasons.permission);
 
       cant(await check.canStartDocumentPoll(contracts, star1),
@@ -440,10 +440,10 @@ function main() {
       cant(await check.canStartDocumentPoll(contracts, galaxy, zaddr, ac1),
         reasons.permission);
 
-      cant(await check.canCastConstitutionVote(contracts, star1),
+      cant(await check.canCastEclipticVote(contracts, star1),
         reasons.notGalaxy);
 
-      cant(await check.canCastConstitutionVote(contracts, galaxy, zaddr, ac1),
+      cant(await check.canCastEclipticVote(contracts, galaxy, zaddr, ac1),
         reasons.permission);
 
       cant(await check.canCastDocumentVote(contracts, star1),
@@ -454,7 +454,7 @@ function main() {
     });
 
     it('checks for proposal correctness', async function() {
-      cant(await check.canStartConstitutionPoll(web3, contracts, galaxy, ac2, ac0),
+      cant(await check.canStartEclipticPoll(web3, contracts, galaxy, ac2, ac0),
         reasons.upgradePath);
     });
 
@@ -471,19 +471,19 @@ function main() {
 
     //   await sendTransaction(
     //     web3,
-    //     constitution.startDocumentPoll(contracts, galaxy, fakeHash),
+    //     ecliptic.startDocumentPoll(contracts, galaxy, fakeHash),
     //     pk0);
 
     //   can(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0));
 
     //   await sendTransaction(
     //     web3,
-    //     constitution.castDocumentVote(contracts, galaxy, fakeHash, true),
+    //     ecliptic.castDocumentVote(contracts, galaxy, fakeHash, true),
     //     pk0);
 
     //   await sendTransaction(
     //     web3,
-    //     constitution.updateDocumentPoll(contracts, fakeHash),
+    //     ecliptic.updateDocumentPoll(contracts, fakeHash),
     //     pk0);
 
     //   // FIXME (jtobin): see fang-'s comment below

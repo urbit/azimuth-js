@@ -1,61 +1,61 @@
-<a name="module_constitution"></a>
+<a name="module_ecliptic"></a>
 
-## constitution
-Constitution API
+## ecliptic
+Ecliptic API
 
 
-* [constitution](#module_constitution)
-    * [.owner](#module_constitution.owner) ⇒ <code>Promise.&lt;String&gt;</code>
-    * [.balanceOf](#module_constitution.balanceOf) ⇒ <code>Promise.&lt;Number&gt;</code>
-    * [.ownerOf](#module_constitution.ownerOf) ⇒ <code>Promise.&lt;String&gt;</code>
-    * [.exists](#module_constitution.exists) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [.getApproved](#module_constitution.getApproved) ⇒ <code>Promise.&lt;String&gt;</code>
-    * [.isApprovedForAll](#module_constitution.isApprovedForAll) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [.getSpawnLimit](#module_constitution.getSpawnLimit) ⇒ <code>Promise.&lt;Number&gt;</code>
-    * [.canEscapeTo](#module_constitution.canEscapeTo) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [.safeTransferFrom](#module_constitution.safeTransferFrom) ⇒ <code>Object</code>
-    * [.transferFrom](#module_constitution.transferFrom) ⇒ <code>Object</code>
-    * [.approve](#module_constitution.approve) ⇒ <code>Object</code>
-    * [.setApprovalForAll](#module_constitution.setApprovalForAll) ⇒ <code>Object</code>
-    * [.setManagementProxy](#module_constitution.setManagementProxy) ⇒ <code>Object</code>
-    * [.configureKeys](#module_constitution.configureKeys) ⇒ <code>Object</code>
-    * [.spawn](#module_constitution.spawn) ⇒ <code>Object</code>
-    * [.setSpawnProxy](#module_constitution.setSpawnProxy) ⇒ <code>Object</code>
-    * [.transferShip](#module_constitution.transferShip) ⇒ <code>Object</code>
-    * [.setTransferProxy](#module_constitution.setTransferProxy) ⇒ <code>Object</code>
-    * [.escape](#module_constitution.escape) ⇒ <code>Object</code>
-    * [.cancelEscape](#module_constitution.cancelEscape) ⇒ <code>Object</code>
-    * [.adopt](#module_constitution.adopt) ⇒ <code>Object</code>
-    * [.reject](#module_constitution.reject) ⇒ <code>Object</code>
-    * [.detach](#module_constitution.detach) ⇒ <code>Object</code>
-    * [.setDelegate](#module_constitution.setDelegate) ⇒ <code>Object</code>
-    * [.startConstitutionPoll](#module_constitution.startConstitutionPoll) ⇒ <code>Object</code>
-    * [.startDocumentPoll](#module_constitution.startDocumentPoll) ⇒ <code>Object</code>
-    * [.castConstitutionVote](#module_constitution.castConstitutionVote) ⇒ <code>Object</code>
-    * [.castDocumentVote](#module_constitution.castDocumentVote) ⇒ <code>Object</code>
-    * [.updateConstitutionPoll](#module_constitution.updateConstitutionPoll) ⇒ <code>Object</code>
-    * [.updateDocumentPoll](#module_constitution.updateDocumentPoll) ⇒ <code>Object</code>
-    * [.createGalaxy](#module_constitution.createGalaxy) ⇒ <code>Object</code>
-    * [.setDnsDomains](#module_constitution.setDnsDomains) ⇒ <code>Object</code>
+* [ecliptic](#module_ecliptic)
+    * [.owner](#module_ecliptic.owner) ⇒ <code>Promise.&lt;String&gt;</code>
+    * [.balanceOf](#module_ecliptic.balanceOf) ⇒ <code>Promise.&lt;Number&gt;</code>
+    * [.ownerOf](#module_ecliptic.ownerOf) ⇒ <code>Promise.&lt;String&gt;</code>
+    * [.exists](#module_ecliptic.exists) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [.getApproved](#module_ecliptic.getApproved) ⇒ <code>Promise.&lt;String&gt;</code>
+    * [.isApprovedForAll](#module_ecliptic.isApprovedForAll) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [.getSpawnLimit](#module_ecliptic.getSpawnLimit) ⇒ <code>Promise.&lt;Number&gt;</code>
+    * [.canEscapeTo](#module_ecliptic.canEscapeTo) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [.safeTransferFrom](#module_ecliptic.safeTransferFrom) ⇒ <code>Object</code>
+    * [.transferFrom](#module_ecliptic.transferFrom) ⇒ <code>Object</code>
+    * [.approve](#module_ecliptic.approve) ⇒ <code>Object</code>
+    * [.setApprovalForAll](#module_ecliptic.setApprovalForAll) ⇒ <code>Object</code>
+    * [.setManagementProxy](#module_ecliptic.setManagementProxy) ⇒ <code>Object</code>
+    * [.configureKeys](#module_ecliptic.configureKeys) ⇒ <code>Object</code>
+    * [.spawn](#module_ecliptic.spawn) ⇒ <code>Object</code>
+    * [.setSpawnProxy](#module_ecliptic.setSpawnProxy) ⇒ <code>Object</code>
+    * [.transferShip](#module_ecliptic.transferShip) ⇒ <code>Object</code>
+    * [.setTransferProxy](#module_ecliptic.setTransferProxy) ⇒ <code>Object</code>
+    * [.escape](#module_ecliptic.escape) ⇒ <code>Object</code>
+    * [.cancelEscape](#module_ecliptic.cancelEscape) ⇒ <code>Object</code>
+    * [.adopt](#module_ecliptic.adopt) ⇒ <code>Object</code>
+    * [.reject](#module_ecliptic.reject) ⇒ <code>Object</code>
+    * [.detach](#module_ecliptic.detach) ⇒ <code>Object</code>
+    * [.setDelegate](#module_ecliptic.setDelegate) ⇒ <code>Object</code>
+    * [.startEclipticPoll](#module_ecliptic.startEclipticPoll) ⇒ <code>Object</code>
+    * [.startDocumentPoll](#module_ecliptic.startDocumentPoll) ⇒ <code>Object</code>
+    * [.castEclipticVote](#module_ecliptic.castEclipticVote) ⇒ <code>Object</code>
+    * [.castDocumentVote](#module_ecliptic.castDocumentVote) ⇒ <code>Object</code>
+    * [.updateEclipticPoll](#module_ecliptic.updateEclipticPoll) ⇒ <code>Object</code>
+    * [.updateDocumentPoll](#module_ecliptic.updateDocumentPoll) ⇒ <code>Object</code>
+    * [.createGalaxy](#module_ecliptic.createGalaxy) ⇒ <code>Object</code>
+    * [.setDnsDomains](#module_ecliptic.setDnsDomains) ⇒ <code>Object</code>
 
-<a name="module_constitution.owner"></a>
+<a name="module_ecliptic.owner"></a>
 
-### constitution.owner ⇒ <code>Promise.&lt;String&gt;</code>
-Get constitution contract owner.
+### ecliptic.owner ⇒ <code>Promise.&lt;String&gt;</code>
+Get ecliptic contract owner.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;String&gt;</code> - The owner address.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
 
-<a name="module_constitution.balanceOf"></a>
+<a name="module_ecliptic.balanceOf"></a>
 
-### constitution.balanceOf ⇒ <code>Promise.&lt;Number&gt;</code>
+### ecliptic.balanceOf ⇒ <code>Promise.&lt;Number&gt;</code>
 Get the amount of ships owned by an address.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;Number&gt;</code> - Number of ships.  
 
 | Param | Type | Description |
@@ -63,12 +63,12 @@ Get the amount of ships owned by an address.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | address | <code>String</code> | Owner's address. |
 
-<a name="module_constitution.ownerOf"></a>
+<a name="module_ecliptic.ownerOf"></a>
 
-### constitution.ownerOf ⇒ <code>Promise.&lt;String&gt;</code>
+### ecliptic.ownerOf ⇒ <code>Promise.&lt;String&gt;</code>
 Get the current owner of a ship.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;String&gt;</code> - Owner's address.  
 
 | Param | Type | Description |
@@ -76,12 +76,12 @@ Get the current owner of a ship.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | tokenId | <code>Number</code> | Ship token. |
 
-<a name="module_constitution.exists"></a>
+<a name="module_ecliptic.exists"></a>
 
-### constitution.exists ⇒ <code>Promise.&lt;Bool&gt;</code>
+### ecliptic.exists ⇒ <code>Promise.&lt;Bool&gt;</code>
 Check if a ship is active.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - true if ship is active, false otherwise.  
 
 | Param | Type | Description |
@@ -89,12 +89,12 @@ Check if a ship is active.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | tokenId | <code>Number</code> | Ship token. |
 
-<a name="module_constitution.getApproved"></a>
+<a name="module_ecliptic.getApproved"></a>
 
-### constitution.getApproved ⇒ <code>Promise.&lt;String&gt;</code>
+### ecliptic.getApproved ⇒ <code>Promise.&lt;String&gt;</code>
 Get the transfer proxy for a ship.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;String&gt;</code> - The transfer proxy's address.  
 
 | Param | Type | Description |
@@ -102,12 +102,12 @@ Get the transfer proxy for a ship.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | tokenId | <code>Number</code> | Ship token. |
 
-<a name="module_constitution.isApprovedForAll"></a>
+<a name="module_ecliptic.isApprovedForAll"></a>
 
-### constitution.isApprovedForAll ⇒ <code>Promise.&lt;Bool&gt;</code>
+### ecliptic.isApprovedForAll ⇒ <code>Promise.&lt;Bool&gt;</code>
 Check if an address is an operator for an owner.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - true if 'operator' is an operator for 'owner'.  
 
 | Param | Type | Description |
@@ -116,12 +116,12 @@ Check if an address is an operator for an owner.
 | owner | <code>String</code> | The owner's address. |
 | operator | <code>String</code> | The operator's address. |
 
-<a name="module_constitution.getSpawnLimit"></a>
+<a name="module_ecliptic.getSpawnLimit"></a>
 
-### constitution.getSpawnLimit ⇒ <code>Promise.&lt;Number&gt;</code>
+### ecliptic.getSpawnLimit ⇒ <code>Promise.&lt;Number&gt;</code>
 Return the total number of children a ship is allowed to spawn at some time.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;Number&gt;</code> - The spawn limit.  
 
 | Param | Type | Description |
@@ -130,12 +130,12 @@ Return the total number of children a ship is allowed to spawn at some time.
 | ship | <code>Number</code> | Ship token. |
 | time | <code>Number</code> | Time (uint256). |
 
-<a name="module_constitution.canEscapeTo"></a>
+<a name="module_ecliptic.canEscapeTo"></a>
 
-### constitution.canEscapeTo ⇒ <code>Promise.&lt;Bool&gt;</code>
+### ecliptic.canEscapeTo ⇒ <code>Promise.&lt;Bool&gt;</code>
 Check if a ship can escape to a sponsor.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if ship can escape, false otherwise.  
 
 | Param | Type | Description |
@@ -144,12 +144,12 @@ Check if a ship can escape to a sponsor.
 | ship | <code>Number</code> | Ship token. |
 | sponsor | <code>Number</code> | Sponsor's ship token. |
 
-<a name="module_constitution.safeTransferFrom"></a>
+<a name="module_ecliptic.safeTransferFrom"></a>
 
-### constitution.safeTransferFrom ⇒ <code>Object</code>
+### ecliptic.safeTransferFrom ⇒ <code>Object</code>
 Safely transfer a ship between addresses (call recipient if it's a contract).
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -159,12 +159,12 @@ Safely transfer a ship between addresses (call recipient if it's a contract).
 | to | <code>String</code> | Receiver's address. |
 | tokenId | <code>Number</code> | Ship token. |
 
-<a name="module_constitution.transferFrom"></a>
+<a name="module_ecliptic.transferFrom"></a>
 
-### constitution.transferFrom ⇒ <code>Object</code>
+### ecliptic.transferFrom ⇒ <code>Object</code>
 Transfer a ship between addresses (without notifying recipient contract).
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -174,12 +174,12 @@ Transfer a ship between addresses (without notifying recipient contract).
 | to | <code>String</code> | Receiver's address. |
 | tokenId | <code>Number</code> | Ship token. |
 
-<a name="module_constitution.approve"></a>
+<a name="module_ecliptic.approve"></a>
 
-### constitution.approve ⇒ <code>Object</code>
+### ecliptic.approve ⇒ <code>Object</code>
 Allow an address to transfer ownership of a ship.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -188,13 +188,13 @@ Allow an address to transfer ownership of a ship.
 | approved | <code>String</code> | The approved address. |
 | tokenId | <code>Number</code> | Ship token. |
 
-<a name="module_constitution.setApprovalForAll"></a>
+<a name="module_ecliptic.setApprovalForAll"></a>
 
-### constitution.setApprovalForAll ⇒ <code>Object</code>
+### ecliptic.setApprovalForAll ⇒ <code>Object</code>
 Allow or disallow an operator to transfer ownership of alL ships owner by
 the message sender.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -203,12 +203,12 @@ the message sender.
 | operator | <code>Address</code> | The operator's address. |
 | approved | <code>Bool</code> | Whether the operator is approved or not. |
 
-<a name="module_constitution.setManagementProxy"></a>
+<a name="module_ecliptic.setManagementProxy"></a>
 
-### constitution.setManagementProxy ⇒ <code>Object</code>
+### ecliptic.setManagementProxy ⇒ <code>Object</code>
 Configure the management address for all ships owned by the message sender.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -216,13 +216,13 @@ Configure the management address for all ships owned by the message sender.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | manager | <code>String</code> | The management address. |
 
-<a name="module_constitution.configureKeys"></a>
+<a name="module_ecliptic.configureKeys"></a>
 
-### constitution.configureKeys ⇒ <code>Object</code>
+### ecliptic.configureKeys ⇒ <code>Object</code>
 Configure a ship with Urbit public keys, incrementing the ship's continuity
 number if needed.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -234,12 +234,12 @@ number if needed.
 | cryptoSuiteVersion | <code>Number</code> | The crypto suite version. |
 | discontinuous | <code>Bool</code> | True to increment the continuity number. |
 
-<a name="module_constitution.spawn"></a>
+<a name="module_ecliptic.spawn"></a>
 
-### constitution.spawn ⇒ <code>Object</code>
+### ecliptic.spawn ⇒ <code>Object</code>
 Spawn a ship, giving ownership of it to the target address.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -248,12 +248,12 @@ Spawn a ship, giving ownership of it to the target address.
 | ship | <code>Number</code> | A ship token. |
 | target | <code>String</code> | The target address. |
 
-<a name="module_constitution.setSpawnProxy"></a>
+<a name="module_ecliptic.setSpawnProxy"></a>
 
-### constitution.setSpawnProxy ⇒ <code>Object</code>
+### ecliptic.setSpawnProxy ⇒ <code>Object</code>
 Give an address the right to spawn ships with the given prefix.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -262,13 +262,13 @@ Give an address the right to spawn ships with the given prefix.
 | prefix | <code>Number</code> | A (prefix) ship token. |
 | address | <code>String</code> | The address to designate as a spawn proxy. |
 
-<a name="module_constitution.transferShip"></a>
+<a name="module_ecliptic.transferShip"></a>
 
-### constitution.transferShip ⇒ <code>Object</code>
+### ecliptic.transferShip ⇒ <code>Object</code>
 Transfer a ship to a target address, optionally clearing all permissions
 data and keys.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -278,12 +278,12 @@ data and keys.
 | address | <code>String</code> | The target address. |
 | reset | <code>Bool</code> | True to reset ship's keys. |
 
-<a name="module_constitution.setTransferProxy"></a>
+<a name="module_ecliptic.setTransferProxy"></a>
 
-### constitution.setTransferProxy ⇒ <code>Object</code>
+### ecliptic.setTransferProxy ⇒ <code>Object</code>
 Give an address the right to transfer the given ship.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -292,12 +292,12 @@ Give an address the right to transfer the given ship.
 | prefix | <code>Number</code> | Ship token. |
 | address | <code>String</code> | The address to designate as a transfer proxy. |
 
-<a name="module_constitution.escape"></a>
+<a name="module_ecliptic.escape"></a>
 
-### constitution.escape ⇒ <code>Object</code>
+### ecliptic.escape ⇒ <code>Object</code>
 Request escape from 'ship' to 'sponsor'.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -306,12 +306,12 @@ Request escape from 'ship' to 'sponsor'.
 | ship | <code>Number</code> | Escapee's ship token. |
 | sponsor | <code>Number</code> | Sponsor's ship token. |
 
-<a name="module_constitution.cancelEscape"></a>
+<a name="module_ecliptic.cancelEscape"></a>
 
-### constitution.cancelEscape ⇒ <code>Object</code>
+### ecliptic.cancelEscape ⇒ <code>Object</code>
 Cancel the currently set escape for a ship.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -319,12 +319,12 @@ Cancel the currently set escape for a ship.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | ship | <code>Number</code> | Escapee's ship token. |
 
-<a name="module_constitution.adopt"></a>
+<a name="module_ecliptic.adopt"></a>
 
-### constitution.adopt ⇒ <code>Object</code>
+### ecliptic.adopt ⇒ <code>Object</code>
 As the sponsor, accept the escapee.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -333,12 +333,12 @@ As the sponsor, accept the escapee.
 | sponsor | <code>Number</code> | Sponsor's ship token. |
 | escapee | <code>Number</code> | Escapee's ship token. |
 
-<a name="module_constitution.reject"></a>
+<a name="module_ecliptic.reject"></a>
 
-### constitution.reject ⇒ <code>Object</code>
+### ecliptic.reject ⇒ <code>Object</code>
 As the sponsor, reject the escapee's escape request.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -347,12 +347,12 @@ As the sponsor, reject the escapee's escape request.
 | sponsor | <code>Number</code> | Sponsor's ship token. |
 | escapee | <code>Number</code> | Escapee's ship token. |
 
-<a name="module_constitution.detach"></a>
+<a name="module_ecliptic.detach"></a>
 
-### constitution.detach ⇒ <code>Object</code>
+### ecliptic.detach ⇒ <code>Object</code>
 As the sponsor, stop sponsoring the ship.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -361,12 +361,12 @@ As the sponsor, stop sponsoring the ship.
 | sponsor | <code>Number</code> | Sponsor's ship token. |
 | ship | <code>Number</code> | Ship token. |
 
-<a name="module_constitution.setDelegate"></a>
+<a name="module_ecliptic.setDelegate"></a>
 
-### constitution.setDelegate ⇒ <code>Object</code>
+### ecliptic.setDelegate ⇒ <code>Object</code>
 Configure the delegate address for all ships owned by the message sender.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -374,26 +374,26 @@ Configure the delegate address for all ships owned by the message sender.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | delegate | <code>String</code> | The delegate's address. |
 
-<a name="module_constitution.startConstitutionPoll"></a>
+<a name="module_ecliptic.startEclipticPoll"></a>
 
-### constitution.startConstitutionPoll ⇒ <code>Object</code>
-As a galaxy, start a poll for the constitution upgrade proposal.
+### ecliptic.startEclipticPoll ⇒ <code>Object</code>
+As a galaxy, start a poll for the ecliptic upgrade proposal.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | galaxy | <code>Number</code> | A (galaxy) ship token. |
-| proposal | <code>Object</code> | The constitution upgrade proposal. |
+| proposal | <code>Object</code> | The ecliptic upgrade proposal. |
 
-<a name="module_constitution.startDocumentPoll"></a>
+<a name="module_ecliptic.startDocumentPoll"></a>
 
-### constitution.startDocumentPoll ⇒ <code>Object</code>
+### ecliptic.startDocumentPoll ⇒ <code>Object</code>
 As a galaxy, start a poll for a proposal.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -402,12 +402,12 @@ As a galaxy, start a poll for a proposal.
 | galaxy | <code>Number</code> | A (galaxy) ship token. |
 | proposal | <code>String</code> | The proposal document. |
 
-<a name="module_constitution.castConstitutionVote"></a>
+<a name="module_ecliptic.castEclipticVote"></a>
 
-### constitution.castConstitutionVote ⇒ <code>Object</code>
-As a galaxy, cast a vote on the constitution upgrade proposal.
+### ecliptic.castEclipticVote ⇒ <code>Object</code>
+As a galaxy, cast a vote on the ecliptic upgrade proposal.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -417,12 +417,12 @@ As a galaxy, cast a vote on the constitution upgrade proposal.
 | proposal | <code>Object</code> | The upgrade proposal. |
 | vote | <code>Bool</code> | True if yes, false otherwise. |
 
-<a name="module_constitution.castDocumentVote"></a>
+<a name="module_ecliptic.castDocumentVote"></a>
 
-### constitution.castDocumentVote ⇒ <code>Object</code>
+### ecliptic.castDocumentVote ⇒ <code>Object</code>
 As a galaxy, cast a vote on the proposal.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -432,12 +432,12 @@ As a galaxy, cast a vote on the proposal.
 | proposal | <code>String</code> | The proposal document. |
 | vote | <code>Bool</code> | True if yes, false otherwise. |
 
-<a name="module_constitution.updateConstitutionPoll"></a>
+<a name="module_ecliptic.updateEclipticPoll"></a>
 
-### constitution.updateConstitutionPoll ⇒ <code>Object</code>
+### ecliptic.updateEclipticPoll ⇒ <code>Object</code>
 Check whether the proposal has achieved majority, upgrading to it if so.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -445,12 +445,12 @@ Check whether the proposal has achieved majority, upgrading to it if so.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | proposal | <code>Object</code> | The upgrade proposal. |
 
-<a name="module_constitution.updateDocumentPoll"></a>
+<a name="module_ecliptic.updateDocumentPoll"></a>
 
-### constitution.updateDocumentPoll ⇒ <code>Object</code>
+### ecliptic.updateDocumentPoll ⇒ <code>Object</code>
 Check whether the proposal has achieved majority.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -458,12 +458,12 @@ Check whether the proposal has achieved majority.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | proposal | <code>Object</code> | The proposal document. |
 
-<a name="module_constitution.createGalaxy"></a>
+<a name="module_ecliptic.createGalaxy"></a>
 
-### constitution.createGalaxy ⇒ <code>Object</code>
+### ecliptic.createGalaxy ⇒ <code>Object</code>
 Grant the target address ownership of the galaxy and register it for voting.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
@@ -472,12 +472,12 @@ Grant the target address ownership of the galaxy and register it for voting.
 | galaxy | <code>Number</code> | A (galaxy) ship token. |
 | target | <code>String</code> | The target address. |
 
-<a name="module_constitution.setDnsDomains"></a>
+<a name="module_ecliptic.setDnsDomains"></a>
 
-### constitution.setDnsDomains ⇒ <code>Object</code>
-Set primary, secondary, adn tertiary DNS domains for the constitution.
+### ecliptic.setDnsDomains ⇒ <code>Object</code>
+Set primary, secondary, adn tertiary DNS domains for the ecliptic.
 
-**Kind**: static property of [<code>constitution</code>](#module_constitution)  
+**Kind**: static property of [<code>ecliptic</code>](#module_ecliptic)  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
 
 | Param | Type | Description |

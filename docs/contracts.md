@@ -15,5 +15,5 @@ provided addresses.
 | Param | Type | Description |
 | --- | --- | --- |
 | web3 | <code>Object</code> | A web3 instance. |
-| ship | <code>Object</code> | An addresses object.  Must provide addresses for   constitution, ships, polls, and pool contracts, at those respective key   names. |
+| ship | <code>Object</code> | An addresses object.  Must provide addresses for   ecliptic, ships, polls, and pool contracts, at those respective key   names. |
 

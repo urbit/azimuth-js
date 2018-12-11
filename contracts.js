@@ -3,8 +3,8 @@
  * @module contracts
  */
 
-const constitutionAbi =
-  require('urbit-azimuth/build/contracts/Constitution.json').abi;
+const eclipticAbi =
+  require('urbit-azimuth/build/contracts/Ecliptic.json').abi;
 
 const shipsAbi =
   require('urbit-azimuth/build/contracts/Ships.json').abi;
@@ -17,11 +17,11 @@ const pollsAbi =
  * provided addresses.
  * @param {Object} web3 - A web3 instance.
  * @param {Object} addresses - An addresses object.  Must provide addresses for
- *   constitution, ships, and polls contracts, at those respective key names.
+ *   ecliptic, ships, and polls contracts, at those respective key names.
  * @return {Object} The initialised contracts.
  */
 const initContracts = (web3, addresses) => ({
-  constitution: newConstitution(web3, addresses.constitution),
+  ecliptic: newEcliptic(web3, addresses.ecliptic),
   ships: newShips(web3, addresses.ships),
   polls: newPolls(web3, addresses.polls),
 });
@@ -35,19 +35,19 @@ const initContracts = (web3, addresses) => ({
  */
 const initContractsPartial = async (web3, shipsAddress) => {
   let ships = newShips(web3, shipsAddress);
-  let constitutionAddress = await ships.methods.owner().call();
-  let constitution = newConstitution(web3, constitutionAddress);
-  let pollsAddress = await constitution.methods.polls().call();
+  let eclipticAddress = await ships.methods.owner().call();
+  let ecliptic = newEcliptic(web3, eclipticAddress);
+  let pollsAddress = await ecliptic.methods.polls().call();
   let polls = newPolls(web3, pollsAddress);
   return {
-    constitution: constitution,
+    ecliptic: ecliptic,
     ships: ships,
     polls: polls
   };
 }
 
-const newConstitution = (web3, address) =>
-  new web3.eth.Contract(constitutionAbi, address);
+const newEcliptic = (web3, address) =>
+  new web3.eth.Contract(eclipticAbi, address);
 
 const newShips = (web3, address) =>
   new web3.eth.Contract(shipsAbi, address);
@@ -58,7 +58,7 @@ const newPolls = (web3, address) =>
 module.exports = {
   initContracts,
   initContractsPartial,
-  constitutionAbi,
+  eclipticAbi,
   shipsAbi,
   pollsAbi
 }

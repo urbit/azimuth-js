@@ -6,12 +6,12 @@
 const internal = require('./internal/polls');
 
 /*
- * Get the constitution poll at the target address.
+ * Get the ecliptic poll at the target address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} proposal - The target proposal address.
  * @return {Promise<Object>} The specified poll.
  */
-module.exports.getConstitutionPoll = internal.getConstitutionPoll;
+module.exports.getEclipticPoll = internal.getEclipticPoll;
 
 /*
  * Get the document poll at the target address.
@@ -22,12 +22,12 @@ module.exports.getConstitutionPoll = internal.getConstitutionPoll;
 module.exports.getDocumentPoll = internal.getDocumentPoll;
 
 /*
- * Check if a constitution proposal has achieved a majority.
+ * Check if a ecliptic proposal has achieved a majority.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} proposal - The target proposal address.
  * @return {Promise<Bool>} True if majority achieved, false otherwise.
  */
-module.exports.constitutionHasAchievedMajority = internal.constitutionHasAchievedMajority;
+module.exports.eclipticHasAchievedMajority = internal.eclipticHasAchievedMajority;
 
 /*
  * Check if a document proposal has achieved a majority.
@@ -43,7 +43,7 @@ module.exports.documentHasAchievedMajority = internal.documentHasAchievedMajorit
  * @param {String} proposal - The target proposal address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
-module.exports.hasVotedOnConstitutionPoll = internal.hasVotedOnConstitutionPoll;
+module.exports.hasVotedOnEclipticPoll = internal.hasVotedOnEclipticPoll;
 
 /*
  * Check if a galaxy has voted on a proposal.

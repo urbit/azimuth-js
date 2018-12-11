@@ -1,12 +1,12 @@
 /**
- * Constitution API
- * @module constitution
+ * Ecliptic API
+ * @module ecliptic
  */
 
-const internal = require('./internal/constitution');
+const internal = require('./internal/ecliptic');
 
 /**
- * Get constitution contract owner.
+ * Get ecliptic contract owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<String>} The owner address.
  */
@@ -222,13 +222,13 @@ module.exports.detach = internal.detach;
 module.exports.setVotingProxy = internal.setVotingProxy;
 
 /**
- * As a galaxy, start a poll for the constitution upgrade proposal.
+ * As a galaxy, start a poll for the ecliptic upgrade proposal.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} galaxy - A (galaxy) ship token.
- * @param {Object} proposal - The constitution upgrade proposal.
+ * @param {Object} proposal - The ecliptic upgrade proposal.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.startConstitutionPoll = internal.startConstitutionPoll;
+module.exports.startEclipticPoll = internal.startEclipticPoll;
 
 /**
  * As a galaxy, start a poll for a proposal.
@@ -240,14 +240,14 @@ module.exports.startConstitutionPoll = internal.startConstitutionPoll;
 module.exports.startDocumentPoll = internal.startDocumentPoll;
 
 /**
- * As a galaxy, cast a vote on the constitution upgrade proposal.
+ * As a galaxy, cast a vote on the ecliptic upgrade proposal.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} galaxy - A (galaxy) ship token.
  * @param {Object} proposal - The upgrade proposal.
  * @param {Bool} vote - True if yes, false otherwise.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.castConstitutionVote = internal.castConstitutionVote;
+module.exports.castEclipticVote = internal.castEclipticVote;
 
 /**
  * As a galaxy, cast a vote on the proposal.
@@ -265,7 +265,7 @@ module.exports.castDocumentVote = internal.castDocumentVote;
  * @param {Object} proposal - The upgrade proposal.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.updateConstitutionPoll = internal.updateConstitutionPoll;
+module.exports.updateEclipticPoll = internal.updateEclipticPoll;
 
 /**
  * Check whether the proposal has achieved majority.
@@ -285,7 +285,7 @@ module.exports.updateDocumentPoll = internal.updateDocumentPoll;
 module.exports.createGalaxy = internal.createGalaxy;
 
 /**
- * Set primary, secondary, adn tertiary DNS domains for the constitution.
+ * Set primary, secondary, adn tertiary DNS domains for the ecliptic.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} primary - Primary DNS address.
  * @param {String} secondary - Secondary DNS address.

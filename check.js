@@ -3,8 +3,8 @@
  * @module check
  */
 
-const { constitutionAbi } = require('./contracts');
-const constitution = require('./constitution');
+const { eclipticAbi } = require('./contracts');
+const ecliptic = require('./ecliptic');
 const ships = require('./ships');
 const polls = require('./polls');
 const utils = require('./utils');
@@ -104,13 +104,13 @@ async function hasOwner(contracts, ship) {
 }
 
 /**
- * Check if an address is the constitution owner.
+ * Check if an address is the ecliptic owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - Owner's address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
-async function isConstitutionOwner(contracts, address) {
-  return utils.addressEquals(address, await constitution.owner(contracts));
+async function isEclipticOwner(contracts, address) {
+  return utils.addressEquals(address, await ecliptic.owner(contracts));
 }
 
 // NB (jtobin):
@@ -132,8 +132,8 @@ async function canCreateGalaxy(contracts, galaxy, address) {
     res.reason = reasons.zero;
     return res;
   }
-  // must be constitution owner
-  if (!await isConstitutionOwner(contracts, address)) {
+  // must be ecliptic owner
+  if (!await isEclipticOwner(contracts, address)) {
     res.reason = reasons.permission;
     return res;
   }
@@ -188,7 +188,7 @@ async function canSpawn(contracts, ship, target) {
 
   // parent must be live and able to spawn
   let ts         = Math.round(new Date().getTime() / 1000);
-  let spawnLimit = await constitution.getSpawnLimit(contracts, prefix, ts);
+  let spawnLimit = await ecliptic.getSpawnLimit(contracts, prefix, ts);
   if (!ships.hasBeenBooted(contracts, parentShipObj) ||
       (await ships.getSpawnCount(contracts, ship)) >= spawnLimit)
   {
@@ -452,7 +452,7 @@ async function checkActiveShipVoter(contracts, galaxy, voter) {
 }
 
 /**
- * Check if a target address and ship can initiate a constitution poll at the
+ * Check if a target address and ship can initiate a ecliptic poll at the
  *  given address.
  * @param {Object} web3 - A web3 object.
  * @param {Object} contracts - An Urbit contracts object.
@@ -461,28 +461,28 @@ async function checkActiveShipVoter(contracts, galaxy, voter) {
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, address) {
+async function canStartEclipticPoll(web3, contracts, galaxy, proposal, address) {
   let asv = await checkActiveShipVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false};
-  let prop = new web3.eth.Contract(constitutionAbi, proposal);
+  let prop = new web3.eth.Contract(eclipticAbi, proposal);
   let expected;
   try {
-    expected = await prop.methods.previousConstitution().call()
+    expected = await prop.methods.previousEcliptic().call()
   } catch(e) {
     expected = false;
   }
-  if (contracts.constitution._address !== expected) // FIXME (jtobin): inappropriate comparison here
+  if (contracts.ecliptic._address !== expected) // FIXME (jtobin): inappropriate comparison here
   {
     res.reason = reasons.upgradePath;
     return res;
   }
-  if (await polls.constitutionHasAchievedMajority(contracts, proposal))
+  if (await polls.eclipticHasAchievedMajority(contracts, proposal))
   {
     res.reason = reasons.majority;
     return res;
   }
-  if (!canStartPoll(await polls.getConstitutionPoll(contracts, proposal)))
+  if (!canStartPoll(await polls.getEclipticPoll(contracts, proposal)))
   {
     res.reason = reasons.pollTime;
     return res;
@@ -526,25 +526,25 @@ async function canStartDocumentPoll(contracts, galaxy, proposal, address) {
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canCastConstitutionVote(contracts, galaxy, proposal, address)
+async function canCastEclipticVote(contracts, galaxy, proposal, address)
 {
   let asv = await checkActiveShipVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false };
   // proposal must not have achieved majority before
-  if (await polls.constitutionHasAchievedMajority(contracts, proposal))
+  if (await polls.eclipticHasAchievedMajority(contracts, proposal))
   {
     res.reason = reasons.majority;
     return res;
   }
   // may only vote when the poll is open
-  if (!pollIsActive(await polls.getConstitutionPoll(contracts, proposal)))
+  if (!pollIsActive(await polls.getEclipticPoll(contracts, proposal)))
   {
     res.reason = reasons.pollInactive;
     return res;
   }
   // may only vote once
-  if (await polls.hasVotedOnConstitutionPoll(contracts, galaxy, proposal))
+  if (await polls.hasVotedOnEclipticPoll(contracts, galaxy, proposal))
   {
     res.reason = reasons.pollVoted;
     return res;
@@ -590,13 +590,13 @@ async function canCastDocumentVote(contracts, galaxy, proposal, address)
 }
 
 /**
- * Check if the target address can set the DNS domains for the constitution.
+ * Check if the target address can set the DNS domains for the ecliptic.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - Target address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 function canSetDnsDomains(contracts, address) {
-  return isConstitutionOwner(contracts, address);
+  return isEclipticOwner(contracts, address);
 }
 
 
@@ -715,7 +715,7 @@ async function csrCanForfeit(contracts, batch, address) {
 }
 
 module.exports = {
-  constitution,
+  ecliptic,
   ships,
   polls,
   isShip,
@@ -727,7 +727,7 @@ module.exports = {
   pollIsActive,
   canStartPoll,
   hasOwner,
-  isConstitutionOwner,
+  isEclipticOwner,
   canCreateGalaxy,
   canSpawn,
   canSetManagementProxy,
@@ -742,9 +742,9 @@ module.exports = {
   canDetach,
   checkActiveShipManager,
   checkActiveShipVoter,
-  canStartConstitutionPoll,
+  canStartEclipticPoll,
   canStartDocumentPoll,
-  canCastConstitutionVote,
+  canCastEclipticVote,
   canCastDocumentVote,
   canSetDnsDomains,
   lsrCanWithdraw,

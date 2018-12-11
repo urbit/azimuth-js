@@ -14,7 +14,7 @@ Contract checks, assertions, and verifications
     * [~pollIsActive(poll)](#module_check..pollIsActive) ⇒ <code>Bool</code>
     * [~canStartPoll(poll)](#module_check..canStartPoll) ⇒ <code>Bool</code>
     * [~hasOwner(contracts, tokenId)](#module_check..hasOwner) ⇒ <code>Promise.&lt;Bool&gt;</code>
-    * [~isConstitutionOwner(contracts, address)](#module_check..isConstitutionOwner) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~isEclipticOwner(contracts, address)](#module_check..isEclipticOwner) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~canCreateGalaxy(contracts, tokenId, address)](#module_check..canCreateGalaxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~canSpawn(contracts, tokenId, address)](#module_check..canSpawn) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~canSetSpawnProxy(contracts, tokenId, address)](#module_check..canSetSpawnProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
@@ -136,10 +136,10 @@ Check if a ship has an owner.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | tokenId | <code>Number</code> | Ship token. |
 
-<a name="module_check..isConstitutionOwner"></a>
+<a name="module_check..isEclipticOwner"></a>
 
-### check~isConstitutionOwner(contracts, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if an address is the constitution owner.
+### check~isEclipticOwner(contracts, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if an address is the ecliptic owner.
 
 **Kind**: inner method of [<code>check</code>](#module_check)  
 **Returns**: <code>Promise.&lt;Bool&gt;</code> - True if so, false otherwise.  

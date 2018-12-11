@@ -8,7 +8,7 @@
 const accounts = require('./accounts');
 const check = require('./check');
 const conditionalSR = require('./conditionalSR');
-const constitution = require('./constitution');
+const ecliptic = require('./ecliptic');
 const contracts = require('./contracts');
 const linearSR = require('./linearSR');
 const polls = require('./polls');
@@ -23,7 +23,7 @@ const getKeyPair = accounts.getKeyPair;
 module.exports = {
   check,
   conditionalSR,
-  constitution,
+  ecliptic,
   linearSR,
   polls,
   ships,
