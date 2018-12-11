@@ -1,10 +1,10 @@
 {
-  "name": "urbit-constitution-js",
+  "name": "azimuth-js",
   "version": "0.7.1",
   "description": "Functions for interacting with Azimuth",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/urbit/constitution-js.git"
+    "url": "git+https://github.com/urbit/azimuth-js.git"
   },
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,6 @@
     "test": "npm-run-all test:setup test:mocha test:cleanup --continue-on-error"
   },
   "keywords": [
-    "urbit",
     "azimuth",
     "ecliptic",
     "smart",
