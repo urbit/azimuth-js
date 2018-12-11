@@ -15,5 +15,5 @@ provided addresses.
 | Param | Type | Description |
 | --- | --- | --- |
 | web3 | <code>Object</code> | A web3 instance. |
-| point | <code>Object</code> | An addresses object.  Must provide addresses for   ecliptic, azimuth, polls, and pool contracts, at those respective key   names. |
+| point | <code>Object</code> | An addresses object.  Must provide addresses for   ecliptic, azimuth, and polls contracts, at those respective key   names. |
 
