@@ -11,8 +11,8 @@ module.exports.getRights = (contracts, point) => {
   return contracts.azimuth.methods.rights(point).call();
 }
 
-module.exports.getOwnedPointsByAddress = (contracts, address) => {
-  return contracts.azimuth.methods.getOwnedPointsByAddress(address).call();
+module.exports.getOwnedPoints = (contracts, address) => {
+  return contracts.azimuth.methods.getOwnedPoints(address).call();
 }
 
 module.exports.getOwnedPointCount = (contracts, address) => {

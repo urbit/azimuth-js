@@ -355,7 +355,7 @@ async function getPoint(contracts, point, what) {
  * @param {String} address - The target address.
  * @return {Promise<Array<Number>>} An array of owned azimuth.
  */
-const getOwnedPointsByAddress = internal.getOwnedPointsByAddress;
+const getOwnedPoints = internal.getOwnedPoints;
 
 /**
  * Get a count of points owned by an address.
@@ -488,7 +488,7 @@ const isOperator = internal.isOperator;
 module.exports = {
   owner,
   getPoint,
-  getOwnedPointsByAddress,
+  getOwnedPoints,
   getOwnedPointCount,
   getOwnedPointAtIndex,
   isManagementProxy,
