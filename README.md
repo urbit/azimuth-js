@@ -1,16 +1,17 @@
-# urbit-constitution-js
+# azimuth-js
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/constitution-js/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/urbit-constitution-js.svg)](https://www.npmjs.com/package/urbit-constitution-js)
 
-Interact with [Azimuth](https://github.com/urbit/azimuth) from Javascript.
+Interact with [Azimuth](https://github.com/urbit/azimuth-solidity) from
+Javascript.
 
 ## Install
 
 Just grab from npm like so:
 
 ```
-npm install urbit-constitution-js
+npm install azimuth-js
 ```
 
 ## API Reference
@@ -22,23 +23,23 @@ npm install urbit-constitution-js
 Require the library via something like:
 
 ```javascript
-const cjs = require('urbit-constitution-js');
+const azimuth = require('azimuth-js');
 ```
 
-In general: use the functions in `cjs.ecliptic`, `cjs.azimuth`, and
-`cjs.polls` to interact with the corresponding Ethereum contracts.  Use
-`cjs.check` to verify any required state is what you expect it to be.
-`cjs.txn` contains functions for signing and sending transactions, and
-`cjs.utils` mostly re-exports useful utility functions from
+In general: use the functions in `azimuth.ecliptic`, `azimuth.azimuth`, and
+`azimuth.polls` to interact with the corresponding Ethereum contracts.  Use
+`azimuth.check` to verify any required state is what you expect it to be.
+`azimuth.txn` contains functions for signing and sending transactions, and
+`azimuth.utils` mostly re-exports useful utility functions from
 [ethereumjs-util](https://github.com/ethereumjs/ethereumjs-util).
 
 You might want to define something like the following, for convenience:
 
 ```javascript
-const ecliptic = cjs.ecliptic;
-const azimuth = cjs.azimuth;
-const check = cjs.check;
-const txn = cjs.txn
+const ecliptic = azimuth.ecliptic;
+const azimuth = azimuth.azimuth;
+const check = azimuth.check;
+const txn = azimuth.txn
 ```
 
 The library exposes a purely-functional API.  This means you'll have to supply
@@ -59,12 +60,12 @@ let contractAddresses = {
     polls:    '0x935452c45eda2958976a429c9733c40302995efd'
   }
 
-let contracts = cjs.initContracts(web3, contractAddresses);
+let contracts = azimuth.initContracts(web3, contractAddresses);
 ```
 
-Note that the web3 object is passed to `cjs.initContracts` explicitly.  Aside
-from contract initialisation, this is typically only required when sending
-transactions (more below).
+Note that the web3 object is passed to `azimuth.initContracts` explicitly.
+Aside from contract initialisation, this is typically only required when
+sending transactions (more below).
 
 When interacting with the contract APIs, on the other hand, you'll almost
 always have to pass a contracts object explicitly.  For example:
@@ -150,7 +151,7 @@ to run the tests on a one-off local Ganache node.
 
 For debugging and custom testing, you'll need a local testnet running Azimuth.
 
-1. Clone [Azimuth](https://github.com/urbit/azimuth)
+1. Clone [Azimuth](https://github.com/urbit/azimuth-solidity)
 2. `cd` into the repo and `npm install`
 3. `npm install -g ganache-cli`
 3. Run a local `ganache` node, boot using the following command to ensure a matching seed:
