@@ -4,13 +4,13 @@
  */
 
 const eclipticAbi =
-  require('urbit-azimuth/build/contracts/Ecliptic.json').abi;
+  require('azimuth-solidity/build/contracts/Ecliptic.json').abi;
 
 const azimuthAbi =
-  require('urbit-azimuth/build/contracts/Azimuth.json').abi;
+  require('azimuth-solidity/build/contracts/Azimuth.json').abi;
 
 const pollsAbi =
-  require('urbit-azimuth/build/contracts/Polls.json').abi;
+  require('azimuth-solidity/build/contracts/Polls.json').abi;
 
 /**
  * Create a collection of Urbit contracts, given a web3 instance and their
