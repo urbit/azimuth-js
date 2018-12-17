@@ -1,14 +1,14 @@
 {
-  "name": "urbit-constitution-js",
-  "version": "0.7.1",
+  "name": "azimuth-js",
+  "version": "0.8.0",
   "description": "Functions for interacting with Azimuth",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/urbit/constitution-js.git"
+    "url": "git+https://github.com/urbit/azimuth-js.git"
   },
   "main": "index.js",
   "scripts": {
-    "test:deploy": "cd node_modules/urbit-azimuth && truffle compile && truffle deploy",
+    "test:deploy": "cd node_modules/azimuth-solidity && truffle compile && truffle deploy",
     "test:ganache": "ganache-cli -m 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten' > /dev/null &",
     "test:setup": "npm run test:ganache && npm run test:deploy",
     "test:mocha": "nyc mocha --reporter spec",
@@ -16,8 +16,8 @@
     "test": "npm-run-all test:setup test:mocha test:cleanup --continue-on-error"
   },
   "keywords": [
-    "urbit",
-    "constitution",
+    "azimuth",
+    "ecliptic",
     "smart",
     "contract"
   ],
@@ -33,16 +33,16 @@
     "truffle": "^4.1.14"
   },
   "dependencies": {
-    "urbit-azimuth": "0.9.1",
+    "azimuth-solidity": "1.0.0",
     "ethereumjs-util": "^5.2.0",
     "web3": "^1.0.0-beta.36"
   },
   "author": "Tlon",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/urbit/constitution-js/issues"
+    "url": "https://github.com/urbit/azimuth-js/issues"
   },
-  "homepage": "https://github.com/urbit/constitution-js",
+  "homepage": "https://github.com/urbit/azimuth-js",
   "directories": {
     "test": "test"
   }

@@ -3,9 +3,9 @@
  * @module check
  */
 
-const { constitutionAbi } = require('./contracts');
-const constitution = require('./constitution');
-const ships = require('./ships');
+const { eclipticAbi } = require('./contracts');
+const ecliptic = require('./ecliptic');
+const azimuth = require('./azimuth');
 const polls = require('./polls');
 const utils = require('./utils');
 const reasons = require('./resources/reasons.json');
@@ -15,57 +15,57 @@ const MAXSTAR = 65535;
 const MAXPLANET = 4294967295;
 
 /**
- * Check if something is a ship.
- * @param {Number} ship - Ship token.
- * @return {Bool} True if a ship, false otherwise.
+ * Check if something is a point.
+ * @param {Number} point - Point number.
+ * @return {Bool} True if a point, false otherwise.
  */
-function isShip(ship) {
-  return (typeof ship === 'number' && ship >= 0 && ship <= MAXPLANET);
+function isPoint(point) {
+  return (typeof point === 'number' && point >= 0 && point <= MAXPLANET);
 }
 
 /**
  * Check if something is a galaxy.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @return {Bool} True if a galaxy, false otherwise.
  */
-function isGalaxy(ship) {
-  return (typeof ship === 'number' && ship >= 0 && ship <= MAXGALAXY);
+function isGalaxy(point) {
+  return (typeof point === 'number' && point >= 0 && point <= MAXGALAXY);
 }
 
 /**
  * Check if something is a star.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @return {Bool} True if a star, false otherwise.
  */
-function isStar(ship) {
-  return (typeof ship === 'number' && ship > MAXGALAXY && ship <= MAXSTAR);
+function isStar(point) {
+  return (typeof point === 'number' && point > MAXGALAXY && point <= MAXSTAR);
 }
 
 /**
  * Check if something is a planet.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @return {Bool} True if a planet, false otherwise.
  */
-function isPlanet(ship) {
-  return (typeof ship === 'number' && ship > MAXSTAR && ship <= MAXPLANET);
+function isPlanet(point) {
+  return (typeof point === 'number' && point > MAXSTAR && point <= MAXPLANET);
 }
 
 /**
- * Check if a ship is a parent of another ship.
- * @param {Number} ship - Ship token.
- * @return {Bool} True if a parent, false otherwise.
+ * Check if a point is a prefix of another point.
+ * @param {Number} point - Point number.
+ * @return {Bool} True if a prefix, false otherwise.
  */
-function isParent(ship) {
-  return (typeof ship === 'number' && ship > 0 && ship <= MAXSTAR);
+function isPrefix(point) {
+  return (typeof point === 'number' && point > 0 && point <= MAXSTAR);
 }
 
 /**
- * Check if a ship is a child of another ship.
- * @param {Number} ship - Ship token.
+ * Check if a point is a child of another point.
+ * @param {Number} point - Point number.
  * @return {Bool} True if a child, false otherwise.
  */
-function isChild(ship) {
-  return (typeof ship === 'number' && ship > MAXGALAXY && ship <= MAXPLANET);
+function isChild(point) {
+  return (typeof point === 'number' && point > MAXGALAXY && point <= MAXPLANET);
 }
 
 /**
@@ -91,26 +91,26 @@ function canStartPoll(poll) {
 }
 
 /**
- * Check if a ship has an owner.
+ * Check if a point has an owner.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
-async function hasOwner(contracts, ship) {
-  if (typeof ship === 'object') {
-    return !utils.addressEquals(ship.owner, utils.zeroAddress());
+async function hasOwner(contracts, point) {
+  if (typeof point === 'object') {
+    return !utils.addressEquals(point.owner, utils.zeroAddress());
   }
-  return !await ships.isOwner(contracts, ship, utils.zeroAddress());
+  return !await azimuth.isOwner(contracts, point, utils.zeroAddress());
 }
 
 /**
- * Check if an address is the constitution owner.
+ * Check if an address is the ecliptic owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - Owner's address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
-async function isConstitutionOwner(contracts, address) {
-  return utils.addressEquals(address, await constitution.owner(contracts));
+async function isEclipticOwner(contracts, address) {
+  return utils.addressEquals(address, await ecliptic.owner(contracts));
 }
 
 // NB (jtobin):
@@ -121,7 +121,7 @@ async function isConstitutionOwner(contracts, address) {
 /**
  * Check if an address can create the specified galaxy.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
@@ -132,8 +132,8 @@ async function canCreateGalaxy(contracts, galaxy, address) {
     res.reason = reasons.zero;
     return res;
   }
-  // must be constitution owner
-  if (!await isConstitutionOwner(contracts, address)) {
+  // must be ecliptic owner
+  if (!await isEclipticOwner(contracts, address)) {
     res.reason = reasons.permission;
     return res;
   }
@@ -147,13 +147,13 @@ async function canCreateGalaxy(contracts, galaxy, address) {
 }
 
 /**
- * Check if an address can spawn the given ship.
+ * Check if an address can spawn the given point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canSpawn(contracts, ship, target) {
+async function canSpawn(contracts, point, target) {
   let res = { result: false };
 
   // prevents targeting the zero address
@@ -161,36 +161,36 @@ async function canSpawn(contracts, ship, target) {
     res.reason = reasons.zero;
     return res;
   }
-  let prefix        = ships.getPrefix(ship);
-  let parentShipObj = await ships.getShip(contracts, prefix);
+  let prefix        = azimuth.getPrefix(point);
+  let prefixPointObj = await azimuth.getPoint(contracts, prefix);
 
-  // must either be the owner of the parentShipObj, or a spawn proxy for it
-  if (!ships.isOwner(contracts, parentShipObj, target) &&
-      !ships.isSpawnProxy(contracts, parentShipObj, target))
+  // must either be the owner of the prefixPointObj, or a spawn proxy for it
+  if (!azimuth.isOwner(contracts, prefixPointObj, target) &&
+      !azimuth.isSpawnProxy(contracts, prefixPointObj, target))
   {
     res.reason = reasons.permission;
     return res;
   }
 
-  // only currently unowned ships can be spawned
-  if (await hasOwner(contracts, ship)) {
+  // only currently unowned points can be spawned
+  if (await hasOwner(contracts, point)) {
     res.reason = reasons.spawned;
     return res;
   }
 
-  // only allow spawning of ships of the class directly below the prefix
-  let childClass = ships.getShipClass(prefix) + 1;
-  let shipClass  = ships.getShipClass(ship);
-  if (childClass !== shipClass) {
-    res.reason = reasons.spawnClass;
+  // only allow spawning of points of the size directly below the prefix
+  let childSize = azimuth.getPointSize(prefix) + 1;
+  let pointSize  = azimuth.getPointSize(point);
+  if (childSize !== pointSize) {
+    res.reason = reasons.spawnSize;
     return res;
   }
 
-  // parent must be live and able to spawn
+  // prefix must be linked and able to spawn
   let ts         = Math.round(new Date().getTime() / 1000);
-  let spawnLimit = await constitution.getSpawnLimit(contracts, prefix, ts);
-  if (!ships.hasBeenBooted(contracts, parentShipObj) ||
-      (await ships.getSpawnCount(contracts, ship)) >= spawnLimit)
+  let spawnLimit = await ecliptic.getSpawnLimit(contracts, prefix, ts);
+  if (!azimuth.hasBeenLinked(contracts, prefixPointObj) ||
+      (await azimuth.getSpawnCount(contracts, point)) >= spawnLimit)
   {
     res.reason = reasons.spawnPrefix;
     return res;
@@ -200,51 +200,51 @@ async function canSpawn(contracts, ship, target) {
   return res;
 }
 
-async function canSetManagementProxy(contracts, ship, address) {
-  return checkActiveShipOwner(contracts, ship, address);
+async function canSetManagementProxy(contracts, point, address) {
+  return checkActivePointOwner(contracts, point, address);
 }
 
-async function canSetVotingProxy(contracts, ship, address) {
-  if (!isGalaxy(ship)) return { result: false, reason: reasons.notGalaxy };
-  return checkActiveShipOwner(contracts, ship, address);
+async function canSetVotingProxy(contracts, point, address) {
+  if (!isGalaxy(point)) return { result: false, reason: reasons.notGalaxy };
+  return checkActivePointOwner(contracts, point, address);
 }
 
 /**
- * Check if an address can set a spawn proxy for the given ship.
+ * Check if an address can set a spawn proxy for the given point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
 async function canSetSpawnProxy(contracts, prefix, address) {
-  return checkActiveShipOwner(contracts, prefix, address);
+  return checkActivePointOwner(contracts, prefix, address);
 }
 
 /**
- * Check if the sender address can send the provided ship to the target
+ * Check if the sender address can send the provided point to the target
  * address.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @param {String} sender - Sender's address.
  * @param {String} target - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canTransferShip(contracts, ship, source, target) {
+async function canTransferPoint(contracts, point, source, target) {
   let res     = { result: false };
-  // prevent burning of ships
+  // prevent burning of points
   if (utils.isZeroAddress(target))
   {
     res.reason = reasons.zero;
     return res;
   }
 
-  let shipObj = await ships.getShip(contracts, ship);
-  // must be either the owner of the ship,
-  // a transfer proxy for the ship,
+  let pointObj = await azimuth.getPoint(contracts, point);
+  // must be either the owner of the point,
+  // a transfer proxy for the point,
   // or an operator for the owner
-  if (!ships.isOwner(contracts, shipObj, source) &&
-      !ships.isTransferProxy(contracts, shipObj, source) &&
-      !await ships.isOperator(contracts, shipObj.owner, source))
+  if (!azimuth.isOwner(contracts, pointObj, source) &&
+      !azimuth.isTransferProxy(contracts, pointObj, source) &&
+      !await azimuth.isOperator(contracts, pointObj.owner, source))
   {
     res.reason = reasons.permission;
     return res;
@@ -255,19 +255,19 @@ async function canTransferShip(contracts, ship, source, target) {
 }
 
 /**
- * Check if the address can set a transfer proxy for the ship.
+ * Check if the address can set a transfer proxy for the point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canSetTransferProxy(contracts, ship, address) {
+async function canSetTransferProxy(contracts, point, address) {
   let res     = { result: false };
-  let shipObj = await ships.getShip(contracts, ship);
-  // must be either the owner of the ship,
+  let pointObj = await azimuth.getPoint(contracts, point);
+  // must be either the owner of the point,
   // or an operator for the owner
-  if (!ships.isOwner(contracts, shipObj, address) &&
-      !await ships.isOperator(contracts, shipObj.owner, address))
+  if (!azimuth.isOwner(contracts, pointObj, address) &&
+      !await azimuth.isOperator(contracts, pointObj.owner, address))
   {
     res.reason = reasons.permission;
     return res;
@@ -277,34 +277,34 @@ async function canSetTransferProxy(contracts, ship, address) {
 }
 
 /**
- * Check if the target address can make a ship escape to the given sponsor.
+ * Check if the target address can make a point escape to the given sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
- * @param {Number} sponsor - Ship token.
+ * @param {Number} point - Point number.
+ * @param {Number} sponsor - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canEscape(contracts, ship, sponsor, address) {
-  let asm = await checkActiveShipManager(contracts, ship, address);
+async function canEscape(contracts, point, sponsor, address) {
+  let asm = await checkActivePointManager(contracts, point, address);
   if (!asm.result) {
     return asm;
   }
   let res = { result: false };
-  let shipClass    = ships.getShipClass(ship);
-  let sponsorClass = ships.getShipClass(sponsor);
-  // can only escape to a ship one class higher than ourselves,
-  // except in the special case where the escaping ship hasn't
-  // been booted yet -- in that case we may escape to ships of
-  // the same class, to support lightweight invitation chains.
-  if (sponsorClass + 1 !== shipClass &&
-      !(sponsorClass === shipClass &&
-        !await ships.hasBeenBooted(contracts, ship)))
+  let pointSize    = azimuth.getPointSize(point);
+  let sponsorSize = azimuth.getPointSize(sponsor);
+  // can only escape to a point one size higher than ourselves,
+  // except in the special case where the escaping point hasn't
+  // been booted yet -- in that case we may escape to points of
+  // the same size, to support lightweight invitation chains.
+  if (sponsorSize + 1 !== pointSize &&
+      !(sponsorSize === pointSize &&
+        !await azimuth.hasBeenLinked(contracts, point)))
   {
     res.reason = reasons.sponsor;
     return res;
   }
   // can't escape to a sponsor that hasn't been booted
-  if (!await ships.hasBeenBooted(contracts, sponsor))
+  if (!await azimuth.hasBeenLinked(contracts, sponsor))
   {
     res.reason = reasons.sponsorBoot;
     return res;
@@ -314,22 +314,22 @@ async function canEscape(contracts, ship, sponsor, address) {
 }
 
 /**
- * Check if a ship is active and the target address is its owner.
+ * Check if a point is active and the target address is its owner.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function checkActiveShipOwner(contracts, ship, address) {
+async function checkActivePointOwner(contracts, point, address) {
   let res = { result: false };
-  let theShip = await ships.getShip(contracts, ship);
-  // must be the owner of the ship
-  if (!await ships.isOwner(contracts, theShip, address)) {
+  let thePoint = await azimuth.getPoint(contracts, point);
+  // must be the owner of the point
+  if (!await azimuth.isOwner(contracts, thePoint, address)) {
     res.reason = reasons.permission;
     return res;
   }
-  // the ship must be active
-  if (!await ships.isActive(contracts, theShip)) {
+  // the point must be active
+  if (!await azimuth.isActive(contracts, thePoint)) {
     res.reason = reasons.inactive;
     return res;
   }
@@ -338,20 +338,20 @@ async function checkActiveShipOwner(contracts, ship, address) {
 }
 
 /**
- * Check if a ship is active and the target address can manage it.
+ * Check if a point is active and the target address can manage it.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function checkActiveShipManager(contracts, ship, address) {
+async function checkActivePointManager(contracts, point, address) {
   res = { result: false };
-  if (!await ships.canManage(contracts, ship, address))
+  if (!await azimuth.canManage(contracts, point, address))
   {
     res.reason = reasons.permission;
     return res;
   }
-  if (!await ships.isActive(contracts, ship))
+  if (!await azimuth.isActive(contracts, point))
   {
     res.reason = reasons.inactive;
     return res;
@@ -361,40 +361,40 @@ async function checkActiveShipManager(contracts, ship, address) {
 }
 
 /**
- * Check if an address can configure public keys for a ship.
+ * Check if an address can configure public keys for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canConfigureKeys(contracts, ship, address) {
-  return await checkActiveShipManager(contracts, ship, address);
+async function canConfigureKeys(contracts, point, address) {
+  return await checkActivePointManager(contracts, point, address);
 }
 
 /**
  * Check if the target address can adopt the escapee as its new sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} escapee - Escapee's ship token.
+ * @param {Number} escapee - Escapee's point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
 async function canAdopt(contracts, escapee, address) {
   let res = { result: false };
   // escapee must currently be trying to escape
-  let ship = await ships.getShip(contracts, escapee, 'state');
-  if (!ship.escapeRequested) {
+  let point = await azimuth.getPoint(contracts, escapee, 'state');
+  if (!point.escapeRequested) {
     res.reason = reasons.notEscape;
     return res;
   }
   // caller must manage the requested sponsor
-  return await checkActiveShipManager(contracts, ship.escapeRequestedTo, address);
+  return await checkActivePointManager(contracts, point.escapeRequestedTo, address);
 }
 
 /**
  * Check if the target address can reject the escapee's request to the given
  * sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} escapee - Escapee's ship token.
+ * @param {Number} escapee - Escapee's point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
@@ -404,45 +404,45 @@ async function canReject(contracts, escapee, address) {
 }
 
 /**
- * Check if the target address can detach a ship from its sponsor.
+ * Check if the target address can detach a point from its sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canDetach(contracts, ship, address)
+async function canDetach(contracts, point, address)
 {
   let res = { result: false };
-  // ship must currently have a sponsor
-  let theShip = await ships.getShip(contracts, ship, 'state');
-  if (!theShip.hasSponsor) {
+  // point must currently have a sponsor
+  let thePoint = await azimuth.getPoint(contracts, point, 'state');
+  if (!thePoint.hasSponsor) {
     res.reason = reasons.sponsorless;
     return res;
   }
   // caller must manage the requested sponsor
-  return await checkActiveShipManager(contracts, theShip.sponsor, address);
+  return await checkActivePointManager(contracts, thePoint.sponsor, address);
 }
 
 /**
- * Check if a ship is active and an address can vote for it.
+ * Check if a point is active and an address can vote for it.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} voter - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function checkActiveShipVoter(contracts, galaxy, voter) {
+async function checkActivePointVoter(contracts, galaxy, voter) {
   let res = { result: false }
-  if (ships.getShipClass(galaxy) !== ships.ShipClass.Galaxy)
+  if (azimuth.getPointSize(galaxy) !== azimuth.PointSize.Galaxy)
   {
     res.reason = reasons.notGalaxy;
     return res;
   }
-  if (!await ships.canVoteAs(contracts, galaxy, voter))
+  if (!await azimuth.canVoteAs(contracts, galaxy, voter))
   {
     res.reason = reasons.permission;
     return res;
   }
-  if (!await ships.isActive(contracts, galaxy))
+  if (!await azimuth.isActive(contracts, galaxy))
   {
     res.reason = reasons.inactive;
     return res;
@@ -452,37 +452,37 @@ async function checkActiveShipVoter(contracts, galaxy, voter) {
 }
 
 /**
- * Check if a target address and ship can initiate a constitution poll at the
+ * Check if a target address and point can initiate a upgrade poll at the
  *  given address.
  * @param {Object} web3 - A web3 object.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, address) {
-  let asv = await checkActiveShipVoter(contracts, galaxy, address);
+async function canStartUpgradePoll(web3, contracts, galaxy, proposal, address) {
+  let asv = await checkActivePointVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false};
-  let prop = new web3.eth.Contract(constitutionAbi, proposal);
+  let prop = new web3.eth.Contract(eclipticAbi, proposal);
   let expected;
   try {
-    expected = await prop.methods.previousConstitution().call()
+    expected = await prop.methods.previousEcliptic().call()
   } catch(e) {
     expected = false;
   }
-  if (contracts.constitution._address !== expected) // FIXME (jtobin): inappropriate comparison here
+  if (contracts.ecliptic._address !== expected) // FIXME (jtobin): inappropriate comparison here
   {
     res.reason = reasons.upgradePath;
     return res;
   }
-  if (await polls.constitutionHasAchievedMajority(contracts, proposal))
+  if (await polls.eclipticHasAchievedMajority(contracts, proposal))
   {
     res.reason = reasons.majority;
     return res;
   }
-  if (!canStartPoll(await polls.getConstitutionPoll(contracts, proposal)))
+  if (!canStartPoll(await polls.getUpgradePoll(contracts, proposal)))
   {
     res.reason = reasons.pollTime;
     return res;
@@ -492,15 +492,15 @@ async function canStartConstitutionPoll(web3, contracts, galaxy, proposal, addre
 }
 
 /**
- * Check if a target address and ship can initiate the given proposal.
+ * Check if a target address and point can initiate the given proposal.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
 async function canStartDocumentPoll(contracts, galaxy, proposal, address) {
-  let asv = await checkActiveShipVoter(contracts, galaxy, address);
+  let asv = await checkActivePointVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false };
   if (await polls.documentHasAchievedMajority(contracts, proposal))
@@ -518,33 +518,33 @@ async function canStartDocumentPoll(contracts, galaxy, proposal, address) {
 }
 
 /**
- * Check if a target address and ship can vote on the proposal at the target
+ * Check if a target address and point can vote on the proposal at the target
  * address.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
-async function canCastConstitutionVote(contracts, galaxy, proposal, address)
+async function canCastUpgradeVote(contracts, galaxy, proposal, address)
 {
-  let asv = await checkActiveShipVoter(contracts, galaxy, address);
+  let asv = await checkActivePointVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false };
   // proposal must not have achieved majority before
-  if (await polls.constitutionHasAchievedMajority(contracts, proposal))
+  if (await polls.eclipticHasAchievedMajority(contracts, proposal))
   {
     res.reason = reasons.majority;
     return res;
   }
   // may only vote when the poll is open
-  if (!pollIsActive(await polls.getConstitutionPoll(contracts, proposal)))
+  if (!pollIsActive(await polls.getUpgradePoll(contracts, proposal)))
   {
     res.reason = reasons.pollInactive;
     return res;
   }
   // may only vote once
-  if (await polls.hasVotedOnConstitutionPoll(contracts, galaxy, proposal))
+  if (await polls.hasVotedOnUpgradePoll(contracts, galaxy, proposal))
   {
     res.reason = reasons.pollVoted;
     return res;
@@ -554,17 +554,17 @@ async function canCastConstitutionVote(contracts, galaxy, proposal, address)
 }
 
 /**
- * Check if a target address and ship can vote on the proposal at the given
+ * Check if a target address and point can vote on the proposal at the given
  * address.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} proposal - The proposal address.
  * @param {String} address - Target address.
  * @return {Promise<Object>} A result and reason pair.
  */
 async function canCastDocumentVote(contracts, galaxy, proposal, address)
 {
-  let asv = await checkActiveShipVoter(contracts, galaxy, address);
+  let asv = await checkActivePointVoter(contracts, galaxy, address);
   if (!asv.result) return asv;
   let res = { result: false };
   // proposal must not have achieved majority before
@@ -590,13 +590,13 @@ async function canCastDocumentVote(contracts, galaxy, proposal, address)
 }
 
 /**
- * Check if the target address can set the DNS domains for the constitution.
+ * Check if the target address can set the DNS domains for the ecliptic.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - Target address.
  * @return {Promise<Bool>} True if so, false otherwise.
  */
 function canSetDnsDomains(contracts, address) {
-  return isConstitutionOwner(contracts, address);
+  return isEclipticOwner(contracts, address);
 }
 
 
@@ -715,36 +715,36 @@ async function csrCanForfeit(contracts, batch, address) {
 }
 
 module.exports = {
-  constitution,
-  ships,
+  ecliptic,
+  azimuth,
   polls,
-  isShip,
+  isPoint,
   isGalaxy,
   isStar,
   isPlanet,
-  isParent,
+  isPrefix,
   isChild,
   pollIsActive,
   canStartPoll,
   hasOwner,
-  isConstitutionOwner,
+  isEclipticOwner,
   canCreateGalaxy,
   canSpawn,
   canSetManagementProxy,
   canSetVotingProxy,
   canSetSpawnProxy,
-  canTransferShip,
+  canTransferPoint,
   canSetTransferProxy,
   canConfigureKeys,
   canEscape,
   canAdopt,
   canReject,
   canDetach,
-  checkActiveShipManager,
-  checkActiveShipVoter,
-  canStartConstitutionPoll,
+  checkActivePointManager,
+  checkActivePointVoter,
+  canStartUpgradePoll,
   canStartDocumentPoll,
-  canCastConstitutionVote,
+  canCastUpgradeVote,
   canCastDocumentVote,
   canSetDnsDomains,
   lsrCanWithdraw,

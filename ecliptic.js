@@ -1,45 +1,45 @@
 /**
- * Constitution API
- * @module constitution
+ * Ecliptic API
+ * @module ecliptic
  */
 
-const internal = require('./internal/constitution');
+const internal = require('./internal/ecliptic');
 
 /**
- * Get constitution contract owner.
+ * Get ecliptic contract owner.
  * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<String>} The owner address.
  */
 module.exports.owner = internal.owner;
 
 /**
- * Get the amount of ships owned by an address.
+ * Get the amount of points owned by an address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - Owner's address.
- * @return {Promise<Number>} Number of ships.
+ * @return {Promise<Number>} Number of azimuth.
  */
 module.exports.balanceOf = internal.balanceOf;
 
 /**
- * Get the current owner of a ship.
+ * Get the current owner of a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @return {Promise<String>} Owner's address.
  */
 module.exports.ownerOf = internal.ownerOf;
 
 /**
- * Check if a ship is active.
+ * Check if a point is active.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
- * @return {Promise<Bool>} true if ship is active, false otherwise.
+ * @param {Number} pointId - Point number.
+ * @return {Promise<Bool>} true if point is active, false otherwise.
  */
 module.exports.exists = internal.exists;
 
 /**
- * Get the transfer proxy for a ship.
+ * Get the transfer proxy for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @return {Promise<String>} The transfer proxy's address.
  */
 module.exports.getApproved = internal.getApproved;
@@ -54,54 +54,54 @@ module.exports.getApproved = internal.getApproved;
 module.exports.isApprovedForAll = internal.isApprovedForAll;
 
 /**
- * Return the total number of children a ship is allowed to spawn at some time.
+ * Return the total number of children a point is allowed to spawn at some time.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {Number} time - Time (uint256).
  * @return {Promise<Number>} The spawn limit.
  */
 module.exports.getSpawnLimit = internal.getSpawnLimit;
 
 /**
- * Check if a ship can escape to a sponsor.
+ * Check if a point can escape to a sponsor.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
- * @param {Number} sponsor - Sponsor's ship token.
- * @return {Promise<Bool>} True if ship can escape, false otherwise.
+ * @param {Number} point - Point number.
+ * @param {Number} sponsor - Sponsor's point number.
+ * @return {Promise<Bool>} True if point can escape, false otherwise.
  */
 module.exports.canEscapeTo = internal.canEscapeTo;
 
 /**
- * Safely transfer a ship between addresses (call recipient if it's a contract).
+ * Safely transfer a point between addresses (call recipient if it's a contract).
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} from - Sender's address.
  * @param {String} to - Receiver's address.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.safeTransferFrom = internal.safeTransferFrom;
 
 /**
- * Transfer a ship between addresses (without notifying recipient contract).
+ * Transfer a point between addresses (without notifying recipient contract).
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} from - Sender's address.
  * @param {String} to - Receiver's address.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.transferFrom = internal.transferFrom;
 
 /**
- * Allow an address to transfer ownership of a ship.
+ * Allow an address to transfer ownership of a point.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} approved - The approved address.
- * @param {Number} tokenId - Ship token.
+ * @param {Number} pointId - Point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.approve = internal.approve;
 
 /**
- * Allow or disallow an operator to transfer ownership of alL ships owner by
+ * Allow or disallow an operator to transfer ownership of all points owned by
  * the message sender.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Address} operator - The operator's address.
@@ -111,19 +111,19 @@ module.exports.approve = internal.approve;
 module.exports.setApprovalForAll = internal.setApprovalForAll;
 
 /**
- * Configure the management address for a ship owned by the message sender.
+ * Configure the management address for a point owned by the message sender.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - The ship to manage.
+ * @param {Number} point - The point to manage.
  * @param {String} manager - The management address.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.setManagementProxy = internal.setManagementProxy;
 
 /**
- * Configure a ship with Urbit public keys, incrementing the ship's continuity
+ * Configure a point with Urbit public keys, incrementing the point's continuity
  * number if needed.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} encryptionKey - The encryption key.
  * @param {String} authenticationKey - The auth key.
  * @param {Number} cryptoSuiteVersion - The crypto suite version.
@@ -134,56 +134,56 @@ module.exports.configureKeys = internal.configureKeys;
 
 
 /**
- * Spawn a ship, giving ownership of it to the target address.
+ * Spawn a point, giving ownership of it to the target address.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - A ship token.
+ * @param {Number} point - A point number.
  * @param {String} target - The target address.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.spawn = internal.spawn;
 
 /**
- * Give an address the right to spawn ships with the given prefix.
+ * Give an address the right to spawn points with the given prefix.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} prefix - A (prefix) ship token.
+ * @param {Number} prefix - A (prefix) point number.
  * @param {String} address - The address to designate as a spawn proxy.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.setSpawnProxy = internal.setSpawnProxy;
 
 /**
- * Transfer a ship to a target address, optionally clearing all permissions
+ * Transfer a point to a target address, optionally clearing all permissions
  * data and keys.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @param {String} address - The target address.
- * @param {Bool} reset - True to reset ship's keys.
+ * @param {Bool} reset - True to reset point's keys.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.transferShip = internal.transferShip;
+module.exports.transferPoint = internal.transferPoint;
 
 /**
- * Give an address the right to transfer the given ship.
+ * Give an address the right to transfer the given point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} prefix - Ship token.
+ * @param {Number} prefix - Point number.
  * @param {String} address - The address to designate as a transfer proxy.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.setTransferProxy = internal.setTransferProxy;
 
 /**
- * Request escape from 'ship' to 'sponsor'.
+ * Request escape from 'point' to 'sponsor'.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Escapee's ship token.
- * @param {Number} sponsor - Sponsor's ship token.
+ * @param {Number} point - Escapee's point number.
+ * @param {Number} sponsor - Sponsor's point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.escape = internal.escape;
 
 /**
- * Cancel the currently set escape for a ship.
+ * Cancel the currently set escape for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Escapee's ship token.
+ * @param {Number} point - Escapee's point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.cancelEscape = internal.cancelEscape;
@@ -191,7 +191,7 @@ module.exports.cancelEscape = internal.cancelEscape;
 /**
  * As the sponsor, accept the escapee.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} escapee - Escapee's ship token.
+ * @param {Number} escapee - Escapee's point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.adopt = internal.adopt;
@@ -199,15 +199,15 @@ module.exports.adopt = internal.adopt;
 /**
  * As the sponsor, reject the escapee's escape request.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} escapee - Escapee's ship token.
+ * @param {Number} escapee - Escapee's point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.reject = internal.reject;
 
 /**
- * As the sponsor, stop sponsoring the ship.
+ * As the sponsor, stop sponsoring the point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} ship - Ship token.
+ * @param {Number} point - Point number.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.detach = internal.detach;
@@ -215,44 +215,44 @@ module.exports.detach = internal.detach;
 /**
  * Configure the voting proxy address for the galaxy.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - Ship number.
+ * @param {Number} galaxy - Point number.
  * @param {String} proxy - The proxy's address.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.setVotingProxy = internal.setVotingProxy;
 
 /**
- * As a galaxy, start a poll for the constitution upgrade proposal.
+ * As a galaxy, start a poll for the ecliptic upgrade proposal.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
- * @param {Object} proposal - The constitution upgrade proposal.
+ * @param {Number} galaxy - A (galaxy) point number.
+ * @param {Object} proposal - The ecliptic upgrade proposal.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.startConstitutionPoll = internal.startConstitutionPoll;
+module.exports.startUpgradePoll = internal.startUpgradePoll;
 
 /**
  * As a galaxy, start a poll for a proposal.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} proposal - The proposal document.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.startDocumentPoll = internal.startDocumentPoll;
 
 /**
- * As a galaxy, cast a vote on the constitution upgrade proposal.
+ * As a galaxy, cast a vote on the ecliptic upgrade proposal.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {Object} proposal - The upgrade proposal.
  * @param {Bool} vote - True if yes, false otherwise.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.castConstitutionVote = internal.castConstitutionVote;
+module.exports.castUpgradeVote = internal.castUpgradeVote;
 
 /**
  * As a galaxy, cast a vote on the proposal.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} proposal - The proposal document.
  * @param {Bool} vote - True if yes, false otherwise.
  * @return {Object} An unsigned transaction object.
@@ -265,7 +265,7 @@ module.exports.castDocumentVote = internal.castDocumentVote;
  * @param {Object} proposal - The upgrade proposal.
  * @return {Object} An unsigned transaction object.
  */
-module.exports.updateConstitutionPoll = internal.updateConstitutionPoll;
+module.exports.updateUpgradePoll = internal.updateUpgradePoll;
 
 /**
  * Check whether the proposal has achieved majority.
@@ -278,14 +278,14 @@ module.exports.updateDocumentPoll = internal.updateDocumentPoll;
 /**
  * Grant the target address ownership of the galaxy and register it for voting.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} galaxy - A (galaxy) ship token.
+ * @param {Number} galaxy - A (galaxy) point number.
  * @param {String} target - The target address.
  * @return {Object} An unsigned transaction object.
  */
 module.exports.createGalaxy = internal.createGalaxy;
 
 /**
- * Set primary, secondary, adn tertiary DNS domains for the constitution.
+ * Set primary, secondary, adn tertiary DNS domains for the ecliptic.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} primary - Primary DNS address.
  * @param {String} secondary - Secondary DNS address.

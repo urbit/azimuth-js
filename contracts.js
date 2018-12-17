@@ -3,54 +3,54 @@
  * @module contracts
  */
 
-const constitutionAbi =
-  require('urbit-azimuth/build/contracts/Constitution.json').abi;
+const eclipticAbi =
+  require('azimuth-solidity/build/contracts/Ecliptic.json').abi;
 
-const shipsAbi =
-  require('urbit-azimuth/build/contracts/Ships.json').abi;
+const azimuthAbi =
+  require('azimuth-solidity/build/contracts/Azimuth.json').abi;
 
 const pollsAbi =
-  require('urbit-azimuth/build/contracts/Polls.json').abi;
+  require('azimuth-solidity/build/contracts/Polls.json').abi;
 
 /**
  * Create a collection of Urbit contracts, given a web3 instance and their
  * provided addresses.
  * @param {Object} web3 - A web3 instance.
  * @param {Object} addresses - An addresses object.  Must provide addresses for
- *   constitution, ships, and polls contracts, at those respective key names.
+ *   ecliptic, azimuth, and polls contracts, at those respective key names.
  * @return {Object} The initialised contracts.
  */
 const initContracts = (web3, addresses) => ({
-  constitution: newConstitution(web3, addresses.constitution),
-  ships: newShips(web3, addresses.ships),
+  ecliptic: newEcliptic(web3, addresses.ecliptic),
+  azimuth: newAzimuth(web3, addresses.azimuth),
   polls: newPolls(web3, addresses.polls),
 });
 
 /**
- * Initialise as many Urbit contracts as possible, given a ships contract
+ * Initialise as many Urbit contracts as possible, given a azimuth contract
  * address.
  * @param {Object} web3 - A web3 instance.
- * @param {String} shipsAddress - An address to a ships contract.
+ * @param {String} azimuthAddress - An address to a azimuth contract.
  * @return {Object} The initialised contracts.
  */
-const initContractsPartial = async (web3, shipsAddress) => {
-  let ships = newShips(web3, shipsAddress);
-  let constitutionAddress = await ships.methods.owner().call();
-  let constitution = newConstitution(web3, constitutionAddress);
-  let pollsAddress = await constitution.methods.polls().call();
+const initContractsPartial = async (web3, azimuthAddress) => {
+  let azimuth = newAzimuth(web3, azimuthAddress);
+  let eclipticAddress = await azimuth.methods.owner().call();
+  let ecliptic = newEcliptic(web3, eclipticAddress);
+  let pollsAddress = await ecliptic.methods.polls().call();
   let polls = newPolls(web3, pollsAddress);
   return {
-    constitution: constitution,
-    ships: ships,
+    ecliptic: ecliptic,
+    azimuth: azimuth,
     polls: polls
   };
 }
 
-const newConstitution = (web3, address) =>
-  new web3.eth.Contract(constitutionAbi, address);
+const newEcliptic = (web3, address) =>
+  new web3.eth.Contract(eclipticAbi, address);
 
-const newShips = (web3, address) =>
-  new web3.eth.Contract(shipsAbi, address);
+const newAzimuth = (web3, address) =>
+  new web3.eth.Contract(azimuthAbi, address);
 
 const newPolls = (web3, address) =>
   new web3.eth.Contract(pollsAbi, address);
@@ -58,7 +58,7 @@ const newPolls = (web3, address) =>
 module.exports = {
   initContracts,
   initContractsPartial,
-  constitutionAbi,
-  shipsAbi,
+  eclipticAbi,
+  azimuthAbi,
   pollsAbi
 }
