@@ -12,6 +12,9 @@ const azimuthAbi =
 const pollsAbi =
   require('azimuth-solidity/build/contracts/Polls.json').abi;
 
+const linearStarReleaseAbi =
+  require('azimuth-solidity/build/contracts/LinearStarRelease.json').abi;
+
 /**
  * Create a collection of Urbit contracts, given a web3 instance and their
  * provided addresses.
@@ -24,6 +27,7 @@ const initContracts = (web3, addresses) => ({
   ecliptic: newEcliptic(web3, addresses.ecliptic),
   azimuth: newAzimuth(web3, addresses.azimuth),
   polls: newPolls(web3, addresses.polls),
+  linearSR: newLinearStarRelease(web3, addresses.linearSR),
 });
 
 /**
@@ -55,10 +59,14 @@ const newAzimuth = (web3, address) =>
 const newPolls = (web3, address) =>
   new web3.eth.Contract(pollsAbi, address);
 
+const newLinearStarRelease = (web3, address) =>
+  new web3.eth.Contract(linearStarReleaseAbi, address);
+
 module.exports = {
   initContracts,
   initContractsPartial,
   eclipticAbi,
   azimuthAbi,
-  pollsAbi
+  pollsAbi,
+  linearStarReleaseAbi
 }
