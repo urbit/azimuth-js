@@ -1,7 +1,7 @@
 # azimuth-js
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/constitution-js/blob/master/LICENSE)
-[![npm](https://img.shields.io/npm/v/urbit-constitution-js.svg)](https://www.npmjs.com/package/urbit-constitution-js)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/azimuth-js/blob/master/LICENSE)
+[![npm](https://img.shields.io/npm/v/azimuth-js.svg)](https://www.npmjs.com/package/azimuth-js)
 
 Interact with [Azimuth](https://github.com/urbit/azimuth-solidity) from
 Javascript.
