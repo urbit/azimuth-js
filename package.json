@@ -1,6 +1,6 @@
 {
   "name": "azimuth-js",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Functions for interacting with Azimuth",
   "repository": {
     "type": "git",
