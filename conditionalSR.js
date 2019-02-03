@@ -70,16 +70,6 @@ module.exports.getWithdrawLimit = internal.getWithdrawLimit;
 module.exports.getApprovedTransfer = internal.getApprovedTransfer;
 
 /**
- * Return the list of stars that have been deposited into, but not yet
- * withdrawn from a commitment.
- * @param {Object} contracts - An Urbit contracts object.
- * @param {String} address - The participant/registered address for the
- * commitment.
- * @return {Array<Number>} The stars left in the commitment.
- */
-module.exports.getRemainingStars = internal.getRemainingStars;
-
-/**
  * Return conditions configuration and state data.
  * @param {Object} contracts - An Urbit contracts object.
  * @return {Object} An object containing conditions state, with
