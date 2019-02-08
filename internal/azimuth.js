@@ -103,6 +103,10 @@ module.exports.getSponsoring = (contracts, point) => {
   return contracts.azimuth.methods.getSponsoring(point).call();
 }
 
+module.exports.getSponsoringCount = (contracts, point) => {
+  return contracts.azimuth.methods.getSponsoringCount(point).call();
+}
+
 module.exports.hasSponsor = (contracts, point) => {
   return contracts.azimuth.methods.hasSponsor(point).call();
 }
