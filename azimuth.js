@@ -169,12 +169,20 @@ function getSponsor(contracts, point) {
 }
 
 /**
- * Get a array of all points the target point is sponsoring.
+ * Get an array of all points the target point is sponsoring.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number} point - Point number
- * @return {Promise<Array<String>>} The points being sponsored
+ * @param {Number} point - Point number.
+ * @return {Promise<Array<String>>} The points being sponsored.
  */
 const getSponsoring = internal.getSponsoring;
+
+/**
+ * Get the number of points the target point is sponsoring.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @return {Promise<Number>} The amount of points being sponsored.
+ */
+const getSponsoringCount = internal.getSponsoringCount;
 
 /**
  * Check if a point has a sponsor.
@@ -519,6 +527,7 @@ module.exports = {
   getSpawned,
   getSponsor,
   getSponsoring,
+  getSponsoringCount,
   hasSponsor,
   isSponsor,
   isEscaping,
