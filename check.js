@@ -56,7 +56,7 @@ function isPlanet(point) {
  * @return {Bool} True if a prefix, false otherwise.
  */
 function isPrefix(point) {
-  return (typeof point === 'number' && point > 0 && point <= MAXSTAR);
+  return (typeof point === 'number' && point >= 0 && point <= MAXSTAR);
 }
 
 /**
