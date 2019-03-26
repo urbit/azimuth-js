@@ -17,6 +17,7 @@ const txn = require('./txn');
 const utils = require('./utils');
 
 const initContracts = contracts.initContracts;
+const initContractsPartial = contracts.initContractsPartial;
 
 const getKeyPair = accounts.getKeyPair;
 
@@ -30,5 +31,6 @@ module.exports = {
   txn,
   utils,
   initContracts,
+  initContractsPartial,
   getKeyPair
 }
