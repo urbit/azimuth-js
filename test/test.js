@@ -6,12 +6,12 @@ const hdkey  = require('hdkey');
 const Web3   = require('web3');
 const ethUtil  = require('ethereumjs-util');
 
-const cjs = require('..');
-const check = cjs.check;
-const ecliptic = cjs.ecliptic;
-const azimuth = cjs.azimuth;
-const delsend = cjs.delegatedSending;
-const txn = cjs.txn;
+const ajs = require('..');
+const check = ajs.check;
+const ecliptic = ajs.ecliptic;
+const azimuth = ajs.azimuth;
+const delsend = ajs.delegatedSending;
+const txn = ajs.txn;
 
 const reasons = require('../resources/reasons.json');
 
@@ -25,9 +25,9 @@ const hd = hdkey.fromMasterSeed(seed);
 
 const path = "m/44'/60'/0'/0";
 
-const pair0 = cjs.getKeyPair(hd, path, 0);
-const pair1 = cjs.getKeyPair(hd, path, 1);
-const pair2 = cjs.getKeyPair(hd, path, 2);
+const pair0 = ajs.getKeyPair(hd, path, 0);
+const pair1 = ajs.getKeyPair(hd, path, 1);
+const pair2 = ajs.getKeyPair(hd, path, 2);
 
 const ac0 = ethUtil.addHexPrefix(pair0.address.toString('hex'));
 const ac1 = ethUtil.addHexPrefix(pair1.address.toString('hex'));
@@ -95,7 +95,7 @@ function main() {
 
   let provider  = new Web3.providers.HttpProvider('http://localhost:8545');
   let web3      = new Web3(provider);
-  let contracts = cjs.initContracts(web3, contractAddresses);
+  let contracts = ajs.initContracts(web3, contractAddresses);
 
   let galaxy       = 0;
   let galaxyPlanet = 65536;
