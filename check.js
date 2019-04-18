@@ -739,7 +739,7 @@ async function canSendInvitePoint(contracts, as, point, to, address) {
     return res;
   }
   res.result = false;
-  if (to === address) {
+  if (utils.addressEquals(to, address)) {
     res.reason = reasons.cantReceive;
     return res;
   }
