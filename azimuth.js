@@ -382,7 +382,7 @@ async function getUnspawnedChildren(contracts, point) {
   let stepSize = childCount + 1;
   for (i = 1; i <= childCount; i++) {
     let child = point + (i*stepSize);
-    if (spawned.indexOf(''+child) < 0) {
+    if (spawned.indexOf(child.toString()) < 0) {
       unspawned.push(child);
     }
   }
