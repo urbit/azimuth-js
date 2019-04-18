@@ -50,17 +50,25 @@ const initContractsPartial = async (web3, azimuthAddress) => {
   };
 }
 
+const newContract = (web3, address, abi) => {
+  let contract = new web3.eth.Contract(abi, address);
+  //NOTE this allows us to support a broader range of web3 versions.
+  //     see also #23.
+  contract._address = (contract._address || contract.address);
+  return contract;
+}
+
 const newEcliptic = (web3, address) =>
-  new web3.eth.Contract(eclipticAbi, address);
+  newContract(web3, address, eclipticAbi);
 
 const newAzimuth = (web3, address) =>
-  new web3.eth.Contract(azimuthAbi, address);
+  newContract(web3, address, azimuthAbi);
 
 const newPolls = (web3, address) =>
-  new web3.eth.Contract(pollsAbi, address);
+  newContract(web3, address, pollsAbi);
 
 const newLinearStarRelease = (web3, address) =>
-  new web3.eth.Contract(linearStarReleaseAbi, address);
+  newContract(web3, address, linearStarReleaseAbi);
 
 module.exports = {
   initContracts,
