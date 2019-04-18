@@ -736,7 +736,6 @@ async function canSetPoolSize(contracts, point, address) {
 async function canSendInvitePoint(contracts, as, point, to, address) {
   let res = await checkActivePointOwner(contracts, as, address);
   if (!res.result) {
-    console.log('first');
     return res;
   }
   res.result = false;
@@ -747,7 +746,6 @@ async function canSendInvitePoint(contracts, as, point, to, address) {
   let canSend = await delegatedSending.canSend(contracts, as, point);
   if (!canSend) {
     res.reason = reasons.permission;
-    console.log('third');
     return res;
   }
   let canReceive = await delegatedSending.canReceive(contracts, to);
