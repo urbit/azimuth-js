@@ -5,8 +5,6 @@
 
 const internal = require('./internal/delegatedSending');
 
-//TODO write docstrings
-
 /**
  * Return the amount of invites left in the pool
  * @param {Number} pool - Pool number
