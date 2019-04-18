@@ -366,6 +366,30 @@ async function getPoint(contracts, point, what) {
 }
 
 /**
+ * Get a list of unspawned/spawnable points
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @return {Promise<Array<Number>>} - Unspawned children of point
+ */
+async function getUnspawnedChildren(contracts, point) {
+  let size = getPointSize(point);
+  if (size >= PointSize.Planet) {
+    return [];
+  }
+  let spawned = await getSpawned(contracts, point);
+  let unspawned = [];
+  let childCount = (size === PointSize.Galaxy) ? 255 : 65535;
+  let stepSize = childCount + 1;
+  for (i = 1; i <= childCount; i++) {
+    let child = point + (i*stepSize);
+    if (spawned.indexOf(''+child) < 0) {
+      unspawned.push(child);
+    }
+  }
+  return unspawned;
+}
+
+/**
  * Get the points that an address owns.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
@@ -525,6 +549,7 @@ module.exports = {
   getContinuityNumber,
   getSpawnCount,
   getSpawned,
+  getUnspawnedChildren,
   getSponsor,
   getSponsoring,
   getSponsoringCount,
