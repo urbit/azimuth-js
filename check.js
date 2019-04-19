@@ -7,6 +7,7 @@ const { eclipticAbi } = require('./contracts');
 const ecliptic = require('./ecliptic');
 const azimuth = require('./azimuth');
 const polls = require('./polls');
+const delegatedSending = require('./delegatedSending');
 const utils = require('./utils');
 const reasons = require('./resources/reasons.json');
 
@@ -714,6 +715,49 @@ async function csrCanForfeit(contracts, batch, address) {
   return res;
 }
 
+/**
+ * Check if the address can give invites to point
+ * @param {Number} point - Point number to give invites to
+ * @param {String} address - The caller address
+ * @return {Promise<Object>} A result and reason pair
+ */
+async function canSetPoolSize(contracts, point, address) {
+  return checkActivePointOwner(contracts, azimuth.getPrefix(point), address);
+}
+
+/**
+ * Check if as can send point as an invite to to
+ * @param {Number} as - The point that would send the invite
+ * @param {Number} point - The point that would be sent as invite
+ * @param {String} to - The Ethereum address recipient of the invite
+ * @param {String} address - The caller address
+ * @return {Promise<Object>} A result and reason pair
+ */
+async function canSendInvitePoint(contracts, as, point, to, address) {
+  let res = await checkActivePointOwner(contracts, as, address);
+  if (!res.result) {
+    return res;
+  }
+  res.result = false;
+  if (utils.addressEquals(to, address)) {
+    res.reason = reasons.cantReceive;
+    return res;
+  }
+  let canSend = await delegatedSending.canSend(contracts, as, point);
+  if (!canSend) {
+    res.reason = reasons.permission;
+    return res;
+  }
+  let canReceive = await delegatedSending.canReceive(contracts, to);
+  if (!canReceive) {
+    res.reason = reasons.cantReceive;
+    return res;
+  }
+  res.result = true;
+  return res;
+}
+
+
 module.exports = {
   ecliptic,
   azimuth,
@@ -751,5 +795,7 @@ module.exports = {
   lsrCanTransferBatch,
   csrCanWithdraw,
   csrCanTransferBatch,
-  csrCanForfeit
+  csrCanForfeit,
+  canSetPoolSize,
+  canSendInvitePoint,
 }

@@ -13,6 +13,7 @@ const contracts = require('./contracts');
 const linearSR = require('./linearSR');
 const polls = require('./polls');
 const azimuth = require('./azimuth');
+const delegatedSending = require('./delegatedSending');
 const txn = require('./txn');
 const utils = require('./utils');
 
@@ -28,6 +29,7 @@ module.exports = {
   linearSR,
   polls,
   azimuth,
+  delegatedSending,
   txn,
   utils,
   initContracts,

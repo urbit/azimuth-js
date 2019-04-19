@@ -22,5 +22,6 @@
   "hasForfeited": "Commitment has already forfeited",
   "notMissed":    "Deadline has not been missed",
   "notApproved":  "Not approved for transfer",
+  "cantReceive":  "Target not eligible to receive",
   "empty":        ""
 }

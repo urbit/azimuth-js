@@ -33,7 +33,7 @@
     "truffle": "4.1.11"
   },
   "dependencies": {
-    "azimuth-solidity": "1.0.2",
+    "azimuth-solidity": "1.1.0",
     "ethereumjs-util": "^5.2.0",
     "web3": "1.0.0-beta.33"
   },

@@ -6,11 +6,12 @@ const hdkey  = require('hdkey');
 const Web3   = require('web3');
 const ethUtil  = require('ethereumjs-util');
 
-const cjs = require('..');
-const check = cjs.check;
-const ecliptic = cjs.ecliptic;
-const azimuth = cjs.azimuth;
-const txn = cjs.txn;
+const ajs = require('..');
+const check = ajs.check;
+const ecliptic = ajs.ecliptic;
+const azimuth = ajs.azimuth;
+const delsend = ajs.delegatedSending;
+const txn = ajs.txn;
 
 const reasons = require('../resources/reasons.json');
 
@@ -24,9 +25,9 @@ const hd = hdkey.fromMasterSeed(seed);
 
 const path = "m/44'/60'/0'/0";
 
-const pair0 = cjs.getKeyPair(hd, path, 0);
-const pair1 = cjs.getKeyPair(hd, path, 1);
-const pair2 = cjs.getKeyPair(hd, path, 2);
+const pair0 = ajs.getKeyPair(hd, path, 0);
+const pair1 = ajs.getKeyPair(hd, path, 1);
+const pair2 = ajs.getKeyPair(hd, path, 2);
 
 const ac0 = ethUtil.addHexPrefix(pair0.address.toString('hex'));
 const ac1 = ethUtil.addHexPrefix(pair1.address.toString('hex'));
@@ -43,7 +44,8 @@ const zaddr = ethUtil.zeroAddress();
 const contractAddresses = {
     ecliptic: '0x56db68f29203ff44a803faa2404a44ecbb7a7480',
     azimuth:  '0x863d9c2e5c4c133596cfac29d55255f0d0f86381',
-    polls:    '0x935452c45eda2958976a429c9733c40302995efd'
+    polls:    '0x935452c45eda2958976a429c9733c40302995efd',
+    delegatedSending: '0xb71c0b6cee1bcae56dfe95cd9d3e41ddd7eafc43'
   }
 
 // helpers
@@ -93,7 +95,7 @@ function main() {
 
   let provider  = new Web3.providers.HttpProvider('http://localhost:8545');
   let web3      = new Web3(provider);
-  let contracts = cjs.initContracts(web3, contractAddresses);
+  let contracts = ajs.initContracts(web3, contractAddresses);
 
   let galaxy       = 0;
   let galaxyPlanet = 65536;
@@ -490,7 +492,55 @@ function main() {
     //   cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
     //     reasons.pollVoted);
     // });
-  })
+  });
+
+  describe('#delegatedSending', async function() {
+    let planet1c = 196864;
+    let planet1d = 262400;
+    it('sets up for tests', async function() {
+      let prep = ecliptic.spawn(contracts, planet1c, ac0);
+      await sendTransaction(web3, prep, pk0);
+      prep = ecliptic.setSpawnProxy(contracts, star1, contracts.delegatedSending._address);
+      await sendTransaction(web3, prep, pk0);
+      // ac0 now owns planet1c (in addition to star1)
+    });
+
+    it('checks for star ownership', async function() {
+      cant(await check.canSetPoolSize(contracts, planet1c, ac1),
+        reasons.permission);
+      can(await check.canSetPoolSize(contracts, planet1c, ac0));
+    });
+
+    it('generates usable transaction', async function() {
+      assert.equal(await delsend.pools(contracts, planet1c), 0);
+
+      let tx = delsend.setPoolSize(contracts, planet1c, 9);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.equal(await delsend.pools(contracts, planet1c), 9);
+    });
+
+    it('checks invite send ability', async function() {
+      cant(await check.canSendInvitePoint(contracts, planet1c, planet1d, ac0, ac0),
+        reasons.cantReceive);
+      cant(await check.canSendInvitePoint(contracts, planet1c, planet1d, ac1, ac0),
+        reasons.cantReceive);
+      can(await check.canSendInvitePoint(contracts, planet1c, planet1d, ac2, ac0));
+    });
+
+    it('generates usable transaction', async function() {
+      let tx = delsend.sendPoint(contracts, planet1c, planet1d, ac2);
+      await sendTransaction(web3, tx, pk0);
+
+      assert.isTrue(await azimuth.isTransferProxy(contracts, planet1d, ac2));
+      assert.equal(await delsend.pools(contracts, planet1c), 8);
+      assert.equal(await delsend.invitedBy(contracts, planet1d), planet1c);
+      assert.equal(await delsend.getPool(contracts, planet1d), planet1c);
+      let invited = await delsend.getInvited(contracts, planet1c);
+      assert.equal(invited.length, 1);
+      assert.equal(invited[0], planet1d);
+    })
+  });
 }
 
 main();
