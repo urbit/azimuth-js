@@ -1,0 +1,5 @@
+# Changelog
+
+- 0.12.0 (2019-04-19)
+    * Make web3 a peer dependency.
+
