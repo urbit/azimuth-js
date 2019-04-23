@@ -210,6 +210,7 @@ function main() {
 
       assert.isFalse(await azimuth.isOwner(contracts, star1, ac0));
       assert.isFalse(await azimuth.isActive(contracts, star1));
+      assert.equal((await azimuth.getUnspawnedChildren(contracts, galaxy)).length, 255);
 
       let tx = ecliptic.spawn(contracts, star1, ac0);
       await sendTransaction(web3, tx, pk0);
@@ -229,6 +230,7 @@ function main() {
       assert.isTrue(await azimuth.isOwner(contracts, star2, ac0));
       assert.isFalse(await azimuth.isActive(contracts, star2));
       assert.isTrue(await azimuth.isTransferProxy(contracts, star2, ac1));
+      assert.equal((await azimuth.getUnspawnedChildren(contracts, galaxy)).length, 253);
     });
 
     it('prevents spawning spawned points', async function() {
