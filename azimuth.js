@@ -378,10 +378,9 @@ async function getUnspawnedChildren(contracts, point) {
   }
   let spawned = await getSpawned(contracts, point);
   let unspawned = [];
-  let childCount = (size === PointSize.Galaxy) ? 255 : 65535;
-  let stepSize = childCount + 1;
-  for (i = 1; i <= childCount; i++) {
-    let child = point + (i*stepSize);
+  let childSpace = (size === PointSize.Galaxy) ? 0x100 : 0x1000;
+  for (i = 1; i < childSpace; i++) {
+    let child = point + (i*childSpace);
     if (spawned.indexOf(child.toString()) < 0) {
       unspawned.push(child);
     }
