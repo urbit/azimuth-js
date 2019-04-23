@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.13.0 (2019-04-24)
+    * Adds a convenience function for grabbing the unspawned children of a
+      point.
+
 - 0.12.0 (2019-04-19)
     * Make web3 a peer dependency.
 
