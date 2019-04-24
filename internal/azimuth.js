@@ -131,7 +131,7 @@ module.exports.isSpawnProxy = (contracts, point, address) => {
   return contracts.azimuth.methods.isSpawnProxy(point, address).call();
 }
 
-module.exports.getSpawnProxy = (contarct, point) => {
+module.exports.getSpawnProxy = (contracts, point) => {
   return contracts.azimuth.methods.getSpawnProxy(point).call();
 }
 
