@@ -59,6 +59,7 @@ const newContract = (web3, address, abi) => {
   //NOTE this allows us to support a broader range of web3 versions.
   //     see also #23.
   contract._address = (contract._address || contract.address);
+  contract.address = contract._address;
   return contract;
 }
 
@@ -75,7 +76,7 @@ const newLinearStarRelease = (web3, address) =>
   newContract(web3, address, linearStarReleaseAbi);
 
 const newDelegatedSending = (web3, address) =>
-  new web3.eth.Contract(delegatedSendingAbi, address);
+  newContract(web3, address, delegatedSendingAbi);
 
 module.exports = {
   initContracts,
