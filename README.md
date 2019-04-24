@@ -1,5 +1,6 @@
 # azimuth-js
 
+[![Build Status](https://secure.travis-ci.org/urbit/azimuth-js.png)](http://travis-ci.org/urbit/azimuth-js)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/azimuth-js/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/azimuth-js.svg)](https://www.npmjs.com/package/azimuth-js)
 
