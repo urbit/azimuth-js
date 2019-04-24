@@ -144,14 +144,11 @@ function getSpawnCount(contracts, point) {
 /**
  * Check if a point has been spawned.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {Number | Object} point - Point number or point object.
+ * @param {Number} point - Point number.
  * @return {Promise<Bool>} True if the point has been spawned, false
  *  otherwise.
  */
 function getSpawned(contracts, point) {
-  if (typeof point === 'object') {
-    return point.spawned;
-  }
   return internal.getSpawned(contracts, point);
 }
 
