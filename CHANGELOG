@@ -1,5 +1,8 @@
 # Changelog
 
+- 0.13.1 (2019-04-25)
+    * Minor bug fixes.
+
 - 0.13.0 (2019-04-24)
     * Adds a convenience function for grabbing the unspawned children of a
       point.
