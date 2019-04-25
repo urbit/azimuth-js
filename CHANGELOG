@@ -1,5 +1,8 @@
 # Changelog
 
+- 0.13.2 (2019-04-26)
+    * Fixes an off-by-one error in getUnspawnedChildren.
+
 - 0.13.1 (2019-04-25)
     * Minor bug fixes.
 
