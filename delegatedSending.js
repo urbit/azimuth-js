@@ -80,9 +80,13 @@ module.exports.getPlanetsToSend = async function(contracts, as, amount) {
   // sponsor > inviter's sponsor > least spawned > most spawned
   stars = stars.map(async star => {
     const available = await internal.pools(contracts, pool, star);
-    if (available === 0) return {star, available};
-    const spawned = await azimuth.getSpawnCount(contracts, star);
+    const capable = azimuth.isSpawnProxy(
+      contracts, star, contracts.delegatedSending.address
+    );
+    if (available === 0 || !(await capable))
+      return {star, available};
 
+    const spawned = await azimuth.getSpawnCount(contracts, star);
     if (star === sponsor)
       priority = -2;
     else if (star === inviterSponsor)
