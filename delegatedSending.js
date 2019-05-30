@@ -67,7 +67,7 @@ module.exports.canReceive = internal.canReceive
  *      or spawn limits are being hit
  * @param {Number} as - point to send the planets with
  * @param {Number} amount - amount of planets to generate
- * @return {Array<Number>} Pseudo-random list of planets that as can send
+ * @return {Promise<Array<Number>>} Pseudo-random list of planets that as can send
  */
 module.exports.getPlanetsToSend = async function(contracts, as, amount) {
   const sponsor = await azimuth.getSponsor(contracts, as);
