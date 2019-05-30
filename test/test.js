@@ -541,7 +541,14 @@ function main() {
       let invited = await delsend.getInvited(contracts, planet1c);
       assert.equal(invited.length, 1);
       assert.equal(invited[0], planet1d);
-    })
+    });
+
+    it('generates planets to send', async function() {
+      let shortList = await delsend.getPlanetsToSend(contracts, planet1c, 3);
+      let longList = await delsend.getPlanetsToSend(contracts, planet1c, 15);
+      assert.equal(shortList.length, 3);
+      assert.equal(longList.length, 8);
+    });
   });
 }
 
