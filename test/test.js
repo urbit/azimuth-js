@@ -514,12 +514,12 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
-      assert.equal(await delsend.pools(contracts, planet1c), 0);
+      assert.equal(await delsend.pools(contracts, planet1c, star1), 0);
 
-      let tx = delsend.setPoolSize(contracts, planet1c, 9);
+      let tx = delsend.setPoolSize(contracts, star1, planet1c, 9);
       await sendTransaction(web3, tx, pk0);
 
-      assert.equal(await delsend.pools(contracts, planet1c), 9);
+      assert.equal(await delsend.pools(contracts, planet1c, star1), 9);
     });
 
     it('checks invite send ability', async function() {
@@ -535,7 +535,7 @@ function main() {
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await azimuth.isTransferProxy(contracts, planet1d, ac2));
-      assert.equal(await delsend.pools(contracts, planet1c), 8);
+      assert.equal(await delsend.pools(contracts, planet1c, star1), 8);
       assert.equal(await delsend.invitedBy(contracts, planet1d), planet1c);
       assert.equal(await delsend.getPool(contracts, planet1d), planet1c);
       let invited = await delsend.getInvited(contracts, planet1c);

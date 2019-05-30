@@ -8,6 +8,7 @@ const internal = require('./internal/delegatedSending');
 /**
  * Return the amount of invites left in the pool
  * @param {Number} pool - Pool number
+ * @param {Number} prefix - Invites from this prefix
  * @return {Promise<Number>} Number of invites remaining
  */
 module.exports.pools = internal.pools
@@ -44,6 +45,13 @@ module.exports.getPool = internal.getPool
 module.exports.invitingFromPool = internal.getPool
 
 /**
+ * Get the stars that have put invites into the pool
+ * @param {Number} pool - Pool number
+ * @return {Promise<Array<Number>>} Stars that touched the pool
+ */
+module.exports.getPoolStars = internal.getPoolStars
+
+/**
  * Returns true if receipients is eligible to receive a point, false otherwise
  * @param {String} recipient - Ethereum address
  * @return {Promise<Bool>} Whether recipient can receive a point
@@ -53,6 +61,7 @@ module.exports.canReceive = internal.canReceive
 
 /**
  * Give for (and their invite tree) access to size invites
+ * @param {Number} as - prefix to give invites as
  * @param {Number} for - point to give invites to
  * @param {Number} size - amount of invites to give
  * @return {Object} An unsigned transaction object
