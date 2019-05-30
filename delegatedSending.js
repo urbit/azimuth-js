@@ -61,6 +61,19 @@ module.exports.getPoolStars = internal.getPoolStars
 module.exports.canReceive = internal.canReceive
 
 /**
+ * Returns the total amount of invites (across all stars) available to point
+ * @param {Number} point - The point whose invites to count
+ * @return {Promise<Number>} Total amount of invites
+ */
+module.exports.getTotalInvites = async function(contracts, point) {
+  const pool = await internal.getPool(contracts, as);
+  const stars = await internal.getPoolStars(contracts, pool);
+  let counts = stars.map(star => internal.pools(contracts, pool, star));
+  counts = await Promise.all(counts);
+  return counts.reduce((total, count) => (total + count), 0);
+}
+
+/**
  * Generate a list of planets for as to send as invites
  * NOTE that the returned list isn't guaranteed to contain exactly amount items,
  *      it may return fewer in cases where not enough invites are available,
