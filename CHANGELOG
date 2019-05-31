@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.14.0 (2019-05-31)
+    * Adds support for the latest version of the delegated sending contract.
+      (#31)
+
 - 0.13.2 (2019-04-26)
     * Fixes an off-by-one error in getUnspawnedChildren.
 
