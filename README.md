@@ -27,12 +27,12 @@ Require the library via something like:
 const azimuth = require('azimuth-js');
 ```
 
-In general: use the functions in `azimuth.ecliptic`, `azimuth.azimuth`, and
-`azimuth.polls` to interact with the corresponding Ethereum contracts.  Use
-`azimuth.check` to verify any required state is what you expect it to be.
-`azimuth.txn` contains functions for signing and sending transactions, and
-`azimuth.utils` mostly re-exports useful utility functions from
-[ethereumjs-util](https://github.com/ethereumjs/ethereumjs-util).
+In general: use the functions in `azimuth.ecliptic`, `azimuth.azimuth`,
+`azimuth.polls`, and so on to interact with the corresponding Ethereum
+contract.  Use `azimuth.check` to verify any required state is what you expect
+it to be.  `azimuth.txn` contains functions for signing and sending
+transactions, and `azimuth.utils` mostly re-exports useful utility functions
+from [ethereumjs-util](https://github.com/ethereumjs/ethereumjs-util).
 
 You might want to define something like the following, for convenience:
 
