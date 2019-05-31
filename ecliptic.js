@@ -4,6 +4,7 @@
  */
 
 const internal = require('./internal/ecliptic');
+const azimuth = require('./azimuth');
 
 /**
  * Get ecliptic contract owner.
@@ -70,6 +71,20 @@ module.exports.getSpawnLimit = internal.getSpawnLimit;
  * @return {Promise<Bool>} True if point can escape, false otherwise.
  */
 module.exports.canEscapeTo = internal.canEscapeTo;
+
+/**
+ * Get the amount of children point can still spawn before hitting the limit.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @return {Promise<Number>} The amount of children still spawnable from point.
+ */
+module.exports.getSpawnsRemaining = async function(contracts, point) {
+  const now = Math.floor(new Date().getTime() / 1000);
+  const count = await azimuth.getSpawnCount(contracts, point);
+  const limit = await internal.getSpawnLimit(contracts, point, now);
+  return limit - count;
+}
+
 
 /**
  * Safely transfer a point between addresses (call recipient if it's a contract).

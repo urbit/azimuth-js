@@ -1,8 +1,6 @@
 
-//TODO ordering
-
-module.exports.pools = (contracts, point) => {
-  return contracts.delegatedSending.methods.pools(point).call();
+module.exports.pools = (contracts, pool, prefix) => {
+  return contracts.delegatedSending.methods.pools(pool, prefix).call();
 }
 
 module.exports.getInvited = (contracts, point) => {
@@ -19,6 +17,10 @@ module.exports.canSend = (contracts, as, point) => {
 
 module.exports.getPool = (contracts, point) => {
   return contracts.delegatedSending.methods.getPool(point).call();
+}
+
+module.exports.getPoolStars = (contracts, pool) => {
+  return contracts.delegatedSending.methods.getPoolStars(pool).call();
 }
 
 module.exports.canReceive = (contracts, recipient) => {
@@ -46,9 +48,9 @@ const tx = (to, data, value) => ({
   value: value || 0x0
 });
 
-module.exports.setPoolSize = (contracts, _for, _size) => {
+module.exports.setPoolSize = (contracts, _as, _for, _size) => {
   let addr = contracts.delegatedSending._address;
-  let data = contracts.delegatedSending.methods.setPoolSize(_for, _size);
+  let data = contracts.delegatedSending.methods.setPoolSize(_as, _for, _size);
   let abi  = data.encodeABI();
   return tx(addr, abi, 0);
 }
