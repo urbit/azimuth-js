@@ -79,10 +79,10 @@ module.exports.canEscapeTo = internal.canEscapeTo;
  * @return {Promise<Number>} The amount of children still spawnable from point.
  */
 module.exports.getSpawnsRemaining = async function(contracts, point) {
-  const count = azimuth.getSpawnCount(contracts, point);
   const now = Math.floor(new Date().getTime() / 1000);
-  const limit = internal.getSpawnLimit(contracts, point, now);
-  return ((await limit) - (await count));
+  const count = await azimuth.getSpawnCount(contracts, point);
+  const limit = await internal.getSpawnLimit(contracts, point, now);
+  return limit - count;
 }
 
 
