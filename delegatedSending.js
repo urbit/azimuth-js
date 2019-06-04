@@ -61,14 +61,24 @@ module.exports.getPoolStars = internal.getPoolStars
 module.exports.canReceive = internal.canReceive
 
 /**
- * Returns the total amount of invites (across all stars) available to point
+ * Returns the total amount of usable invites available to point.
+ * Invites are usable if the star they're associated with has its spawn proxy
+ * set to the Delegated Sending contract, and is still under its spawn limit.
  * @param {Number} point - The point whose invites to count
  * @return {Promise<Number>} Total amount of invites
  */
-module.exports.getTotalInvites = async function(contracts, point) {
-  const pool = await internal.getPool(contracts, as);
+module.exports.getTotalUsableInvites = async function(contracts, point) {
+  const pool = await internal.getPool(contracts, point);
   const stars = await internal.getPoolStars(contracts, pool);
-  let counts = stars.map(star => internal.pools(contracts, pool, star));
+  let counts = stars.map(async star => {
+    const capable = await azimuth.isSpawnProxy(
+      contracts, star, contracts.delegatedSending.address
+    );
+    if (!capable) return 0;
+    const invites = await internal.pools(contracts, pool, star);
+    const spawnable = await ecliptic.getSpawnsRemaining(contracts, star);
+    return Math.min(invites, spawnable);
+  });
   counts = await Promise.all(counts);
   return counts.reduce((total, count) => (total + count), 0);
 }
@@ -77,7 +87,7 @@ module.exports.getTotalInvites = async function(contracts, point) {
  * Generate a list of planets for as to send as invites
  * NOTE that the returned list isn't guaranteed to contain exactly amount items,
  *      it may return fewer in cases where not enough invites are available,
- *      or spawn limits are being hit
+ *      usable, or spawn limits are being hit
  * @param {Number} as - point to send the planets with
  * @param {Number} amount - amount of planets to generate
  * @return {Promise<Array<Number>>} Pseudo-random list of planets that as can send

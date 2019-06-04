@@ -504,6 +504,8 @@ function main() {
       await sendTransaction(web3, prep, pk0);
       prep = ecliptic.setSpawnProxy(contracts, star1, contracts.delegatedSending._address);
       await sendTransaction(web3, prep, pk0);
+      prep = ecliptic.setSpawnProxy(contracts, star2, contracts.delegatedSending._address);
+      await sendTransaction(web3, prep, pk1);
       // ac0 now owns planet1c (in addition to star1)
     });
 
@@ -518,8 +520,12 @@ function main() {
 
       let tx = delsend.setPoolSize(contracts, star1, planet1c, 9);
       await sendTransaction(web3, tx, pk0);
+      tx = delsend.setPoolSize(contracts, star2, planet1c, 1);
+      await sendTransaction(web3, tx, pk1);
 
       assert.equal(await delsend.pools(contracts, planet1c, star1), 9);
+      assert.equal(await delsend.pools(contracts, planet1c, star2), 1);
+      assert.equal(await delsend.getTotalUsableInvites(contracts, planet1c), 10);
     });
 
     it('checks invite send ability', async function() {
@@ -536,6 +542,7 @@ function main() {
 
       assert.isTrue(await azimuth.isTransferProxy(contracts, planet1d, ac2));
       assert.equal(await delsend.pools(contracts, planet1c, star1), 8);
+      assert.equal(await delsend.getTotalUsableInvites(contracts, planet1c), 9);
       assert.equal(await delsend.invitedBy(contracts, planet1d), planet1c);
       assert.equal(await delsend.getPool(contracts, planet1d), planet1c);
       let invited = await delsend.getInvited(contracts, planet1c);
@@ -543,11 +550,19 @@ function main() {
       assert.equal(invited[0], planet1d);
     });
 
-    it('generates planets to send', async function() {
+    it('counts & generates planets to send', async function() {
       let shortList = await delsend.getPlanetsToSend(contracts, planet1c, 3);
       let longList = await delsend.getPlanetsToSend(contracts, planet1c, 15);
+      let count = await delsend.getTotalUsableInvites(contracts, planet1c);
       assert.equal(shortList.length, 3);
-      assert.equal(longList.length, 8);
+      assert.equal(longList.length, 9);
+      assert.equal(count, 9);
+
+      let tx = ecliptic.setSpawnProxy(contracts, star2, 0x0);
+      await sendTransaction(web3, tx, pk1);
+
+      count = await delsend.getTotalUsableInvites(contracts, planet1c);
+      assert.equal(count, 8);
     });
   });
 }
