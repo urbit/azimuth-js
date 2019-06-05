@@ -17,7 +17,7 @@ npm install azimuth-js
 
 ## API Reference
 
-[./docs/](./docs/index.md)
+[./docs/](./docs/api.md)
 
 ## Usage
 
