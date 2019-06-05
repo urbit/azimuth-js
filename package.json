@@ -13,7 +13,9 @@
     "test:setup": "npm run test:ganache && npm run test:deploy",
     "test:mocha": "nyc mocha --reporter spec",
     "test:cleanup": "pkill -f ganache-cli",
-    "test": "npm-run-all test:setup test:mocha test:cleanup --continue-on-error"
+    "test": "npm-run-all test:setup test:mocha test:cleanup --continue-on-error",
+    "docs": "jsdoc2md *.js > docs/api.md",
+    "prepublishOnly": "npm run docs"
   },
   "keywords": [
     "azimuth",
