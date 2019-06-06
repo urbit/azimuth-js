@@ -97,7 +97,7 @@ module.exports.getPlanetsToSend = async function(contracts, as, amount) {
   const inviter = await internal.invitedBy(contracts, as);
   const inviterSponsor = await azimuth.getSponsor(contracts, inviter);
   const pool = await internal.getPool(contracts, as);
-  let stars = await internal.getPoolStars(contracts, as);
+  let stars = await internal.getPoolStars(contracts, pool);
 
   // assign priorities so that we can order them:
   // sponsor > inviter's sponsor > least spawned > most spawned
