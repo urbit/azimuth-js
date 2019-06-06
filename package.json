@@ -15,7 +15,8 @@
     "test:cleanup": "pkill -f ganache-cli",
     "test": "npm-run-all test:setup test:mocha test:cleanup --continue-on-error",
     "docs": "jsdoc2md *.js > docs/api.md",
-    "prepublishOnly": "npm run docs"
+    "prepublishOnly": "npm run docs",
+    "lint": "eslint *.js"
   },
   "keywords": [
     "azimuth",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "bip39": "^2.5.0",
     "chai": "^4.2.0",
+    "eslint": "^5.16.0",
     "ganache-cli": "^6.2.3",
     "hdkey": "^1.1.0",
     "jsdoc": "3.6.2",
