@@ -110,6 +110,7 @@ module.exports.getPlanetsToSend = async function(contracts, as, amount) {
       return {star, available};
 
     const spawned = await azimuth.getSpawnCount(contracts, star);
+    let priority;
     if (star === sponsor)
       priority = -2;
     else if (star === inviterSponsor)
