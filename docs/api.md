@@ -1340,7 +1340,7 @@ Delegated Sending
     * [.canReceive](#module_delegatedSending.canReceive) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [.setPoolSize](#module_delegatedSending.setPoolSize) ⇒ <code>Object</code>
     * [.sendPoint](#module_delegatedSending.sendPoint) ⇒ <code>Object</code>
-    * [.getTotalInvites(point)](#module_delegatedSending.getTotalInvites) ⇒ <code>Promise.&lt;Number&gt;</code>
+    * [.getTotalUsableInvites(point)](#module_delegatedSending.getTotalUsableInvites) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [.getPlanetsToSend(as, amount)](#module_delegatedSending.getPlanetsToSend) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
 
 <a name="module_delegatedSending.pools"></a>
@@ -1457,10 +1457,12 @@ As as, send the point to to
 | point | <code>Number</code> | the point to send as an invite |
 | to | <code>String</code> | target Ethereum address |
 
-<a name="module_delegatedSending.getTotalInvites"></a>
+<a name="module_delegatedSending.getTotalUsableInvites"></a>
 
-### delegatedSending.getTotalInvites(point) ⇒ <code>Promise.&lt;Number&gt;</code>
-Returns the total amount of invites (across all stars) available to point
+### delegatedSending.getTotalUsableInvites(point) ⇒ <code>Promise.&lt;Number&gt;</code>
+Returns the total amount of usable invites available to point.
+Invites are usable if the star they're associated with has its spawn proxy
+set to the Delegated Sending contract, and is still under its spawn limit.
 
 **Kind**: static method of [<code>delegatedSending</code>](#module_delegatedSending)  
 **Returns**: <code>Promise.&lt;Number&gt;</code> - Total amount of invites  
@@ -1475,7 +1477,7 @@ Returns the total amount of invites (across all stars) available to point
 Generate a list of planets for as to send as invites
 NOTE that the returned list isn't guaranteed to contain exactly amount items,
      it may return fewer in cases where not enough invites are available,
-     or spawn limits are being hit
+     usable, or spawn limits are being hit
 
 **Kind**: static method of [<code>delegatedSending</code>](#module_delegatedSending)  
 **Returns**: <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code> - Pseudo-random list of planets that as can send  
