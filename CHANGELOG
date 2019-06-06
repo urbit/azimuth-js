@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.14.1 (2019-06-06)
+    * Fixes an issue wherein 'getPlanetsToSend' could return incorrect
+      results. (#37)
+
 - 0.14.0 (2019-05-31)
     * Adds support for the latest version of the delegated sending contract.
       (#31)
