@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.14.2 (2019-06-06)
+    * Fixes a bug where the linear and conditional star release modules
+      weren't actually being imported in the "check" module. (#38)
+
 - 0.14.1 (2019-06-06)
     * Fixes an issue wherein 'getPlanetsToSend' could return incorrect
       results. (#37)
