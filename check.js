@@ -6,6 +6,8 @@
 const { eclipticAbi } = require('./contracts');
 const ecliptic = require('./ecliptic');
 const azimuth = require('./azimuth');
+const linearSR = require('./linearSR')
+const conditionalSR = require('./conditionalSR')
 const polls = require('./polls');
 const delegatedSending = require('./delegatedSending');
 const utils = require('./utils');
@@ -346,7 +348,7 @@ async function checkActivePointOwner(contracts, point, address) {
  * @return {Promise<Object>} A result and reason pair.
  */
 async function checkActivePointManager(contracts, point, address) {
-  res = { result: false };
+  let res = { result: false };
   if (!await azimuth.canManage(contracts, point, address))
   {
     res.reason = reasons.permission;
