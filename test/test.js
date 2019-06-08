@@ -103,15 +103,30 @@ function main() {
   let star2        = 512;
   let planet1a     = 65792;
   let planet1b     = 131328;
+  let planet1c     = 196864;
+  let planet1d     = 262400;
 
   it('prepare the environment', async function() {
-    galaxy = await firstUnownedGalaxy(contracts);
-    console.log('using galaxy ' + galaxy + '/255');
+    this.timeout(20000)
 
+    // NB (jtobin):
+    //
+    // The polls tests require that a sufficient number of galaxies have
+    // been spawned, so we explicitly create ~zod and ~nec below.
+
+    let tx = ecliptic.createGalaxy(contracts, 0, ac0);
+    await sendTransaction(web3, tx, pk0);
+
+    tx = ecliptic.createGalaxy(contracts, 1, ac0);
+    await sendTransaction(web3, tx, pk0);
+
+    galaxy   = await firstUnownedGalaxy(contracts);
     star1    = star1 + galaxy;
     star2    = star2 + galaxy;
     planet1a = planet1a + galaxy;
     planet1b = planet1b + galaxy;
+    planet1c = planet1c + galaxy;
+    planet1d = planet1d + galaxy;
   });
 
   describe('#createGalaxy', async function() {
@@ -461,44 +476,40 @@ function main() {
         reasons.upgradePath);
     });
 
-    // it('generates usable transactions', async function() {
-    //   this.timeout(10000) // this one can take awhile
+    it('generates usable transactions', async function() {
+      this.timeout(10000) // this one can take awhile
 
-    //   let fakeHash = '0x';
-    //   if (galaxy < 10 || galaxy >= 100)
-    //     fakeHash = fakeHash + '0';
-    //   fakeHash = fakeHash + galaxy;
+      let fakeHash = '0x';
+      if (galaxy < 10 || galaxy >= 100)
+        fakeHash = fakeHash + '0';
+      fakeHash = fakeHash + galaxy;
 
-    //   cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
-    //     reasons.pollInactive);
+      cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
+        reasons.pollInactive);
 
-    //   await sendTransaction(
-    //     web3,
-    //     ecliptic.startDocumentPoll(contracts, galaxy, fakeHash),
-    //     pk0);
+      await sendTransaction(
+        web3,
+        ecliptic.startDocumentPoll(contracts, galaxy, fakeHash),
+        pk0);
 
-    //   can(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0));
+      can(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0));
 
-    //   await sendTransaction(
-    //     web3,
-    //     ecliptic.castDocumentVote(contracts, galaxy, fakeHash, true),
-    //     pk0);
+      await sendTransaction(
+        web3,
+        ecliptic.castDocumentVote(contracts, galaxy, fakeHash, true),
+        pk0);
 
-    //   await sendTransaction(
-    //     web3,
-    //     ecliptic.updateDocumentPoll(contracts, fakeHash),
-    //     pk0);
+      await sendTransaction(
+        web3,
+        ecliptic.updateDocumentPoll(contracts, fakeHash),
+        pk0);
 
-    //   // FIXME (jtobin): see fang-'s comment below
-    //   // this one depends on how many galaxies have been spawned...
-    //   cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
-    //     reasons.pollVoted);
-    // });
+      cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
+        reasons.pollVoted);
+    });
   });
 
   describe('#delegatedSending', async function() {
-    let planet1c = 196864;
-    let planet1d = 262400;
     it('sets up for tests', async function() {
       let prep = ecliptic.spawn(contracts, planet1c, ac0);
       await sendTransaction(web3, prep, pk0);
