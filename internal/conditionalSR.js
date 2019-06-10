@@ -1,37 +1,30 @@
 
-module.exports.getCommitment = (contracts, address) => {
-  return contracts.conditionalSR.methods.commitments(address).call();
-}
+module.exports.getCommitment = (contracts, address) =>
+  contracts.conditionalSR.methods.commitments(address).call()
 
-module.exports.getRemainingStars = (contracts, address) => {
-  return contracts.conditionalSR.methods.getRemainingStars(address).call();
-}
+module.exports.getRemainingStars = (contracts, address) =>
+  contracts.conditionalSR.methods.getRemainingStars(address).call()
 
-module.exports.getBatches = (contracts, address) => {
-  return contracts.conditionalSR.methods.getBatches(address).call();
-}
+module.exports.getBatches = (contracts, address) =>
+  contracts.conditionalSR.methods.getBatches(address).call()
 
-module.exports.verifyBalance = (contracts, address) => {
-  return contracts.conditionalSR.methods.verifyBalance(address).call();
-}
+module.exports.verifyBalance = (contracts, address) =>
+  contracts.conditionalSR.methods.verifyBalance(address).call()
 
-module.exports.getWithdrawLimit = (contracts, address) => {
-  return contracts.conditionalSR.methods.withdrawLimit(address).call();
-}
+module.exports.getWithdrawLimit = (contracts, address) =>
+  contracts.conditionalSR.methods.withdrawLimit(address).call()
 
-module.exports.getApprovedTransfer = (contracts, address) => {
-  return contracts.conditionalSR.methods.transfers(address).call();
-}
+module.exports.getApprovedTransfer = (contracts, address) =>
+  contracts.conditionalSR.methods.transfers(address).call()
 
-module.exports.getConditionsState = (contracts) => {
-  return contracts.conditionalSR.methods.getConditionsState().call();
-}
+module.exports.getConditionsState = (contracts) =>
+  contracts.conditionalSR.methods.getConditionsState().call()
 
 const tx = (to, data, value) => ({
   to: to,
   data: data,
   value: value || 0x0
-});
+})
 
 module.exports.approveCommitmentTransfer = (contracts, _to) => {
   let addr = contracts.conditionalSR._address;

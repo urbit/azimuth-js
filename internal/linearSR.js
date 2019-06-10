@@ -1,27 +1,21 @@
 
-module.exports.getBatch = (contracts, address) => {
-  return contracts.linearSR.methods.batches(address).call();
-}
+module.exports.getBatch = (contracts, address) =>
+  contracts.linearSR.methods.batches(address).call()
 
-module.exports.getRemainingStars = (contracts, address) => {
-  return contracts.linearSR.methods.getRemainingStars(address).call();
-}
+module.exports.getRemainingStars = (contracts, address) =>
+  contracts.linearSR.methods.getRemainingStars(address).call()
 
-module.exports.verifyBalance = (contracts, address) => {
-  return contracts.linearSR.methods.verifyBalance(address).call();
-}
+module.exports.verifyBalance = (contracts, address) =>
+  contracts.linearSR.methods.verifyBalance(address).call()
 
-module.exports.getStartTime = (contracts) => {
-  return contracts.linearSR.methods.start().call();
-}
+module.exports.getStartTime = (contracts) =>
+  contracts.linearSR.methods.start().call()
 
-module.exports.getWithdrawLimit = (contracts, address) => {
-  return contracts.linearSR.methods.withdrawLimit(address).call();
-}
+module.exports.getWithdrawLimit = (contracts, address) =>
+  contracts.linearSR.methods.withdrawLimit(address).call()
 
-module.exports.getApprovedTransfer = (contracts, address) => {
-  return contracts.linearSR.methods.transfers(address).call();
-}
+module.exports.getApprovedTransfer = (contracts, address) =>
+  contracts.linearSR.methods.transfers(address).call()
 
 const tx = (to, data, value) => ({
   to: to,

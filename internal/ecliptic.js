@@ -1,35 +1,27 @@
 
-module.exports.owner = (contracts) => {
-  return contracts.ecliptic.methods.owner().call();
-}
+module.exports.owner = (contracts) =>
+  contracts.ecliptic.methods.owner().call()
 
-module.exports.balanceOf = (contracts, address) => {
-  return contracts.ecliptic.methods.balanceOf(address).call();
-}
+module.exports.balanceOf = (contracts, address) =>
+  contracts.ecliptic.methods.balanceOf(address).call()
 
-module.exports.ownerOf = (contracts, point) => {
-  return contracts.ecliptic.methods.ownerOf(point).call();
-}
+module.exports.ownerOf = (contracts, point) =>
+  contracts.ecliptic.methods.ownerOf(point).call()
 
-module.exports.exists = (contracts, point) => {
-  return contracts.ecliptic.methods.exists(point).call();
-}
+module.exports.exists = (contracts, point) =>
+  contracts.ecliptic.methods.exists(point).call()
 
-module.exports.getApproved = (contracts, point) => {
-  return contracts.ecliptic.methods.getApproved(point).call();
-}
+module.exports.getApproved = (contracts, point) =>
+  contracts.ecliptic.methods.getApproved(point).call()
 
-module.exports.isApprovedForAll = (contracts, owner, operator) => {
-  return contracts.ecliptic.methods.isApprovedForAll(owner, operator).call();
-}
+module.exports.isApprovedForAll = (contracts, owner, operator) =>
+  contracts.ecliptic.methods.isApprovedForAll(owner, operator).call()
 
-module.exports.getSpawnLimit = (contracts, point, time) => {
-  return contracts.ecliptic.methods.getSpawnLimit(point, time).call();
-}
+module.exports.getSpawnLimit = (contracts, point, time) =>
+  contracts.ecliptic.methods.getSpawnLimit(point, time).call()
 
-module.exports.canEscapeTo = (contracts, point, sponsor) => {
-  return contracts.ecliptic.methods.canEscapeTo(point, sponsor).call();
-}
+module.exports.canEscapeTo = (contracts, point, sponsor) =>
+  contracts.ecliptic.methods.canEscapeTo(point, sponsor).call()
 
 // NB (jtobin):
 //
