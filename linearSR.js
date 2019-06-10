@@ -9,8 +9,8 @@ const internal = require('./internal/linearSR');
  * Return the details of a batch.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the batch.
- * @return {Object} A batch object, with windup, rate, rateUnit, amount,
- * withdrawn.
+ * @return {Promise<Object>} A batch object, with windup, rate, rateUnit,
+ * amount, withdrawn.
  */
 module.exports.getBatch = internal.getBatch;
 
@@ -19,7 +19,7 @@ module.exports.getBatch = internal.getBatch;
  * withdrawn from a batch.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the batch.
- * @return {Array<Number>} The stars left in the batch.
+ * @return {Promise<Array<Number>>} The stars left in the batch.
  */
 module.exports.getRemainingStars = internal.getRemainingStars;
 
@@ -27,14 +27,14 @@ module.exports.getRemainingStars = internal.getRemainingStars;
  * Return whether the amount of stars deposited into the batch checks out.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the batch.
- * @return {boolean} true if sufficient stars have been deposited.
+ * @return {Promise<Bool>} true if sufficient stars have been deposited.
  */
 module.exports.verifyBalance = internal.verifyBalance;
 
 /**
  * Return the timestamp at which the release was started.
  * @param {Object} contracts - An Urbit contracts object.
- * @return {Number} A timestamp.
+ * @return {Promise<Number>} A timestamp.
  */
 module.exports.getStartTime = internal.getStartTime;
 
@@ -43,7 +43,7 @@ module.exports.getStartTime = internal.getStartTime;
  * batch at the current time.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the batch.
- * @return {Number} the withdraw limit.
+ * @return {Promise<Number>} the withdraw limit.
  */
 module.exports.getWithdrawLimit = internal.getWithdrawLimit;
 
@@ -51,7 +51,7 @@ module.exports.getWithdrawLimit = internal.getWithdrawLimit;
  * Return the address this batch can be transferred to.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the batch.
- * @return {String} The approved transfer address, 0x0 for none.
+ * @return {Promise<String>} The approved transfer address, 0x0 for none.
  */
 module.exports.getApprovedTransfer = internal.getApprovedTransfer;
 

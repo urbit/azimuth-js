@@ -36,30 +36,30 @@
 ## Members
 
 <dl>
-<dt><a href="#getCommitment">getCommitment</a> ⇒ <code>Object</code></dt>
+<dt><a href="#getCommitment">getCommitment</a> ⇒ <code>Promise.&lt;Object&gt;</code></dt>
 <dd><p>Return the details of a commitment.</p>
 </dd>
-<dt><a href="#getRemainingStars">getRemainingStars</a> ⇒ <code>Array.&lt;Number&gt;</code></dt>
+<dt><a href="#getRemainingStars">getRemainingStars</a> ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code></dt>
 <dd><p>Return the list of stars that have been deposited into, but not yet
 withdrawn from a commitment.</p>
 </dd>
-<dt><a href="#getBatches">getBatches</a> ⇒ <code>Array.&lt;Number&gt;</code></dt>
+<dt><a href="#getBatches">getBatches</a> ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code></dt>
 <dd><p>Return the configured sizes of the batches for the commitment.</p>
 </dd>
-<dt><a href="#verifyBalance">verifyBalance</a> ⇒ <code>boolean</code></dt>
+<dt><a href="#verifyBalance">verifyBalance</a> ⇒ <code>Promise.&lt;Bool&gt;</code></dt>
 <dd><p>Return whether the amount of stars deposited into the commitment checks out.</p>
 </dd>
-<dt><a href="#getStartTime">getStartTime</a> ⇒ <code>Number</code></dt>
+<dt><a href="#getStartTime">getStartTime</a> ⇒ <code>Promise.&lt;Number&gt;</code></dt>
 <dd><p>Return the timestamp at which the release was started.</p>
 </dd>
-<dt><a href="#getWithdrawLimit">getWithdrawLimit</a> ⇒ <code>Number</code></dt>
+<dt><a href="#getWithdrawLimit">getWithdrawLimit</a> ⇒ <code>Promise.&lt;Number&gt;</code></dt>
 <dd><p>Return the amount of stars a participant is allowed to withdraw from their
 commitment at the current time.</p>
 </dd>
-<dt><a href="#getApprovedTransfer">getApprovedTransfer</a> ⇒ <code>String</code></dt>
+<dt><a href="#getApprovedTransfer">getApprovedTransfer</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
 <dd><p>Return the address this commitment can be transferred to.</p>
 </dd>
-<dt><a href="#approveCommitmentTransfer">approveCommitmentTransfer</a> ⇒ <code>Object</code></dt>
+<dt><a href="#approveCommitmentTransfer">approveCommitmentTransfer</a> ⇒ <code>Promise.&lt;Object&gt;</code></dt>
 <dd><p>Approve the transfer of a commitment to another address.</p>
 </dd>
 <dt><a href="#transferCommitment">transferCommitment</a> ⇒ <code>Object</code></dt>
@@ -77,24 +77,24 @@ commitment at the current time.</p>
 <dt><a href="#analyzeCondition">analyzeCondition</a> ⇒ <code>Object</code></dt>
 <dd><p>Analyze a condition for satisfaction.</p>
 </dd>
-<dt><a href="#getBatch">getBatch</a> ⇒ <code>Object</code></dt>
+<dt><a href="#getBatch">getBatch</a> ⇒ <code>Promise.&lt;Object&gt;</code></dt>
 <dd><p>Return the details of a batch.</p>
 </dd>
-<dt><a href="#getRemainingStars">getRemainingStars</a> ⇒ <code>Array.&lt;Number&gt;</code></dt>
+<dt><a href="#getRemainingStars">getRemainingStars</a> ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code></dt>
 <dd><p>Return the list of stars that have been deposited into, but not yet
 withdrawn from a batch.</p>
 </dd>
-<dt><a href="#verifyBalance">verifyBalance</a> ⇒ <code>boolean</code></dt>
+<dt><a href="#verifyBalance">verifyBalance</a> ⇒ <code>Promise.&lt;Bool&gt;</code></dt>
 <dd><p>Return whether the amount of stars deposited into the batch checks out.</p>
 </dd>
-<dt><a href="#getStartTime">getStartTime</a> ⇒ <code>Number</code></dt>
+<dt><a href="#getStartTime">getStartTime</a> ⇒ <code>Promise.&lt;Number&gt;</code></dt>
 <dd><p>Return the timestamp at which the release was started.</p>
 </dd>
-<dt><a href="#getWithdrawLimit">getWithdrawLimit</a> ⇒ <code>Number</code></dt>
+<dt><a href="#getWithdrawLimit">getWithdrawLimit</a> ⇒ <code>Promise.&lt;Number&gt;</code></dt>
 <dd><p>Return the amount of stars a participant is allowed to withdraw from their
 batch at the current time.</p>
 </dd>
-<dt><a href="#getApprovedTransfer">getApprovedTransfer</a> ⇒ <code>String</code></dt>
+<dt><a href="#getApprovedTransfer">getApprovedTransfer</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
 <dd><p>Return the address this batch can be transferred to.</p>
 </dd>
 <dt><a href="#approveBatchTransfer">approveBatchTransfer</a> ⇒ <code>Object</code></dt>
@@ -114,7 +114,7 @@ batch at the current time.</p>
 ## Functions
 
 <dl>
-<dt><a href="#getConditionsState">getConditionsState(contracts)</a> ⇒ <code>Object</code></dt>
+<dt><a href="#getConditionsState">getConditionsState(contracts)</a> ⇒ <code>Promise.&lt;Object&gt;</code></dt>
 <dd><p>Return conditions configuration and state data.</p>
 </dd>
 </dl>
@@ -2065,12 +2065,12 @@ Check if two addresses are equal.
 
 <a name="getCommitment"></a>
 
-## getCommitment ⇒ <code>Object</code>
+## getCommitment ⇒ <code>Promise.&lt;Object&gt;</code>
 Return the details of a commitment.
 
 **Kind**: global variable  
-**Returns**: <code>Object</code> - A commitment object, with windup, rate, rateUnit, amount,
-withdrawn.  
+**Returns**: <code>Promise.&lt;Object&gt;</code> - A commitment object, with windup, rate, rateUnit,
+amount, withdrawn.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2079,12 +2079,12 @@ withdrawn.
 
 <a name="getRemainingStars"></a>
 
-## getRemainingStars ⇒ <code>Array.&lt;Number&gt;</code>
+## getRemainingStars ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
 Return the list of stars that have been deposited into, but not yet
 withdrawn from a commitment.
 
 **Kind**: global variable  
-**Returns**: <code>Array.&lt;Number&gt;</code> - The stars left in the commitment.  
+**Returns**: <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code> - The stars left in the commitment.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2093,11 +2093,11 @@ withdrawn from a commitment.
 
 <a name="getBatches"></a>
 
-## getBatches ⇒ <code>Array.&lt;Number&gt;</code>
+## getBatches ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
 Return the configured sizes of the batches for the commitment.
 
 **Kind**: global variable  
-**Returns**: <code>Array.&lt;Number&gt;</code> - The batch sizes for the commitment.  
+**Returns**: <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code> - The batch sizes for the commitment.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2106,11 +2106,11 @@ Return the configured sizes of the batches for the commitment.
 
 <a name="verifyBalance"></a>
 
-## verifyBalance ⇒ <code>boolean</code>
+## verifyBalance ⇒ <code>Promise.&lt;Bool&gt;</code>
 Return whether the amount of stars deposited into the commitment checks out.
 
 **Kind**: global variable  
-**Returns**: <code>boolean</code> - true if sufficient stars have been deposited.  
+**Returns**: <code>Promise.&lt;Bool&gt;</code> - true if sufficient stars have been deposited.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2119,11 +2119,11 @@ Return whether the amount of stars deposited into the commitment checks out.
 
 <a name="getStartTime"></a>
 
-## getStartTime ⇒ <code>Number</code>
+## getStartTime ⇒ <code>Promise.&lt;Number&gt;</code>
 Return the timestamp at which the release was started.
 
 **Kind**: global variable  
-**Returns**: <code>Number</code> - A timestamp.  
+**Returns**: <code>Promise.&lt;Number&gt;</code> - A timestamp.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2131,12 +2131,12 @@ Return the timestamp at which the release was started.
 
 <a name="getWithdrawLimit"></a>
 
-## getWithdrawLimit ⇒ <code>Number</code>
+## getWithdrawLimit ⇒ <code>Promise.&lt;Number&gt;</code>
 Return the amount of stars a participant is allowed to withdraw from their
 commitment at the current time.
 
 **Kind**: global variable  
-**Returns**: <code>Number</code> - the withdraw limit.  
+**Returns**: <code>Promise.&lt;Number&gt;</code> - the withdraw limit.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2145,11 +2145,11 @@ commitment at the current time.
 
 <a name="getApprovedTransfer"></a>
 
-## getApprovedTransfer ⇒ <code>String</code>
+## getApprovedTransfer ⇒ <code>Promise.&lt;String&gt;</code>
 Return the address this commitment can be transferred to.
 
 **Kind**: global variable  
-**Returns**: <code>String</code> - The approved transfer address, 0x0 for none.  
+**Returns**: <code>Promise.&lt;String&gt;</code> - The approved transfer address, 0x0 for none.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2158,11 +2158,11 @@ Return the address this commitment can be transferred to.
 
 <a name="approveCommitmentTransfer"></a>
 
-## approveCommitmentTransfer ⇒ <code>Object</code>
+## approveCommitmentTransfer ⇒ <code>Promise.&lt;Object&gt;</code>
 Approve the transfer of a commitment to another address.
 
 **Kind**: global variable  
-**Returns**: <code>Object</code> - An unsigned transaction object.  
+**Returns**: <code>Promise.&lt;Object&gt;</code> - An unsigned transaction object.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2235,12 +2235,12 @@ Analyze a condition for satisfaction.
 
 <a name="getBatch"></a>
 
-## getBatch ⇒ <code>Object</code>
+## getBatch ⇒ <code>Promise.&lt;Object&gt;</code>
 Return the details of a batch.
 
 **Kind**: global variable  
-**Returns**: <code>Object</code> - A batch object, with windup, rate, rateUnit, amount,
-withdrawn.  
+**Returns**: <code>Promise.&lt;Object&gt;</code> - A batch object, with windup, rate, rateUnit,
+amount, withdrawn.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2249,12 +2249,12 @@ withdrawn.
 
 <a name="getRemainingStars"></a>
 
-## getRemainingStars ⇒ <code>Array.&lt;Number&gt;</code>
+## getRemainingStars ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
 Return the list of stars that have been deposited into, but not yet
 withdrawn from a batch.
 
 **Kind**: global variable  
-**Returns**: <code>Array.&lt;Number&gt;</code> - The stars left in the batch.  
+**Returns**: <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code> - The stars left in the batch.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2263,11 +2263,11 @@ withdrawn from a batch.
 
 <a name="verifyBalance"></a>
 
-## verifyBalance ⇒ <code>boolean</code>
+## verifyBalance ⇒ <code>Promise.&lt;Bool&gt;</code>
 Return whether the amount of stars deposited into the batch checks out.
 
 **Kind**: global variable  
-**Returns**: <code>boolean</code> - true if sufficient stars have been deposited.  
+**Returns**: <code>Promise.&lt;Bool&gt;</code> - true if sufficient stars have been deposited.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2276,11 +2276,11 @@ Return whether the amount of stars deposited into the batch checks out.
 
 <a name="getStartTime"></a>
 
-## getStartTime ⇒ <code>Number</code>
+## getStartTime ⇒ <code>Promise.&lt;Number&gt;</code>
 Return the timestamp at which the release was started.
 
 **Kind**: global variable  
-**Returns**: <code>Number</code> - A timestamp.  
+**Returns**: <code>Promise.&lt;Number&gt;</code> - A timestamp.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2288,12 +2288,12 @@ Return the timestamp at which the release was started.
 
 <a name="getWithdrawLimit"></a>
 
-## getWithdrawLimit ⇒ <code>Number</code>
+## getWithdrawLimit ⇒ <code>Promise.&lt;Number&gt;</code>
 Return the amount of stars a participant is allowed to withdraw from their
 batch at the current time.
 
 **Kind**: global variable  
-**Returns**: <code>Number</code> - the withdraw limit.  
+**Returns**: <code>Promise.&lt;Number&gt;</code> - the withdraw limit.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2302,11 +2302,11 @@ batch at the current time.
 
 <a name="getApprovedTransfer"></a>
 
-## getApprovedTransfer ⇒ <code>String</code>
+## getApprovedTransfer ⇒ <code>Promise.&lt;String&gt;</code>
 Return the address this batch can be transferred to.
 
 **Kind**: global variable  
-**Returns**: <code>String</code> - The approved transfer address, 0x0 for none.  
+**Returns**: <code>Promise.&lt;String&gt;</code> - The approved transfer address, 0x0 for none.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -2366,11 +2366,11 @@ Withdraw one star to the specified address.
 
 <a name="getConditionsState"></a>
 
-## getConditionsState(contracts) ⇒ <code>Object</code>
+## getConditionsState(contracts) ⇒ <code>Promise.&lt;Object&gt;</code>
 Return conditions configuration and state data.
 
 **Kind**: global function  
-**Returns**: <code>Object</code> - An object containing conditions state, with
+**Returns**: <code>Promise.&lt;Object&gt;</code> - An object containing conditions state, with
 { conditions, livelines, deadlines, timestamps } arrays.  
 
 | Param | Type | Description |
