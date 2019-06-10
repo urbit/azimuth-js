@@ -10,8 +10,8 @@ const internal = require('./internal/conditionalSR');
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the
  * commitment.
- * @return {Object} A commitment object, with windup, rate, rateUnit, amount,
- * withdrawn.
+ * @return {Promise<Object>} A commitment object, with windup, rate, rateUnit,
+ * amount, withdrawn.
  */
 module.exports.getCommitment = internal.getCommitment;
 
@@ -21,7 +21,7 @@ module.exports.getCommitment = internal.getCommitment;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the
  * commitment.
- * @return {Array<Number>} The stars left in the commitment.
+ * @return {Promise<Array<Number>>} The stars left in the commitment.
  */
 module.exports.getRemainingStars = internal.getRemainingStars;
 
@@ -30,7 +30,7 @@ module.exports.getRemainingStars = internal.getRemainingStars;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the
  * commitment.
- * @return {Array<Number>} The batch sizes for the commitment.
+ * @return {Promise<Array<Number>>} The batch sizes for the commitment.
  */
 module.exports.getBatches = internal.getBatches;
 
@@ -39,14 +39,14 @@ module.exports.getBatches = internal.getBatches;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the
  * commitment.
- * @return {boolean} true if sufficient stars have been deposited.
+ * @return {Promise<Bool>} true if sufficient stars have been deposited.
  */
 module.exports.verifyBalance = internal.verifyBalance;
 
 /**
  * Return the timestamp at which the release was started.
  * @param {Object} contracts - An Urbit contracts object.
- * @return {Number} A timestamp.
+ * @return {Promise<Number>} A timestamp.
  */
 module.exports.getStartTime = internal.getStartTime;
 
@@ -56,7 +56,7 @@ module.exports.getStartTime = internal.getStartTime;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the
  * commitment.
- * @return {Number} the withdraw limit.
+ * @return {Promise<Number>} the withdraw limit.
  */
 module.exports.getWithdrawLimit = internal.getWithdrawLimit;
 
@@ -65,14 +65,14 @@ module.exports.getWithdrawLimit = internal.getWithdrawLimit;
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the
  * commitment.
- * @return {String} The approved transfer address, 0x0 for none.
+ * @return {Promise<String>} The approved transfer address, 0x0 for none.
  */
 module.exports.getApprovedTransfer = internal.getApprovedTransfer;
 
 /**
  * Return conditions configuration and state data.
  * @param {Object} contracts - An Urbit contracts object.
- * @return {Object} An object containing conditions state, with
+ * @return {Promise<Object>} An object containing conditions state, with
  * { conditions, livelines, deadlines, timestamps } arrays.
  */
 module.exports.getConditionsState = async function(contracts) {
@@ -81,12 +81,11 @@ module.exports.getConditionsState = async function(contracts) {
   return { conditions, livelines, deadlines, timestamps };
 }
 
-
 /**
  * Approve the transfer of a commitment to another address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The address to transfer to.
- * @return {Object} An unsigned transaction object.
+ * @return {Promise<Object>} An unsigned transaction object.
  */
 module.exports.approveCommitmentTransfer = internal.approveCommitmentTransfer;
 
