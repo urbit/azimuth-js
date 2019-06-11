@@ -5,22 +5,16 @@
 // there are any), and assemble a raw unsigned transaction.
 //
 function tx(contract, method, ...args) {
-  let raw = (to, data, value) => ({
-    to: to,
-    data: data,
-    value: value || 0x0
-  })
-
   let func = contract.methods[method]
 
-  let data =
+  let called =
       args === null
     ? func.call()
     : func.apply(this, args)
 
-  let abi = data.encodeABI()
+  let data = called.encodeABI()
 
-  return raw(contract._address, abi, 0)
+  return { to: contract._address, data: data, value: 0 }
 }
 
 module.exports = {
