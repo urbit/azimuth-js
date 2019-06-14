@@ -11,6 +11,7 @@ const check = ajs.check;
 const ecliptic = ajs.ecliptic;
 const azimuth = ajs.azimuth;
 const delsend = ajs.delegatedSending;
+const details = ajs.chainDetails;
 const txn = ajs.txn;
 
 const reasons = require('../resources/reasons.json');
@@ -101,6 +102,7 @@ function main() {
   let galaxyPlanet = 65536;
   let star1        = 256;
   let star2        = 512;
+  let star3        = 768;
   let planet1a     = 65792;
   let planet1b     = 131328;
   let planet1c     = 196864;
@@ -574,6 +576,31 @@ function main() {
 
       count = await delsend.getTotalUsableInvites(contracts, planet1c);
       assert.equal(count, 8);
+    });
+  });
+
+  describe('#eventLog', async function() {
+
+    it('can find activated ship block', async function() {
+      const latest = await web3.eth.getBlockNumber();
+      const res = await azimuth.getActivationBlock(
+        contracts,
+        star1,
+        latest,
+        details.local.azimuth.genesis
+      );
+      assert.notEqual(res, 0);
+    });
+
+    it('cannot find unactivated ship block', async function() {
+      const latest = await web3.eth.getBlockNumber();
+      const res = await azimuth.getActivationBlock(
+        contracts,
+        star3,
+        latest,
+        details.local.azimuth.genesis
+      );
+      assert.equal(res, 0);
     });
   });
 }
