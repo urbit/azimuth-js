@@ -586,8 +586,8 @@ function main() {
       const res = await azimuth.getActivationBlock(
         contracts,
         star1,
-        latest,
-        details.local.azimuth.genesis
+        details.local.azimuth.genesis,
+        latest
       );
       assert.notEqual(res, 0);
     });
@@ -597,8 +597,8 @@ function main() {
       const res = await azimuth.getActivationBlock(
         contracts,
         star3,
-        latest,
-        details.local.azimuth.genesis
+        details.local.azimuth.genesis,
+        latest
       );
       assert.equal(res, 0);
     });

@@ -390,31 +390,22 @@ async function getUnspawnedChildren(contracts, point) {
  * been activated yet.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} point - Point number.
- * @param {Number} maxBlock - Block to start backwards search from. You
- *                            generally want to pass in web3.eth.getBlockNumber.
- * @param {Number} minBlock - (optional) Block to end backwards search at.
+ * @param {Number} minBlock - (optional) Block to start search at. (Default 0.)
+ * @param {Number} maxBlock - (optional) Block to end search at. (Default latest.)
  * @return {Promise<Number>} - Block of activation.
  */
-async function getActivationBlock(contracts, point, maxBlock, minBlock) {
+async function getActivationBlock(contracts, point, minBlock, maxBlock) {
   minBlock = minBlock || 0;
-  let block = maxBlock;
-  let res = null;
-  while (block > minBlock && res === null) {
-    const lower = block - 45000; // approximately a week
-    const logs = await contracts.azimuth.getPastEvents('Activated', {
-      fromBlock: lower,
-      toBlock: block,
-      filter: { point: [point] },
-    });
-    if (logs.length > 0) {
-      res = logs[0];
-    }
-    block = lower;
-  }
-  if (res === null) {
+  maxBlock = maxBlock || 'latest';
+  const logs = await contracts.azimuth.getPastEvents('Activated', {
+    fromBlock: minBlock,
+    toBlock: maxBlock,
+    filter: { point: [point] },
+  });
+  if (logs.length === 0) {
     return 0;
   } else {
-    return res.blockNumber;
+    return logs[0].blockNumber;
   }
 }
 
