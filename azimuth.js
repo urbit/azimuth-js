@@ -386,6 +386,30 @@ async function getUnspawnedChildren(contracts, point) {
 }
 
 /**
+ * Get the block at which the point was activated. Returns zero if it hasn't
+ * been activated yet.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @param {Number} minBlock - (optional) Block to start search at. (Default 0.)
+ * @param {Number} maxBlock - (optional) Block to end search at. (Default latest.)
+ * @return {Promise<Number>} - Block of activation.
+ */
+async function getActivationBlock(contracts, point, minBlock, maxBlock) {
+  minBlock = minBlock || 0;
+  maxBlock = maxBlock || 'latest';
+  const logs = await contracts.azimuth.getPastEvents('Activated', {
+    fromBlock: minBlock,
+    toBlock: maxBlock,
+    filter: { point: [point] },
+  });
+  if (logs.length === 0) {
+    return 0;
+  } else {
+    return logs[0].blockNumber;
+  }
+}
+
+/**
  * Get the points that an address owns.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The target address.
@@ -546,6 +570,7 @@ module.exports = {
   getSpawnCount,
   getSpawned,
   getUnspawnedChildren,
+  getActivationBlock,
   getSponsor,
   getSponsoring,
   getSponsoringCount,

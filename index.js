@@ -16,6 +16,7 @@ const azimuth = require('./azimuth');
 const delegatedSending = require('./delegatedSending');
 const txn = require('./txn');
 const utils = require('./utils');
+const chainDetails = require('./resources/chainDetails.json');
 
 const initContracts = contracts.initContracts;
 const initContractsPartial = contracts.initContractsPartial;
@@ -34,5 +35,6 @@ module.exports = {
   utils,
   initContracts,
   initContractsPartial,
-  getKeyPair
+  getKeyPair,
+  chainDetails
 }

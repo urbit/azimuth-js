@@ -1,0 +1,20 @@
+{
+  "mainnet": {
+    "azimuth": {
+      "address": "0x223c067F8CF28ae173EE5CafEa60cA44C335fecB",
+      "genesis": 6784880
+    }
+  },
+  "ropsten": {
+    "azimuth": {
+      "address": "0x308ab6a6024cf198B57e008d0Ac9Ad0219886579",
+      "genesis": 4601630
+    }
+  },
+  "local": {
+    "azimuth": {
+      "address": "0x863d9c2e5c4c133596cfac29d55255f0d0f86381",
+      "genesis": 0
+    }
+  }
+}
