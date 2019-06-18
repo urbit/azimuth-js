@@ -157,10 +157,5 @@ For debugging and custom testing, you'll need a local testnet running Azimuth.
 3. `npm install -g ganache-cli`
 3. Run a local `ganache` node, boot using the following command to ensure a matching seed:
    `ganache-cli -m "benefit crew supreme gesture quantum web media hazard theory mercy wing kitten"`
-4. Run `truffle deploy` from the ecliptic's directory to deploy to your local node.
-
-### Useful addresses
-
-Ecliptic owner (is allowed to create galaxies):
-`0x6deffb0cafdb11d175f123f6891aa64f01c24f7d`
+4. Run `truffle deploy` from the Azimuth directory to deploy to your local node.
 

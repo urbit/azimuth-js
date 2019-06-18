@@ -1,5 +1,10 @@
 # Changelog
 
+- 0.15.0 (2019-06-18)
+    * Adds a utility function for retrieving a point's activation block. (#43)
+    * Fixes a bug that prevented the polls tests from running. (#40)
+    * Miscellaneous internal improvements and docs fixes. (#41, #42)
+
 - 0.14.2 (2019-06-06)
     * Fixes a bug where the linear and conditional star release modules
       weren't actually being imported in the "check" module. (#38)
