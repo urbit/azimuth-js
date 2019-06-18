@@ -188,6 +188,7 @@ Azimuth API
     * [~getPointSize(point)](#module_azimuth..getPointSize) ⇒ <code>Number</code>
     * [~getPoint(contracts, point, what)](#module_azimuth..getPoint) ⇒ <code>Promise.&lt;Object&gt;</code>
     * [~getUnspawnedChildren(contracts, point)](#module_azimuth..getUnspawnedChildren) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
+    * [~getActivationBlock(contracts, point, minBlock, maxBlock)](#module_azimuth..getActivationBlock) ⇒ <code>Promise.&lt;Number&gt;</code>
 
 <a name="module_azimuth..getSponsoring"></a>
 
@@ -761,6 +762,22 @@ Get a list of unspawned/spawnable points
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | point | <code>Number</code> | Point number. |
+
+<a name="module_azimuth..getActivationBlock"></a>
+
+### azimuth~getActivationBlock(contracts, point, minBlock, maxBlock) ⇒ <code>Promise.&lt;Number&gt;</code>
+Get the block at which the point was activated. Returns zero if it hasn't
+been activated yet.
+
+**Kind**: inner method of [<code>azimuth</code>](#module_azimuth)  
+**Returns**: <code>Promise.&lt;Number&gt;</code> - - Block of activation.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contracts | <code>Object</code> | An Urbit contracts object. |
+| point | <code>Number</code> | Point number. |
+| minBlock | <code>Number</code> | (optional) Block to start search at. (Default 0.) |
+| maxBlock | <code>Number</code> | (optional) Block to end search at. (Default latest.) |
 
 <a name="module_check"></a>
 
