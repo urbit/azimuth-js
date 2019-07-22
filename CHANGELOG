@@ -1,5 +1,10 @@
 # Changelog
 
+- 0.15.1 (2019-07-22)
+    * Miscellaneous fixes to support a more recent web3 version.  Note that
+      the library now supports web3 v1.0.0-beta.54 exclusively, rather than a
+      range in the beta series. (#46)
+
 - 0.15.0 (2019-06-18)
     * Adds a utility function for retrieving a point's activation block. (#43)
     * Fixes a bug that prevented the polls tests from running. (#40)
