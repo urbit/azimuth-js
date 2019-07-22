@@ -45,7 +45,7 @@
     "urbit-ob": "^4.0.1"
   },
   "peerDependencies": {
-    "web3": ">=1.0.0-beta.33"
+    "web3": "1.0.0-beta.54"
   },
   "author": "Tlon",
   "license": "MIT",
