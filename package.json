@@ -9,9 +9,9 @@
   "main": "index.js",
   "scripts": {
     "test:deploy": "cd node_modules/azimuth-solidity && truffle deploy",
-    "test:ganache": "ganache-cli -m 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten' > /dev/null &",
+    "test:ganache": "ganache-cli --networkId 1 -m 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten' > /dev/null &",
     "test:setup": "npm run test:ganache && npm run test:deploy",
-    "test:mocha": "nyc mocha --reporter spec",
+    "test:mocha": "nyc mocha --reporter spec --timeout 5000 --exit",
     "test:cleanup": "pkill -f ganache-cli",
     "test": "npm-run-all test:setup test:mocha test:cleanup --continue-on-error",
     "docs": "jsdoc2md *.js > docs/api.md",
@@ -28,7 +28,7 @@
     "bip39": "^2.5.0",
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
-    "ganache-cli": "^6.2.3",
+    "ganache-cli": "^6.5.0",
     "hdkey": "^1.1.0",
     "jsdoc": "3.6.2",
     "jsdoc-to-markdown": "^5.0.0",
@@ -37,14 +37,15 @@
     "nyc": "^14.1.1",
     "secp256k1": "^3.5.2",
     "truffle": "4.1.11",
-    "web3": "1.0.0-beta.33"
+    "web3": "^1.0.0-beta.54"
   },
   "dependencies": {
     "azimuth-solidity": "1.2.0",
-    "ethereumjs-util": "^5.2.0"
+    "ethereumjs-util": "^5.2.0",
+    "urbit-ob": "^4.0.1"
   },
   "peerDependencies": {
-    "web3": ">=1.0.0-beta.33"
+    "web3": "1.0.0-beta.54"
   },
   "author": "Tlon",
   "license": "MIT",

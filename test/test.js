@@ -85,7 +85,7 @@ async function sendTransaction(web3, tx, privateKey) {
 
   tx.from = renderAsHex(addr);
 
-  let stx  = await txn.signTransaction(web3, tx, privateKey);
+  let stx = await txn.signTransaction(web3, tx, privateKey);
   return txn.sendSignedTransaction(web3, stx);
 }
 
@@ -97,6 +97,8 @@ function main() {
   let provider  = new Web3.providers.HttpProvider('http://localhost:8545');
   let web3      = new Web3(provider);
   let contracts = ajs.initContracts(web3, contractAddresses);
+
+  const someBytes32 = web3.utils.asciiToHex('whatever');
 
   let galaxy       = 0;
   let galaxyPlanet = 65536;
@@ -216,7 +218,7 @@ function main() {
 
     it('can spawn child to self, directly', async function() {
       let tx = ecliptic.configureKeys(
-                 contracts, galaxy, '0xaa', '0xbb', 1, false);
+                 contracts, galaxy, someBytes32, someBytes32, 1, false);
       await sendTransaction(web3, tx, pk0);
 
       can(await check.canSpawn(contracts, star1, ac0));
@@ -233,7 +235,7 @@ function main() {
       await sendTransaction(web3, tx, pk0);
 
       tx = await ecliptic.configureKeys(
-             contracts, star1, '0xaa', '0xbb', 1, false);
+             contracts, star1, someBytes32, someBytes32, 1, false);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await azimuth.isOwner(contracts, star1, ac0));
@@ -481,10 +483,7 @@ function main() {
     it('generates usable transactions', async function() {
       this.timeout(10000) // this one can take awhile
 
-      let fakeHash = '0x';
-      if (galaxy < 10 || galaxy >= 100)
-        fakeHash = fakeHash + '0';
-      fakeHash = fakeHash + galaxy;
+      let fakeHash = web3.utils.asciiToHex('poll hash ' + galaxy);
 
       cant(await check.canCastDocumentVote(contracts, galaxy, fakeHash, ac0),
         reasons.pollInactive);
@@ -571,7 +570,7 @@ function main() {
       assert.equal(longList.length, 9);
       assert.equal(count, 9);
 
-      let tx = ecliptic.setSpawnProxy(contracts, star2, 0x0);
+      let tx = ecliptic.setSpawnProxy(contracts, star2, zaddr);
       await sendTransaction(web3, tx, pk1);
 
       count = await delsend.getTotalUsableInvites(contracts, planet1c);
