@@ -58,6 +58,7 @@ function sendSignedTransaction(web3, signedTx) {
         }
       })
       .on('error', (e) => {
+        // eslint-disable-next-line no-console
         console.error(e);
         reject();
       });
