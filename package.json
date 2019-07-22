@@ -11,7 +11,7 @@
     "test:deploy": "cd node_modules/azimuth-solidity && truffle deploy",
     "test:ganache": "ganache-cli --networkId 1 -m 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten' > /dev/null &",
     "test:setup": "npm run test:ganache && npm run test:deploy",
-    "test:mocha": "nyc mocha --reporter spec",
+    "test:mocha": "nyc mocha --reporter spec --timeout 5000 --exit",
     "test:cleanup": "pkill -f ganache-cli",
     "test": "npm-run-all test:setup test:mocha test:cleanup --continue-on-error",
     "docs": "jsdoc2md *.js > docs/api.md",

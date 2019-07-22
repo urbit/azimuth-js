@@ -190,7 +190,6 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
-      this.timeout(5000);
       let tx = ecliptic.setVotingProxy(contracts, galaxy, ac2);
       await sendTransaction(web3, tx, pk0);
 
@@ -513,7 +512,6 @@ function main() {
 
   describe('#delegatedSending', async function() {
     it('sets up for tests', async function() {
-      this.timeout(5000);
       let prep = ecliptic.spawn(contracts, planet1c, ac0);
       await sendTransaction(web3, prep, pk0);
       prep = ecliptic.setSpawnProxy(contracts, star1, contracts.delegatedSending._address);
@@ -530,7 +528,6 @@ function main() {
     });
 
     it('generates usable transaction', async function() {
-      this.timeout(5000);
       assert.equal(await delsend.pools(contracts, planet1c, star1), 0);
 
       let tx = delsend.setPoolSize(contracts, star1, planet1c, 9);
@@ -566,7 +563,6 @@ function main() {
     });
 
     it('counts & generates planets to send', async function() {
-      this.timeout(5000);
       let shortList = await delsend.getPlanetsToSend(contracts, planet1c, 3);
       let longList = await delsend.getPlanetsToSend(contracts, planet1c, 15);
       let count = await delsend.getTotalUsableInvites(contracts, planet1c);
