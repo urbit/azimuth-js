@@ -1,6 +1,6 @@
 {
   "name": "azimuth-js",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "Functions for interacting with Azimuth",
   "repository": {
     "type": "git",
@@ -40,9 +40,9 @@
     "web3": "^1.0.0-beta.54"
   },
   "dependencies": {
-    "azimuth-solidity": "1.2.0",
+    "azimuth-solidity": "1.2.1",
     "ethereumjs-util": "^5.2.0",
-    "urbit-ob": "^4.0.1"
+    "urbit-ob": "4.1.4"
   },
   "peerDependencies": {
     "web3": "1.0.0-beta.54"
