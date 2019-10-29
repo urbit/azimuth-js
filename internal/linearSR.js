@@ -29,5 +29,5 @@ module.exports.withdraw = (contracts) =>
   gen.tx(contracts.linearSR, 'withdraw')
 
 module.exports.withdrawTo = (contracts, _to) =>
-  gen.tx(contracts.linearSR, 'withdrawTo', _to)
+  gen.tx(contracts.linearSR, 'withdraw', _to)
 
