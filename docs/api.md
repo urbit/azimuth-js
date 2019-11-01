@@ -20,7 +20,7 @@
 <dd><p>Ecliptic API</p>
 </dd>
 <dt><a href="#module_index">index</a></dt>
-<dd><p>constitution-js</p>
+<dd><p>azimuth-js</p>
 </dd>
 <dt><a href="#module_polls">polls</a></dt>
 <dd><p>Polls API</p>
@@ -2009,7 +2009,7 @@ Get the amount of children point can still spawn before hitting the limit.
 <a name="module_index"></a>
 
 ## index
-constitution-js
+azimuth-js
 
 <a name="module_polls"></a>
 

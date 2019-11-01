@@ -1,5 +1,5 @@
 /**
- * constitution-js
+ * azimuth-js
  * @module index
  */
 
