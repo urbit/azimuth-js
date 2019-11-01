@@ -18,6 +18,9 @@ const linearStarReleaseAbi =
 const delegatedSendingAbi =
   require('azimuth-solidity/build/contracts/DelegatedSending.json').abi;
 
+const conditionalStarReleaseAbi =
+  require('azimuth-solidity/build/contracts/ConditionalStarRelease.json').abi;
+
 /**
  * Create a collection of Urbit contracts, given a web3 instance and their
  * provided addresses.
@@ -31,6 +34,7 @@ const initContracts = (web3, addresses) => ({
   azimuth: newAzimuth(web3, addresses.azimuth),
   polls: newPolls(web3, addresses.polls),
   linearSR: newLinearStarRelease(web3, addresses.linearSR),
+  conditionalSR: newConditionalStarRelease(web3, addresses.conditionalSR),
   delegatedSending: newDelegatedSending(web3, addresses.delegatedSending)
 });
 
@@ -77,6 +81,9 @@ const newLinearStarRelease = (web3, address) =>
 
 const newDelegatedSending = (web3, address) =>
   newContract(web3, address, delegatedSendingAbi);
+
+const newConditionalStarRelease = (web3, address) =>
+  newContract(web3, address, conditionalStarReleaseAbi);
 
 module.exports = {
   initContracts,
