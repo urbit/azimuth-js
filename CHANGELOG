@@ -1,5 +1,8 @@
 # Changelog
 
+- 0.15.3 (2019-11-01)
+    * Adds the conditional star release contract to 'initContracts'. (#50)
+
 - 0.15.2 (2019-10-29)
     * Fixes a bug in the bindings to the 'withdraw' method of the linear star
       release contract. (#48)
