@@ -77,10 +77,16 @@ module.exports.getApprovedTransfer = internal.getApprovedTransfer;
  * { conditions, livelines, deadlines, timestamps } arrays.
  */
 module.exports.getConditionsState = async function(contracts) {
-  let [conditions, livelines, deadlines, timestamps] =
-    await internal.getConditionsState(contracts);
-  return { conditions, livelines, deadlines, timestamps };
-}
+  let { conds, deads, lives, times } = await internal.getConditionsState(
+    contracts
+  );
+  return {
+    conditions: conds,
+    livelines: lives,
+    deadlines: deads,
+    timestamps: times
+  };
+};
 
 /**
  * Approve the transfer of a commitment to another address.
