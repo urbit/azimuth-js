@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.15.4 (2019-11-06)
+    * Fixes several ABI mismatch bugs in the conditional star release contract
+      bindings. (#51)
+
 - 0.15.3 (2019-11-01)
     * Adds the conditional star release contract to 'initContracts'. (#50)
 
