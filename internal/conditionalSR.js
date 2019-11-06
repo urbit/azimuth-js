@@ -13,8 +13,8 @@ module.exports.getBatches = (contracts, address) =>
 module.exports.verifyBalance = (contracts, address) =>
   contracts.conditionalSR.methods.verifyBalance(address).call()
 
-module.exports.getWithdrawLimit = (contracts, address) =>
-  contracts.conditionalSR.methods.withdrawLimit(address).call()
+module.exports.getWithdrawLimit = (contracts, address, _batch) =>
+  contracts.conditionalSR.methods.withdrawLimit(address, _batch).call()
 
 module.exports.getApprovedTransfer = (contracts, address) =>
   contracts.conditionalSR.methods.transfers(address).call()
