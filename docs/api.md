@@ -53,8 +53,8 @@ withdrawn from a commitment.</p>
 <dd><p>Return the timestamp at which the release was started.</p>
 </dd>
 <dt><a href="#getWithdrawLimit">getWithdrawLimit</a> ⇒ <code>Promise.&lt;Number&gt;</code></dt>
-<dd><p>Return the amount of stars a participant is allowed to withdraw from their
-commitment at the current time.</p>
+<dd><p>Return the amount of stars a participant is allowed to withdraw from
+one of their batches at the current time.</p>
 </dd>
 <dt><a href="#getApprovedTransfer">getApprovedTransfer</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
 <dd><p>Return the address this commitment can be transferred to.</p>
@@ -66,10 +66,10 @@ commitment at the current time.</p>
 <dd><p>Make an approved transfer of the specified commitment to the caller&#39;s address.</p>
 </dd>
 <dt><a href="#withdraw">withdraw</a> ⇒ <code>Object</code></dt>
-<dd><p>Withdraw one star to the caller&#39;s address.</p>
+<dd><p>Withdraw one star from a batch to the caller&#39;s address.</p>
 </dd>
 <dt><a href="#withdrawTo">withdrawTo</a> ⇒ <code>Object</code></dt>
-<dd><p>Withdraw one star to the specified address.</p>
+<dd><p>Withdraw one star from a batch to the specified address.</p>
 </dd>
 <dt><a href="#forfeit">forfeit</a> ⇒ <code>Object</code></dt>
 <dd><p>Forfeit stars contained in a batch with missed deadline, and all after it.</p>
@@ -2149,8 +2149,8 @@ Return the timestamp at which the release was started.
 <a name="getWithdrawLimit"></a>
 
 ## getWithdrawLimit ⇒ <code>Promise.&lt;Number&gt;</code>
-Return the amount of stars a participant is allowed to withdraw from their
-commitment at the current time.
+Return the amount of stars a participant is allowed to withdraw from
+one of their batches at the current time.
 
 **Kind**: global variable  
 **Returns**: <code>Promise.&lt;Number&gt;</code> - the withdraw limit.  
@@ -2159,6 +2159,7 @@ commitment at the current time.
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | address | <code>String</code> | The participant/registered address for the commitment. |
+| batch | <code>Number</code> | The batch number to look up |
 
 <a name="getApprovedTransfer"></a>
 
@@ -2202,7 +2203,7 @@ Make an approved transfer of the specified commitment to the caller's address.
 <a name="withdraw"></a>
 
 ## withdraw ⇒ <code>Object</code>
-Withdraw one star to the caller's address.
+Withdraw one star from a batch to the caller's address.
 
 **Kind**: global variable  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -2210,11 +2211,12 @@ Withdraw one star to the caller's address.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
+| batch | <code>Number</code> | The batch number to withdraw from |
 
 <a name="withdrawTo"></a>
 
 ## withdrawTo ⇒ <code>Object</code>
-Withdraw one star to the specified address.
+Withdraw one star from a batch to the specified address.
 
 **Kind**: global variable  
 **Returns**: <code>Object</code> - An unsigned transaction object.  
@@ -2222,6 +2224,7 @@ Withdraw one star to the specified address.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
+| batch | <code>Number</code> | The batch number |
 | address | <code>String</code> | The address to withdraw to. |
 
 <a name="forfeit"></a>
