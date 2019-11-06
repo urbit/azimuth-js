@@ -51,11 +51,12 @@ module.exports.verifyBalance = internal.verifyBalance;
 module.exports.getStartTime = internal.getStartTime;
 
 /**
- * Return the amount of stars a participant is allowed to withdraw from their
- * commitment at the current time.
+ * Return the amount of stars a participant is allowed to withdraw from
+ * one of their batches at the current time.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The participant/registered address for the
  * commitment.
+ * @param {Number} batch - The batch number to look up
  * @return {Promise<Number>} the withdraw limit.
  */
 module.exports.getWithdrawLimit = internal.getWithdrawLimit;
@@ -98,15 +99,17 @@ module.exports.approveCommitmentTransfer = internal.approveCommitmentTransfer;
 module.exports.transferCommitment = internal.transferCommitment;
 
 /**
- * Withdraw one star to the caller's address.
+ * Withdraw one star from a batch to the caller's address.
  * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} batch - The batch number to withdraw from
  * @return {Object} An unsigned transaction object.
  */
 module.exports.withdraw = internal.withdraw;
 
 /**
- * Withdraw one star to the specified address.
+ * Withdraw one star from a batch to the specified address.
  * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} batch - The batch number
  * @param {String} address - The address to withdraw to.
  * @return {Object} An unsigned transaction object.
  */

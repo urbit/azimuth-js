@@ -28,11 +28,11 @@ module.exports.approveCommitmentTransfer = (contracts, _to) =>
 module.exports.transferCommitment = (contracts, _from) =>
   gen.tx(contracts.conditionalSR, 'transferCommitment', _from)
 
-module.exports.withdraw = (contracts) =>
-  gen.tx(contracts.conditionalSR, 'withdraw')
+module.exports.withdraw = (contracts, _batch) =>
+  gen.tx(contracts.conditionalSR, 'withdrawToSelf', _batch)
 
-module.exports.withdrawTo = (contracts, _to) =>
-  gen.tx(contracts.conditionalSR, 'withdrawTo', _to)
+module.exports.withdrawTo = (contracts, _batch, _to) =>
+  gen.tx(contracts.conditionalSR, 'withdraw', _batch, _to)
 
 module.exports.forfeit = (contracts, _batch) =>
   gen.tx(contracts.conditionalSR, 'forfeit', _batch)
