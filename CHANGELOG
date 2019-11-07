@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.16.0 (2019-11-07)
+    * Adds the 'getWithdrawn' method to the conditional star release contract
+      bindings. (#52)
+
 - 0.15.4 (2019-11-06)
     * Fixes several ABI mismatch bugs in the conditional star release contract
       bindings. (#51)

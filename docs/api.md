@@ -52,6 +52,10 @@ withdrawn from a commitment.</p>
 <dt><a href="#getStartTime">getStartTime</a> ⇒ <code>Promise.&lt;Number&gt;</code></dt>
 <dd><p>Return the timestamp at which the release was started.</p>
 </dd>
+<dt><a href="#getWithdrawn">getWithdrawn</a> ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code></dt>
+<dd><p>Return the amount of stars a participant has already withdrawn from
+each of their batches at the current time</p>
+</dd>
 <dt><a href="#getWithdrawLimit">getWithdrawLimit</a> ⇒ <code>Promise.&lt;Number&gt;</code></dt>
 <dd><p>Return the amount of stars a participant is allowed to withdraw from
 one of their batches at the current time.</p>
@@ -2145,6 +2149,21 @@ Return the timestamp at which the release was started.
 | Param | Type | Description |
 | --- | --- | --- |
 | contracts | <code>Object</code> | An Urbit contracts object. |
+
+<a name="getWithdrawn"></a>
+
+## getWithdrawn ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
+Return the amount of stars a participant has already withdrawn from
+each of their batches at the current time
+
+**Kind**: global variable  
+**Returns**: <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code> - the number of stars already withdrawn for
+each batch.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contracts | <code>Object</code> | An Urbit contracts object. |
+| address | <code>String</code> | The participant/registered address for the commitment. |
 
 <a name="getWithdrawLimit"></a>
 
