@@ -51,6 +51,16 @@ module.exports.verifyBalance = internal.verifyBalance;
 module.exports.getStartTime = internal.getStartTime;
 
 /**
+ * Return the amount of stars a participant has already withdrawn from
+ * each of their batches at the current time
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - The participant/registered address for the
+ * commitment.
+ * @return {Promise<Array<Number>>} the number of stars already withdrawn for
+ * each batch.
+ */
+module.exports.getWithdrawn = internal.getWithdrawn;
+/**
  * Return the amount of stars a participant is allowed to withdraw from
  * one of their batches at the current time.
  * @param {Object} contracts - An Urbit contracts object.
