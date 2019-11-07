@@ -22,6 +22,9 @@ module.exports.getApprovedTransfer = (contracts, address) =>
 module.exports.getConditionsState = (contracts) =>
   contracts.conditionalSR.methods.getConditionsState().call()
 
+module.exports.getWithdrawn = (contracts, address) =>
+  contracts.conditionalSR.methods.getWithdrawn(address).call();
+
 module.exports.approveCommitmentTransfer = (contracts, _to) =>
   gen.tx(contracts.conditionalSR, 'approveCommitmentTransfer', _to)
 
