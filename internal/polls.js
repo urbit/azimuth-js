@@ -1,4 +1,13 @@
 
+module.exports.getPollDuration = (contracts) =>
+  contracts.polls.methods.pollDuration().call()
+
+module.exports.getPollCooldown = (contracts) =>
+  contracts.polls.methods.pollCooldown().call()
+
+module.exports.getTotalVoters = (contracts) =>
+  contracts.polls.methods.totalVoters().call()
+
 module.exports.getDocumentProposals = (contracts) =>
   contracts.polls.methods.getDocumentProposals().call()
 
