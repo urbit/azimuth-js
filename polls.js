@@ -7,18 +7,21 @@ const internal = require('./internal/polls');
 
 /*
  * Get all documents that have ever been proposed.
+ * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<Array<String>>} Document hashes.
  */
 module.exports.getDocumentProposals = internal.getDocumentProposals;
 
 /*
  * Get all upgrades that have ever been proposed.
+ * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<Array<String>>} Contract addresses.
  */
 module.exports.getUpgradeProposals = internal.getUpgradeProposals;
 
 /*
  * Get all documents that have achieved majority.
+ * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<Array<String>>} Document hashes.
  */
 module.exports.getDocumentMajorities = internal.getDocumentMajorities;
