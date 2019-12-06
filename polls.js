@@ -6,19 +6,43 @@
 const internal = require('./internal/polls');
 
 /*
+ * Get the duration of polls.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @return {Promise<Number>} Poll duration in seconds.
+ */
+module.exports.getPollDuration = internal.getPollDuration;
+
+/*
+ * Get the cooldown period of polls.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @return {Promise<Number>} Poll cooldown period in seconds.
+ */
+module.exports.getPollCooldown = internal.getPollCooldown;
+
+/*
+ * Get the amount of galaxies eligible to vote.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @return {Promise<Number>} Voting galaxies.
+ */
+module.exports.getTotalVoters = internal.getTotalVoters;
+
+/*
  * Get all documents that have ever been proposed.
+ * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<Array<String>>} Document hashes.
  */
 module.exports.getDocumentProposals = internal.getDocumentProposals;
 
 /*
  * Get all upgrades that have ever been proposed.
+ * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<Array<String>>} Contract addresses.
  */
 module.exports.getUpgradeProposals = internal.getUpgradeProposals;
 
 /*
  * Get all documents that have achieved majority.
+ * @param {Object} contracts - An Urbit contracts object.
  * @return {Promise<Array<String>>} Document hashes.
  */
 module.exports.getDocumentMajorities = internal.getDocumentMajorities;
