@@ -1,4 +1,13 @@
 
+module.exports.getDocumentProposals = (contracts) =>
+  contracts.polls.methods.getDocumentProposals().call()
+
+module.exports.getUpgradeProposals = (contracts) =>
+  contracts.polls.methods.getUpgradeProposals().call()
+
+module.exports.getDocumentMajorities = (contracts) =>
+  contracts.polls.methods.getDocumentMajorities().call()
+
 module.exports.getUpgradePoll = (contracts, proposal) =>
   contracts.polls.methods.upgradePolls(proposal).call()
 

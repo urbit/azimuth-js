@@ -6,6 +6,24 @@
 const internal = require('./internal/polls');
 
 /*
+ * Get all documents that have ever been proposed.
+ * @return {Promise<Array<String>>} Document hashes.
+ */
+module.exports.getDocumentProposals = internal.getDocumentProposals;
+
+/*
+ * Get all upgrades that have ever been proposed.
+ * @return {Promise<Array<String>>} Contract addresses.
+ */
+module.exports.getUpgradeProposals = internal.getUpgradeProposals;
+
+/*
+ * Get all documents that have achieved majority.
+ * @return {Promise<Array<String>>} Document hashes.
+ */
+module.exports.getDocumentMajorities = internal.getDocumentMajorities;
+
+/*
  * Get the upgrade poll at the target address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} proposal - The target proposal address.
