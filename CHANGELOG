@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.17.0 (2019-12-06)
+    * Adds a number of additional function bindings to the polls contract.
+      (#53, #54).
+
 - 0.16.0 (2019-11-07)
     * Adds the 'getWithdrawn' method to the conditional star release contract
       bindings. (#52)
