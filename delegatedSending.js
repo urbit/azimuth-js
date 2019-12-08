@@ -71,10 +71,11 @@ module.exports.getTotalUsableInvites = async function(contracts, point) {
   const pool = await internal.getPool(contracts, point);
   const stars = await internal.getPoolStars(contracts, pool);
   let counts = stars.map(async star => {
-    const capable = await azimuth.isSpawnProxy(
+    const capable = azimuth.isSpawnProxy(
       contracts, star, contracts.delegatedSending.address
     );
-    if (!capable) return 0;
+    const supportive = azimuth.isLive(contracts, star);
+    if (!(await capable) || !(await supportive)) return 0;
     const invites = await internal.pools(contracts, pool, star);
     const spawnable = await ecliptic.getSpawnsRemaining(contracts, star);
     return Math.min(invites, spawnable);
@@ -106,8 +107,9 @@ module.exports.getPlanetsToSend = async function(contracts, as, amount) {
     const capable = azimuth.isSpawnProxy(
       contracts, star, contracts.delegatedSending.address
     );
-    if (available === 0 || !(await capable))
-      return {star, available};
+    const supportive = azimuth.isLive(contracts, star);
+    if (available === 0 || !(await capable) || !(await supportive))
+      return {star, available: 0};
 
     const spawned = await azimuth.getSpawnCount(contracts, star);
     let priority;
