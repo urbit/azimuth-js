@@ -25,6 +25,9 @@ module.exports.getConditionsState = (contracts) =>
 module.exports.getWithdrawn = (contracts, address) =>
   contracts.conditionalSR.methods.getWithdrawn(address).call();
 
+module.exports.getForfeited = (contracts, address) =>
+  contracts.conditionalSR.methods.getForfeited(address).call()
+
 module.exports.approveCommitmentTransfer = (contracts, _to) =>
   gen.tx(contracts.conditionalSR, 'approveCommitmentTransfer', _to)
 
