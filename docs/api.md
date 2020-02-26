@@ -63,6 +63,10 @@ one of their batches at the current time.</p>
 <dt><a href="#getApprovedTransfer">getApprovedTransfer</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
 <dd><p>Return the address this commitment can be transferred to.</p>
 </dd>
+<dt><a href="#getForfeited">getForfeited</a> ⇒ <code>Promise.&lt;Array.&lt;Bool&gt;&gt;</code></dt>
+<dd><p>Return whether or not each of the batches have been forfeited at the
+current time.</p>
+</dd>
 <dt><a href="#approveCommitmentTransfer">approveCommitmentTransfer</a> ⇒ <code>Promise.&lt;Object&gt;</code></dt>
 <dd><p>Approve the transfer of a commitment to another address.</p>
 </dd>
@@ -2187,6 +2191,21 @@ Return the address this commitment can be transferred to.
 
 **Kind**: global variable  
 **Returns**: <code>Promise.&lt;String&gt;</code> - The approved transfer address, 0x0 for none.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contracts | <code>Object</code> | An Urbit contracts object. |
+| address | <code>String</code> | The participant/registered address for the commitment. |
+
+<a name="getForfeited"></a>
+
+## getForfeited ⇒ <code>Promise.&lt;Array.&lt;Bool&gt;&gt;</code>
+Return whether or not each of the batches have been forfeited at the
+current time.
+
+**Kind**: global variable  
+**Returns**: <code>Promise.&lt;Array.&lt;Bool&gt;&gt;</code> - the number of stars already withdrawn for
+each batch.  
 
 | Param | Type | Description |
 | --- | --- | --- |
