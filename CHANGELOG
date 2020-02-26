@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.18.0 (2020-02-26)
+    * Adds a missing hasBeenLinked check to the delegated sending logic. (#55)
+    * Adds the 'getForfeited' binding to the conditionalSR contract. (#56)
+
 - 0.17.0 (2019-12-06)
     * Adds a number of additional function bindings to the polls contract.
       (#53, #54).
