@@ -99,6 +99,17 @@ module.exports.getConditionsState = async function(contracts) {
 };
 
 /**
+ * Return whether or not each of the batches have been forfeited at the
+ * current time.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {String} address - The participant/registered address for the
+ * commitment.
+ * @return {Promise<Array<Bool>>} the number of stars already withdrawn for
+ * each batch.
+ */
+module.exports.getForfeited = internal.getForfeited;
+
+/**
  * Approve the transfer of a commitment to another address.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {String} address - The address to transfer to.
