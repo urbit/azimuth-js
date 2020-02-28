@@ -92,6 +92,12 @@ module.exports.isEscaping = (contracts, point) =>
 module.exports.getEscapeRequest = (contracts, point) =>
   contracts.azimuth.methods.getEscapeRequest(point).call()
 
+module.exports.getEscapeRequests = (contracts, point) =>
+  contracts.azimuth.methods.getEscapeRequests(point).call()
+
+module.exports.getEscapeRequestsCount = (contracts, point) =>
+  contracts.azimuth.methods.getEscapeRequestsCount(point).call()
+
 module.exports.isRequestingEscapeTo = (contracts, point, sponsor) =>
   contracts.azimuth.methods.isRequestingEscapeTo(point, sponsor).call()
 
