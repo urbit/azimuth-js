@@ -235,6 +235,22 @@ function getEscapeRequest(contracts, point) {
 }
 
 /**
+ * Get a list of points that are requesting escape to a sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @return {Promise<Array<Number>>} An array of points requesting escape
+ */
+const getEscapeRequests = internal.getEscapeRequests;
+
+/**
+ * Get the number of points that are requesting escape to a sponsor.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @return {Promise<Number>} The number of points requesting escape
+ */
+const getEscapeRequestsCount = internal.getEscapeRequestsCount;
+
+/**
  * Check if a point is requesting escape to another point.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} point - Point number or point object.
@@ -578,6 +594,8 @@ module.exports = {
   isSponsor,
   isEscaping,
   getEscapeRequest,
+  getEscapeRequests,
+  getEscapeRequestsCount,
   isRequestingEscapeTo,
   isSpawnProxy,
   getSpawnProxy,
