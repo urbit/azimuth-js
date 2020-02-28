@@ -246,7 +246,7 @@ const getEscapeRequests = internal.getEscapeRequests;
  * Get the number of points that are requesting escape to a sponsor.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} point - Point number.
- * @return {Promise<Number>} THe number of points requesting escape
+ * @return {Promise<Number>} The number of points requesting escape
  */
 const getEscapeRequestsCount = internal.getEscapeRequestsCount;
 
