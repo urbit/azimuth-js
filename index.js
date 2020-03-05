@@ -17,6 +17,7 @@ const delegatedSending = require('./delegatedSending');
 const txn = require('./txn');
 const utils = require('./utils');
 const chainDetails = require('./resources/chainDetails.json');
+const claims = require('./claims');
 
 const initContracts = contracts.initContracts;
 const initContractsPartial = contracts.initContractsPartial;
@@ -29,6 +30,7 @@ module.exports = {
   ecliptic,
   linearSR,
   polls,
+  claims,
   azimuth,
   delegatedSending,
   txn,

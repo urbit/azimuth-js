@@ -58,7 +58,8 @@ let web3 = new Web3(provider);
 let contractAddresses = {
     ecliptic: '0x56db68f29203ff44a803faa2404a44ecbb7a7480',
     azimuth:  '0x863d9c2e5c4c133596cfac29d55255f0d0f86381',
-    polls:    '0x935452c45eda2958976a429c9733c40302995efd'
+    polls:    '0x935452c45eda2958976a429c9733c40302995efd',
+    claims:   '0xe0834579269eac6beca2882a6a21f6fb0b1d7196'
   }
 
 let contracts = azimuth.initContracts(web3, contractAddresses);
@@ -158,4 +159,3 @@ For debugging and custom testing, you'll need a local testnet running Azimuth.
 3. Run a local `ganache` node, boot using the following command to ensure a matching seed:
    `ganache-cli -m "benefit crew supreme gesture quantum web media hazard theory mercy wing kitten"`
 4. Run `truffle deploy` from the Azimuth directory to deploy to your local node.
-
