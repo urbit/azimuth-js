@@ -13,6 +13,7 @@ const azimuth = ajs.azimuth;
 const delsend = ajs.delegatedSending;
 const details = ajs.chainDetails;
 const txn = ajs.txn;
+const claims = ajs.claims;
 
 const reasons = require('../resources/reasons.json');
 
@@ -46,6 +47,7 @@ const contractAddresses = {
     ecliptic: '0x56db68f29203ff44a803faa2404a44ecbb7a7480',
     azimuth:  '0x863d9c2e5c4c133596cfac29d55255f0d0f86381',
     polls:    '0x935452c45eda2958976a429c9733c40302995efd',
+    claims:   '0xe0834579269eac6beca2882a6a21f6fb0b1d7196',
     delegatedSending: '0xb71c0b6cee1bcae56dfe95cd9d3e41ddd7eafc43'
   }
 
@@ -612,6 +614,22 @@ function main() {
         latest
       );
       assert.equal(res, 0);
+    });
+  });
+
+  describe('#claims', async function() {
+    const btcAddress = '1Hz96kJKF2HLPGY15JWLB5m9qGNxvt8tHJ';
+    const protocol = 'BTC'
+    const dossier = '0x00';
+    it('can write a claim', async function() {
+      const newClaimTx = await claims.addClaim(contracts, galaxy, protocol, btcAddress, dossier);
+      await sendTransaction(web3, newClaimTx, pk0);
+
+      const claim = await claims.getClaim(contracts, galaxy, 0);
+
+      assert.equal(claim.claim, btcAddress);
+      assert.equal(claim.protocol, protocol);
+      assert.equal(claim.dossier, dossier);
     });
   });
 }

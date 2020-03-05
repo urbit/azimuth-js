@@ -12,6 +12,9 @@ const azimuthAbi =
 const pollsAbi =
   require('azimuth-solidity/build/contracts/Polls.json').abi;
 
+const claimsAbi =
+  require('azimuth-solidity/build/contracts/Claims.json').abi;
+
 const linearStarReleaseAbi =
   require('azimuth-solidity/build/contracts/LinearStarRelease.json').abi;
 
@@ -33,6 +36,7 @@ const initContracts = (web3, addresses) => ({
   ecliptic: newEcliptic(web3, addresses.ecliptic),
   azimuth: newAzimuth(web3, addresses.azimuth),
   polls: newPolls(web3, addresses.polls),
+  claims: newClaims(web3, addresses.claims),
   linearSR: newLinearStarRelease(web3, addresses.linearSR),
   conditionalSR: newConditionalStarRelease(web3, addresses.conditionalSR),
   delegatedSending: newDelegatedSending(web3, addresses.delegatedSending)
@@ -76,6 +80,9 @@ const newAzimuth = (web3, address) =>
 const newPolls = (web3, address) =>
   newContract(web3, address, pollsAbi);
 
+const newClaims = (web3, address) =>
+  newContract(web3, address, claimsAbi);
+
 const newLinearStarRelease = (web3, address) =>
   newContract(web3, address, linearStarReleaseAbi);
 
@@ -91,6 +98,7 @@ module.exports = {
   eclipticAbi,
   azimuthAbi,
   pollsAbi,
+  claimsAbi,
   linearStarReleaseAbi,
   delegatedSendingAbi
 }
