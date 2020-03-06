@@ -10,6 +10,9 @@
 <dt><a href="#module_check">check</a></dt>
 <dd><p>Contract checks, assertions, and verifications</p>
 </dd>
+<dt><a href="#module_claims">claims</a></dt>
+<dd><p>Claims API</p>
+</dd>
 <dt><a href="#module_contracts">contracts</a></dt>
 <dd><p>Contracts API</p>
 </dd>
@@ -155,6 +158,8 @@ Azimuth API
 * [azimuth](#module_azimuth)
     * [~getSponsoring](#module_azimuth..getSponsoring) ⇒ <code>Promise.&lt;Array.&lt;String&gt;&gt;</code>
     * [~getSponsoringCount](#module_azimuth..getSponsoringCount) ⇒ <code>Promise.&lt;Number&gt;</code>
+    * [~getEscapeRequests](#module_azimuth..getEscapeRequests) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
+    * [~getEscapeRequestsCount](#module_azimuth..getEscapeRequestsCount) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [~owner](#module_azimuth..owner) ⇒ <code>Promise.&lt;String&gt;</code>
     * [~getOwnedPoints](#module_azimuth..getOwnedPoints) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
     * [~getOwnedPointCount](#module_azimuth..getOwnedPointCount) ⇒ <code>Promise.&lt;Number&gt;</code>
@@ -218,6 +223,32 @@ Get the number of points the target point is sponsoring.
 
 **Kind**: inner constant of [<code>azimuth</code>](#module_azimuth)  
 **Returns**: <code>Promise.&lt;Number&gt;</code> - The amount of points being sponsored.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contracts | <code>Object</code> | An Urbit contracts object. |
+| point | <code>Number</code> | Point number. |
+
+<a name="module_azimuth..getEscapeRequests"></a>
+
+### azimuth~getEscapeRequests ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
+Get a list of points that are requesting escape to a sponsor.
+
+**Kind**: inner constant of [<code>azimuth</code>](#module_azimuth)  
+**Returns**: <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code> - An array of points requesting escape  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contracts | <code>Object</code> | An Urbit contracts object. |
+| point | <code>Number</code> | Point number. |
+
+<a name="module_azimuth..getEscapeRequestsCount"></a>
+
+### azimuth~getEscapeRequestsCount ⇒ <code>Promise.&lt;Number&gt;</code>
+Get the number of points that are requesting escape to a sponsor.
+
+**Kind**: inner constant of [<code>azimuth</code>](#module_azimuth)  
+**Returns**: <code>Promise.&lt;Number&gt;</code> - The number of points requesting escape  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -1310,6 +1341,11 @@ Check if as can send point as an invite to to
 | point | <code>Number</code> | The point that would be sent as invite |
 | to | <code>String</code> | The Ethereum address recipient of the invite |
 | address | <code>String</code> | The caller address |
+
+<a name="module_claims"></a>
+
+## claims
+Claims API
 
 <a name="module_contracts"></a>
 
