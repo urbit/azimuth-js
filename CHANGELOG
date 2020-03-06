@@ -1,5 +1,11 @@
 # Changelog
 
+- 0.19.0 (2020-03-06)
+    * Adds support for the 'getEscapeRequests' and 'getEscapeRequestsCount'
+      methods of the Azimuth contract.
+    * Adds initial support for the Claims contract with 'addClaim' and
+      'getClaim' functions.
+
 - 0.18.0 (2020-02-26)
     * Adds a missing hasBeenLinked check to the delegated sending logic. (#55)
     * Adds the 'getForfeited' binding to the conditionalSR contract. (#56)
