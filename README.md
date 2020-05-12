@@ -24,23 +24,23 @@ npm install azimuth-js
 Require the library via something like:
 
 ```javascript
-const azimuth = require('azimuth-js');
+const azimuthjs = require('azimuth-js');
 ```
 
-In general: use the functions in `azimuth.ecliptic`, `azimuth.azimuth`,
-`azimuth.polls`, and so on to interact with the corresponding Ethereum
-contract.  Use `azimuth.check` to verify any required state is what you expect
-it to be.  `azimuth.txn` contains functions for signing and sending
-transactions, and `azimuth.utils` mostly re-exports useful utility functions
+In general: use the functions in `azimuthjs.ecliptic`, `azimuthjs.azimuth`,
+`azimuthjs.polls`, and so on to interact with the corresponding Ethereum
+contract.  Use `azimuthjs.check` to verify any required state is what you expect
+it to be.  `azimuthjs.txn` contains functions for signing and sending
+transactions, and `azimuthjs.utils` mostly re-exports useful utility functions
 from [ethereumjs-util](https://github.com/ethereumjs/ethereumjs-util).
 
 You might want to define something like the following, for convenience:
 
 ```javascript
-const ecliptic = azimuth.ecliptic;
-const azimuth = azimuth.azimuth;
-const check = azimuth.check;
-const txn = azimuth.txn
+const ecliptic = azimuthjs.ecliptic;
+const azimuth = azimuthjs.azimuth;
+const check = azimuthjs.check;
+const txn = azimuthjs.txn
 ```
 
 The library exposes a purely-functional API.  This means you'll have to supply
@@ -62,10 +62,10 @@ let contractAddresses = {
     claims:   '0xe0834579269eac6beca2882a6a21f6fb0b1d7196'
   }
 
-let contracts = azimuth.initContracts(web3, contractAddresses);
+let contracts = azimuthjs.initContracts(web3, contractAddresses);
 ```
 
-Note that the web3 object is passed to `azimuth.initContracts` explicitly.
+Note that the web3 object is passed to `azimuthjs.initContracts` explicitly.
 Aside from contract initialisation, this is typically only required when
 sending transactions (more below).
 
