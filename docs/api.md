@@ -156,6 +156,7 @@ Azimuth API
 
 
 * [azimuth](#module_azimuth)
+    * [~mainnet](#module_azimuth..mainnet)
     * [~getSponsoring](#module_azimuth..getSponsoring) ⇒ <code>Promise.&lt;Array.&lt;String&gt;&gt;</code>
     * [~getSponsoringCount](#module_azimuth..getSponsoringCount) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [~getEscapeRequests](#module_azimuth..getEscapeRequests) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
@@ -203,6 +204,15 @@ Azimuth API
     * [~getUnspawnedChildren(contracts, point)](#module_azimuth..getUnspawnedChildren) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
     * [~getActivationBlock(contracts, point, minBlock, maxBlock)](#module_azimuth..getActivationBlock) ⇒ <code>Promise.&lt;Number&gt;</code>
 
+<a name="module_azimuth..mainnet"></a>
+
+### azimuth~mainnet
+The Azimuth contract's address on the Ethereum mainnet.
+
+Unlike that of the Ecliptic, Polls, etc. contracts, the Azimuth contract's
+address never changes.  It is also registered as 'azimuth.eth' on ENS.
+
+**Kind**: inner constant of [<code>azimuth</code>](#module_azimuth)  
 <a name="module_azimuth..getSponsoring"></a>
 
 ### azimuth~getSponsoring ⇒ <code>Promise.&lt;Array.&lt;String&gt;&gt;</code>
