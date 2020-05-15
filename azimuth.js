@@ -18,6 +18,14 @@ const utils = require('./utils');
 //  with Promises, rather than to prevent invalid inputs *per se*.
 
 /**
+ * The Azimuth contract's address on the Ethereum mainnet.
+ *
+ * Unlike that of the Ecliptic, Polls, etc. contracts, the Azimuth contract's
+ * address never changes.  It is also registered as 'azimuth.eth' on ENS.
+ */
+const mainnet = '0x223c067f8cf28ae173ee5cafea60ca44c335fecb'
+
+/**
  * Check if an address is the owner of a point.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number | Object} point - Point number or point object.
@@ -562,6 +570,7 @@ const getTransferringFor = internal.getTransferringFor;
 const isOperator = internal.isOperator;
 
 module.exports = {
+  mainnet,
   owner,
   getPoint,
   getOwnedPoints,
