@@ -19,6 +19,26 @@ npm install azimuth-js
 
 [./docs/](./docs/api.md)
 
+## Quickstart
+
+(This example uses an [Infura](https://infura.io/) endpoint as a provider for
+web3.)
+
+```
+const ajs = require('azimuth-js')
+const Web3 = require('web3')
+
+const infura   = `https://mainnet.infura.io/v3/${MY_INFURA_ID}`
+const provider = new Web3.providers.HttpProvider(infura)
+const web3     = new Web3(provider)
+
+const contracts = await ajs.initContractsPartial(web3, ajs.azimuth.mainnet)
+
+const zod = '0x3B17d097D9dd711e4Ef8517AbBF18B2Ba64381fe'
+
+ajs.azimuth.isOwner(contracts, 0, zod).then(console.log) // true
+```
+
 ## Usage
 
 Require the library via something like:
