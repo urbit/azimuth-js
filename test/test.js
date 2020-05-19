@@ -564,6 +564,7 @@ function main() {
     });
 
     it('counts & generates planets to send', async function() {
+      this.timeout(10000) // this one can take awhile
       let shortList = await delsend.getPlanetsToSend(contracts, planet1c, 3);
       let longList = await delsend.getPlanetsToSend(contracts, planet1c, 15);
       let count = await delsend.getTotalUsableInvites(contracts, planet1c);
