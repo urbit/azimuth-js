@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.20.0 (2020-05-16)
+    * Exposes the Azimuth contract address on the Ethereum mainnet as
+      'azimuth.mainnet'.
+
 - 0.19.0 (2020-03-06)
     * Adds support for the 'getEscapeRequests' and 'getEscapeRequestsCount'
       methods of the Azimuth contract.
