@@ -1,5 +1,8 @@
 # Changelog
 
+- 0.20.1 (2020-06-29)
+    * Major version dependency bumps to urbit-ob and mocha.
+
 - 0.20.0 (2020-05-16)
     * Exposes the Azimuth contract address on the Ethereum mainnet as
       'azimuth.mainnet'.
