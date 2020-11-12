@@ -24,3 +24,5 @@ module.exports.addClaim = internal.addClaim;
  * @return {Promise<Object>} A claims object.
  */
 module.exports.getClaim = internal.getClaim;
+
+module.exports.getAllClaims = internal.getAllClaims;

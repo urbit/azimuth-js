@@ -24,6 +24,8 @@ const delegatedSendingAbi =
 const conditionalStarReleaseAbi =
   require('azimuth-solidity/build/contracts/ConditionalStarRelease.json').abi;
 
+const multicallAbi = require('./resources/multicall-abi.json')
+
 /**
  * Create a collection of Urbit contracts, given a web3 instance and their
  * provided addresses.
@@ -39,7 +41,8 @@ const initContracts = (web3, addresses) => ({
   claims: newClaims(web3, addresses.claims),
   linearSR: newLinearStarRelease(web3, addresses.linearSR),
   conditionalSR: newConditionalStarRelease(web3, addresses.conditionalSR),
-  delegatedSending: newDelegatedSending(web3, addresses.delegatedSending)
+  delegatedSending: newDelegatedSending(web3, addresses.delegatedSending),
+  multicall: newMulticall(web3, addresses.multicall)
 });
 
 /**
@@ -55,10 +58,13 @@ const initContractsPartial = async (web3, azimuthAddress) => {
   let ecliptic = newEcliptic(web3, eclipticAddress);
   let pollsAddress = await ecliptic.methods.polls().call();
   let polls = newPolls(web3, pollsAddress);
+  let claimsAddress = await ecliptic.methods.claims().call();
+  let claims = newClaims(web3, claimsAddress);
   return {
     ecliptic: ecliptic,
     azimuth: azimuth,
-    polls: polls
+    polls: polls,
+    claims: claims
   };
 }
 
@@ -91,6 +97,9 @@ const newDelegatedSending = (web3, address) =>
 
 const newConditionalStarRelease = (web3, address) =>
   newContract(web3, address, conditionalStarReleaseAbi);
+
+const newMulticall = (web3, address) =>
+  newContract(web3, address, multicallAbi)
 
 module.exports = {
   initContracts,

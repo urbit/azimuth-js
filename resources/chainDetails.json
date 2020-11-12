@@ -5,6 +5,12 @@
       "genesis": 6784880
     }
   },
+  "rinkeby": {
+    "azimuth": {
+      "address": "0x2BAfc1419F41fB850941b8412eC94723489ff41D",
+      "genesis": 7440691
+    }
+  },
   "ropsten": {
     "azimuth": {
       "address": "0x308ab6a6024cf198B57e008d0Ac9Ad0219886579",
