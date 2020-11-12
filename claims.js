@@ -25,4 +25,10 @@ module.exports.addClaim = internal.addClaim;
  */
 module.exports.getClaim = internal.getClaim;
 
+/*
+ * Reads a claim of a point at a specific index.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @return {Promise<Object[]>} An array of claims objects.
+ */
 module.exports.getAllClaims = internal.getAllClaims;
