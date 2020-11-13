@@ -15,6 +15,17 @@ module.exports.getAllClaims = (contracts, whose) =>
       ]))
   ).call().then(
     rets => rets.returnData
-      .map(ret => coder.decodeParameters(['string', 'string', 'bytes'], ret))
-      .filter(claim => claim[0] !== '' || claim[1] !== '' && claim[2] || null)
+      .map(ret => {
+        const claim = coder.decodeParameters(['string', 'string', 'bytes'], ret)
+        return {
+          protocol: claim[0],
+          claim: claim[1],
+          dossier: claim[2]
+        }
+      })
+      .filter(
+        claim => 
+        claim.claim !== '' ||
+        claim.protocol !== '' && claim.dossier ||
+        null)
   )
