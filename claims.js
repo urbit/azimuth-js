@@ -17,6 +17,16 @@ const internal = require('./internal/claims');
 module.exports.addClaim = internal.addClaim;
 
 /*
+ * Removes a claim from the Claims contract.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number} point - Point number.
+ * @param {String} protocol - Context or platform of the claim.
+ * @param {String} claim - The claim.
+ * @return {Object} An unsigned transaction object.
+ */
+module.exports.removeClaim = internal.removeClaim;
+
+/*
  * Reads a claim of a point at a specific index.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} point - Point number.
