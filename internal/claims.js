@@ -1,4 +1,3 @@
-const coder = require("web3-eth-abi").AbiCoder();
 const gen = require("./genTransaction");
 
 module.exports.addClaim = (contracts, _point, _protocol, _claim, _dossier) =>
@@ -19,6 +18,6 @@ module.exports.getAllClaims = (contracts, whose) =>
   ).then((claims) =>
     claims.filter(
       (claim) =>
-        claim.claim !== "" || (claim.protocol !== "" && claim.dossier) || null
+        claim.protocol !== "" || claim.claim !== ""
     )
   );
