@@ -632,6 +632,25 @@ function main() {
       assert.equal(claim.protocol, protocol);
       assert.equal(claim.dossier, dossier);
     });
+    it('can find all claims', async function() {
+      const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+      const ethProtocol = 'ETH'
+      const ethDossier = '0x01';
+      const newClaimTx = await claims.addClaim(contracts, galaxy, ethProtocol, ethAddress, ethDossier);
+      await sendTransaction(web3, newClaimTx, pk0);
+
+      const allClaims = await claims.getAllClaims(contracts, galaxy);
+
+      assert.equal(allClaims.length, 2);
+
+      assert.equal(allClaims[0].claim, btcAddress);
+      assert.equal(allClaims[0].protocol, protocol);
+      assert.equal(allClaims[0].dossier, dossier);
+
+      assert.equal(allClaims[1].claim, ethAddress);
+      assert.equal(allClaims[1].protocol, ethProtocol);
+      assert.equal(allClaims[1].dossier, ethDossier);
+    });
   });
 }
 
