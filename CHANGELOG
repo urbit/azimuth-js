@@ -1,5 +1,17 @@
 # Changelog
 
+- 0.21.0 (2020-12-03)
+    * Adds some facilities for working with claims:
+
+      * Adds 'removeClaim' and 'getAllClaims' functions for removing and
+        reading claims, respectively. (#64)
+
+      * initContractsPartial now initialises the Claims contract. (#64)
+
+    * Major version dependency bumps to ethereumjs-util and Truffle.
+
+    * Patch version dependency bump to azimuth-solidity v1.2.2.
+
 - 0.20.1 (2020-06-29)
     * Major version dependency bumps to urbit-ob and mocha.
 
