@@ -21,7 +21,7 @@ const reasons = require('../resources/reasons.json');
 
 const mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
 
-const seed = bip39.mnemonicToSeed(mnemonic);
+const seed = bip39.mnemonicToSeedSync(mnemonic);
 
 const hd = hdkey.fromMasterSeed(seed);
 
