@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "azimuth-solidity": "1.2.1",
-    "ethereumjs-util": "^5.2.0",
+    "ethereumjs-util": "^7.0.7",
     "urbit-ob": "^5.0.1"
   },
   "peerDependencies": {
