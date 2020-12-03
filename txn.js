@@ -47,7 +47,7 @@ async function signTransaction(web3, tx, privateKey) {
  */
 function sendSignedTransaction(web3, signedTx) {
   let stx = signedTx.rawTransaction;
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     web3.eth
       .sendSignedTransaction(stx)
       .once('confirmation', (n, receipt) => {

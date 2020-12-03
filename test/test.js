@@ -21,7 +21,7 @@ const reasons = require('../resources/reasons.json');
 
 const mnemonic = 'benefit crew supreme gesture quantum web media hazard theory mercy wing kitten';
 
-const seed = bip39.mnemonicToSeed(mnemonic);
+const seed = bip39.mnemonicToSeedSync(mnemonic);
 
 const hd = hdkey.fromMasterSeed(seed);
 
@@ -236,7 +236,7 @@ function main() {
       let tx = ecliptic.spawn(contracts, star1, ac0);
       await sendTransaction(web3, tx, pk0);
 
-      tx = await ecliptic.configureKeys(
+      tx = ecliptic.configureKeys(
              contracts, star1, someBytes32, someBytes32, 1, false);
       await sendTransaction(web3, tx, pk0);
 
@@ -245,7 +245,7 @@ function main() {
       assert.isFalse(await azimuth.isOwner(contracts, star2, ac0));
       assert.isFalse(await azimuth.isActive(contracts, star2));
 
-      tx = await ecliptic.spawn(contracts, star2, ac1);
+      tx = ecliptic.spawn(contracts, star2, ac1);
       await sendTransaction(web3, tx, pk0);
 
       assert.isTrue(await azimuth.isOwner(contracts, star2, ac0));
