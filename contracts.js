@@ -98,10 +98,12 @@ const newConditionalStarRelease = (web3, address) =>
 module.exports = {
   initContracts,
   initContractsPartial,
-  eclipticAbi,
-  azimuthAbi,
-  pollsAbi,
-  claimsAbi,
-  linearStarReleaseAbi,
-  delegatedSendingAbi
+  //
+  newEcliptic,
+  newAzimuth,
+  newPolls,
+  newClaims,
+  newLinearStarRelease,
+  newDelegatedSending,
+  newConditionalStarRelease
 }
