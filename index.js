@@ -35,6 +35,7 @@ module.exports = {
   delegatedSending,
   txn,
   utils,
+  contracts,
   initContracts,
   initContractsPartial,
   getKeyPair,
