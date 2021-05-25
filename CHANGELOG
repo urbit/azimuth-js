@@ -1,5 +1,11 @@
 # Changelog
 
+- 0.22.0 (2021-05-25)
+  * Exposes the various individual contracts (Ecliptic, Azimuth, etc.) for
+    creation.
+  * Major version bumps to the bip39, secp256k1, and hdkey dependencies.
+  * Miscellaneous minor/internal housekeeping.
+
 - 0.21.0 (2020-12-03)
     * Adds some facilities for working with claims:
 
