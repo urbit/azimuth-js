@@ -25,22 +25,24 @@ const conditionalStarReleaseAbi =
   require('azimuth-solidity/build/contracts/ConditionalStarRelease.json').abi;
 
 /**
- * Create a collection of Urbit contracts, given a web3 instance and their
- * provided addresses.
- * @param {Object} web3 - A web3 instance.
- * @param {Object} addresses - An addresses object.  Must provide addresses for
- *   ecliptic, azimuth, and polls contracts, at those respective key names.
- * @return {Object} The initialised contracts.
- */
-const initContracts = (web3, addresses) => ({
-  ecliptic: newEcliptic(web3, addresses.ecliptic),
-  azimuth: newAzimuth(web3, addresses.azimuth),
-  polls: newPolls(web3, addresses.polls),
-  claims: newClaims(web3, addresses.claims),
-  linearSR: newLinearStarRelease(web3, addresses.linearSR),
-  conditionalSR: newConditionalStarRelease(web3, addresses.conditionalSR),
-  delegatedSending: newDelegatedSending(web3, addresses.delegatedSending),
-});
+* Create a collection of Urbit contracts, given a web3 instance and their
+* provided addresses.
+* @param {Object} web3 - A web3 instance.
+* @param {Object} addresses - An addresses object.  Must provide addresses for
+*   ecliptic, azimuth, and polls contracts, at those respective key names.
+* @return {Object} The initialised contracts.
+*/
+const initContracts = (web3, addresses) => {
+  let contracts = {};
+  contracts = newEcliptic(contracts, web3, addresses.ecliptic);
+  contracts = newAzimuth(contracts, web3, addresses.azimuth);
+  contracts = newPolls(contracts, web3, addresses.polls);
+  contracts = newClaims(contracts, web3, addresses.claims);
+  contracts = newLinearStarRelease(contracts, web3, addresses.linearSR);
+  contracts = newConditionalStarRelease(contracts, web3, addresses.conditionalSR);
+  contracts = newDelegatedSending(contracts, web3, addresses.delegatedSending);
+  return contracts;
+};
 
 /**
  * Initialise as many Urbit contracts as possible, given a azimuth contract
@@ -50,19 +52,15 @@ const initContracts = (web3, addresses) => ({
  * @return {Object} The initialised contracts.
  */
 const initContractsPartial = async (web3, azimuthAddress) => {
-  let azimuth = newAzimuth(web3, azimuthAddress);
-  let eclipticAddress = await azimuth.methods.owner().call();
-  let ecliptic = newEcliptic(web3, eclipticAddress);
-  let pollsAddress = await ecliptic.methods.polls().call();
-  let polls = newPolls(web3, pollsAddress);
-  let claimsAddress = await ecliptic.methods.claims().call();
-  let claims = newClaims(web3, claimsAddress);
-  return {
-    ecliptic: ecliptic,
-    azimuth: azimuth,
-    polls: polls,
-    claims: claims
-  };
+  let contracts = {};
+  contracts = newAzimuth(contracts, web3, azimuthAddress);
+  let eclipticAddress = await contracts.azimuth.methods.owner().call();
+  contracts = newEcliptic(contracts, web3, eclipticAddress);
+  let pollsAddress = await contracts.ecliptic.methods.polls().call();
+  contracts = newPolls(contracts, web3, pollsAddress);
+  let claimsAddress = await contracts.ecliptic.methods.claims().call();
+  contracts = newClaims(contracts, web3, claimsAddress);
+  return contracts;
 }
 
 const newContract = (web3, address, abi) => {
@@ -74,26 +72,47 @@ const newContract = (web3, address, abi) => {
   return contract;
 }
 
-const newEcliptic = (web3, address) =>
-  newContract(web3, address, eclipticAbi);
+const newEcliptic = (contracts, web3, address) => {
+ contracts = contracts || {};
+ contracts.ecliptic = newContract(web3, address, eclipticAbi);
+ return contracts;
+}
 
-const newAzimuth = (web3, address) =>
-  newContract(web3, address, azimuthAbi);
+const newAzimuth = (contracts, web3, address) => {
+ contracts = contracts || {};
+ contracts.azimuth = newContract(web3, address, azimuthAbi);
+ return contracts;
+}
 
-const newPolls = (web3, address) =>
-  newContract(web3, address, pollsAbi);
+const newPolls = (contracts, web3, address) => {
+ contracts = contracts || {};
+ contracts.polls = newContract(web3, address, pollsAbi);
+ return contracts;
+}
 
-const newClaims = (web3, address) =>
-  newContract(web3, address, claimsAbi);
+const newClaims = (contracts, web3, address) => {
+ contracts = contracts || {};
+ contracts.claims = newContract(web3, address, claimsAbi);
+ return contracts;
+}
 
-const newLinearStarRelease = (web3, address) =>
-  newContract(web3, address, linearStarReleaseAbi);
+const newLinearStarRelease = (contracts, web3, address) => {
+ contracts = contracts || {};
+ contracts.linearSR = newContract(web3, address, linearStarReleaseAbi);
+ return contracts;
+}
 
-const newDelegatedSending = (web3, address) =>
-  newContract(web3, address, delegatedSendingAbi);
+const newConditionalStarRelease = (contracts, web3, address) => {
+ contracts = contracts || {};
+ contracts.conditionalSR = newContract(web3, address, conditionalStarReleaseAbi);
+ return contracts;
+}
 
-const newConditionalStarRelease = (web3, address) =>
-  newContract(web3, address, conditionalStarReleaseAbi);
+const newDelegatedSending = (contracts, web3, address) => {
+ contracts = contracts || {};
+ contracts.delegatedSending = newContract(web3, address, delegatedSendingAbi);
+ return contracts;
+}
 
 module.exports = {
   initContracts,
