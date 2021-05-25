@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.22.1 (2021-05-25)
+  * Changes the various 'newContract' functions to require a 'contracts'
+    object as input, similar to the rest of the API. (#72)
+
 - 0.22.0 (2021-05-25)
   * Exposes the various individual contracts (Ecliptic, Azimuth, etc.) for
     creation.
