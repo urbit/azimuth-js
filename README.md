@@ -4,7 +4,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/urbit/azimuth-js/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/azimuth-js.svg)](https://www.npmjs.com/package/azimuth-js)
 
-Interact with [Azimuth](https://github.com/urbit/azimuth-solidity) from
+Interact with [Azimuth](https://github.com/urbit/azimuth) from
 Javascript.
 
 ## Install
@@ -173,7 +173,7 @@ to run the tests on a one-off local Ganache node.
 
 For debugging and custom testing, you'll need a local testnet running Azimuth.
 
-1. Clone [Azimuth](https://github.com/urbit/azimuth-solidity)
+1. Clone [Azimuth](https://github.com/urbit/azimuth)
 2. `cd` into the repo and `npm install`
 3. `npm install -g ganache-cli`
 3. Run a local `ganache` node, boot using the following command to ensure a matching seed:
