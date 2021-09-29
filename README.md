@@ -34,7 +34,7 @@ const web3     = new Web3(provider)
 
 const contracts = await ajs.initContractsPartial(web3, ajs.azimuth.mainnet)
 
-const zod = '0x3B17d097D9dd711e4Ef8517AbBF18B2Ba64381fe'
+const zod = '0x9F57C77b1095BD5Db0558b9Cb9b8e6Fc67375E3C'
 
 ajs.azimuth.isOwner(contracts, 0, zod).then(console.log) // true
 ```
