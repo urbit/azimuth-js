@@ -1,4 +1,7 @@
 # Changelog
+- 0.22.2 (2022-01-21)
+  * Updated npm dependencies. (#79)
+  * Fixed spawn functions. (#62, #80) 
 
 - 0.22.1 (2021-05-25)
   * Changes the various 'newContract' functions to require a 'contracts'
