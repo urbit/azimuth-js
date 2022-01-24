@@ -3,7 +3,7 @@
  * @module check
  */
 
-const { eclipticAbi } = require('./contracts');
+const eclipticAbi = require('azimuth-solidity/build/contracts/Ecliptic.json').abi;
 const ecliptic = require('./ecliptic');
 const azimuth = require('./azimuth');
 const linearSR = require('./linearSR')
@@ -473,9 +473,9 @@ async function canStartUpgradePoll(web3, contracts, galaxy, proposal, address) {
   try {
     expected = await prop.methods.previousEcliptic().call()
   } catch(e) {
-    expected = false;
+    expected = null;
   }
-  if (contracts.ecliptic._address !== expected) // FIXME (jtobin): inappropriate comparison here
+  if (!expected || !utils.addressEquals(contracts.ecliptic.address, expected))
   {
     res.reason = reasons.upgradePath;
     return res;

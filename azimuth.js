@@ -150,14 +150,16 @@ function getSpawnCount(contracts, point) {
 }
 
 /**
- * Check if a point has been spawned.
+ * Get an array of all child points the target point has spawned.
  * @param {Object} contracts - An Urbit contracts object.
  * @param {Number} point - Point number.
- * @return {Promise<Bool>} True if the point has been spawned, false
- *  otherwise.
+ * @return {Promise<Array<Number>>} The spawned points.
  */
-function getSpawned(contracts, point) {
-  return internal.getSpawned(contracts, point);
+async function getSpawned(contracts, point) {
+  //There is an inconsistency in the web3 library: in some versions 
+  // getSpawned returns Array<Number>, in others Array<String>,
+  // so map to Number to be on the safe side.
+  return (await internal.getSpawned(contracts, point)).map(Number);
 }
 
 /**
