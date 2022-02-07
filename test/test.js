@@ -337,6 +337,7 @@ function main() {
       await sendTransaction(web3, tx, pk0);
 
       can(await check.canConfigureKeys(contracts, galaxy, ac1));
+      assert.isTrue(await azimuth.isManagementProxy(contracts, galaxy, ac1));
     });
 
   });

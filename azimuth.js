@@ -461,13 +461,32 @@ const getOwnedPointCount = internal.getOwnedPointCount;
 const getOwnedPointAtIndex = internal.getOwnedPointAtIndex;
 
 /**
- * Check if an address is a manager for an owner.
+ * Check if an address is a management proxy for a point.
  * @param {Object} contracts - An Urbit contracts object.
- * @param {String} owner - The owner's address.
- * @param {String} manager - The manager's address.
- * @return {Promise<Bool>} True if the address is a manager, false otherwise.
+ * @param {Number | Object} point - Point number or point object.
+ * @param {String} address - Target address.
+ * @return {Promise<Bool>} True if address is management proxy, false otherwise.
  */
-const isManagementProxy = internal.isManagementProxy;
+function isManagementProxy(contracts, point, address) {
+  if (typeof point === 'object') {
+    return utils.addressEquals(point.managementProxy, address);
+  }
+  return internal.isManagementProxy(contracts, point, address);
+}
+
+/**
+ * Get the management proxy for a point.
+ * @param {Object} contracts - An Urbit contracts object.
+ * @param {Number | Object} point - Point number or point object.
+ * @return {Promise<String>} The management proxy's address.
+ */
+function getManagementProxy(contracts, point) {
+  if (typeof point === 'object') {
+    return point.managementProxy;
+  }
+  return internal.getManagementProxy(contracts, point);
+}
+
 
 /**
  * Check if an address can manage a point.
