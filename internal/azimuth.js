@@ -26,6 +26,9 @@ module.exports.getOwner = (contracts, point) =>
 module.exports.isManagementProxy = (contracts, owner, manager) =>
   contracts.azimuth.methods.isManagementProxy(owner, manager).call()
 
+module.exports.getManagementProxy = (contracts, point) =>
+  contracts.azimuth.methods.getManagementProxy(point).call()
+
 module.exports.canManage = (contracts, point, address) =>
   contracts.azimuth.methods.canManage(point, address).call()
 
