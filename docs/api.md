@@ -165,7 +165,6 @@ Azimuth API
     * [~getOwnedPoints](#module_azimuth..getOwnedPoints) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
     * [~getOwnedPointCount](#module_azimuth..getOwnedPointCount) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [~getOwnedPointAtIndex](#module_azimuth..getOwnedPointAtIndex) ⇒ <code>Promise.&lt;Number&gt;</code>
-    * [~isManagementProxy](#module_azimuth..isManagementProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~canManage](#module_azimuth..canManage) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~getManagerForCount](#module_azimuth..getManagerForCount) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [~getManagerFor](#module_azimuth..getManagerFor) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
@@ -187,7 +186,7 @@ Azimuth API
     * [~isLive(contracts, point)](#module_azimuth..isLive) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~getContinuityNumber(contracts, point)](#module_azimuth..getContinuityNumber) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [~getSpawnCount(contracts, point)](#module_azimuth..getSpawnCount) ⇒ <code>Promise.&lt;Number&gt;</code>
-    * [~getSpawned(contracts, point)](#module_azimuth..getSpawned) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~getSpawned(contracts, point)](#module_azimuth..getSpawned) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
     * [~getSponsor(contracts, point)](#module_azimuth..getSponsor) ⇒ <code>Promise.&lt;Number&gt;</code>
     * [~hasSponsor(contracts, point)](#module_azimuth..hasSponsor) ⇒ <code>Promise.&lt;Bool&gt;</code>
     * [~isSponsor(contracts, point, sponsor)](#module_azimuth..isSponsor) ⇒ <code>Promise.&lt;Bool&gt;</code>
@@ -203,6 +202,8 @@ Azimuth API
     * [~getPoint(contracts, point, what)](#module_azimuth..getPoint) ⇒ <code>Promise.&lt;Object&gt;</code>
     * [~getUnspawnedChildren(contracts, point)](#module_azimuth..getUnspawnedChildren) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
     * [~getActivationBlock(contracts, point, minBlock, maxBlock)](#module_azimuth..getActivationBlock) ⇒ <code>Promise.&lt;Number&gt;</code>
+    * [~isManagementProxy(contracts, point, address)](#module_azimuth..isManagementProxy) ⇒ <code>Promise.&lt;Bool&gt;</code>
+    * [~getManagementProxy(contracts, point)](#module_azimuth..getManagementProxy) ⇒ <code>Promise.&lt;String&gt;</code>
 
 <a name="module_azimuth..mainnet"></a>
 
@@ -316,20 +317,6 @@ Get the point at the given index of the array containing an owner's azimuth.
 | contracts | <code>Object</code> | An Urbit contracts object. |
 | address | <code>String</code> | The target address. |
 | index | <code>Number</code> | The index of the array. |
-
-<a name="module_azimuth..isManagementProxy"></a>
-
-### azimuth~isManagementProxy ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if an address is a manager for an owner.
-
-**Kind**: inner constant of [<code>azimuth</code>](#module_azimuth)  
-**Returns**: <code>Promise.&lt;Bool&gt;</code> - True if the address is a manager, false otherwise.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| contracts | <code>Object</code> | An Urbit contracts object. |
-| owner | <code>String</code> | The owner's address. |
-| manager | <code>String</code> | The manager's address. |
 
 <a name="module_azimuth..canManage"></a>
 
@@ -613,12 +600,11 @@ Get a point's spawn count.
 
 <a name="module_azimuth..getSpawned"></a>
 
-### azimuth~getSpawned(contracts, point) ⇒ <code>Promise.&lt;Bool&gt;</code>
-Check if a point has been spawned.
+### azimuth~getSpawned(contracts, point) ⇒ <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code>
+Get an array of all child points the target point has spawned.
 
 **Kind**: inner method of [<code>azimuth</code>](#module_azimuth)  
-**Returns**: <code>Promise.&lt;Bool&gt;</code> - True if the point has been spawned, false
- otherwise.  
+**Returns**: <code>Promise.&lt;Array.&lt;Number&gt;&gt;</code> - The spawned points.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -827,6 +813,33 @@ been activated yet.
 | point | <code>Number</code> | Point number. |
 | minBlock | <code>Number</code> | (optional) Block to start search at. (Default 0.) |
 | maxBlock | <code>Number</code> | (optional) Block to end search at. (Default latest.) |
+
+<a name="module_azimuth..isManagementProxy"></a>
+
+### azimuth~isManagementProxy(contracts, point, address) ⇒ <code>Promise.&lt;Bool&gt;</code>
+Check if an address is a management proxy for a point.
+
+**Kind**: inner method of [<code>azimuth</code>](#module_azimuth)  
+**Returns**: <code>Promise.&lt;Bool&gt;</code> - True if address is management proxy, false otherwise.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contracts | <code>Object</code> | An Urbit contracts object. |
+| point | <code>Number</code> \| <code>Object</code> | Point number or point object. |
+| address | <code>String</code> | Target address. |
+
+<a name="module_azimuth..getManagementProxy"></a>
+
+### azimuth~getManagementProxy(contracts, point) ⇒ <code>Promise.&lt;String&gt;</code>
+Get the management proxy for a point.
+
+**Kind**: inner method of [<code>azimuth</code>](#module_azimuth)  
+**Returns**: <code>Promise.&lt;String&gt;</code> - The management proxy's address.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contracts | <code>Object</code> | An Urbit contracts object. |
+| point | <code>Number</code> \| <code>Object</code> | Point number or point object. |
 
 <a name="module_check"></a>
 
