@@ -27,9 +27,19 @@ const hd = hdkey.fromMasterSeed(seed);
 
 const path = "m/44'/60'/0'/0";
 
-const pair0 = ajs.getKeyPair(hd, path, 0);
-const pair1 = ajs.getKeyPair(hd, path, 1);
-const pair2 = ajs.getKeyPair(hd, path, 2);
+const getKeyPair = (hd, path, index) => {
+  let derived = hd.derive(path + '/' + index);
+  let sk      = derived.privateKey;
+  let address = ethUtil.privateToAddress(sk);
+  return {
+    address: address,
+    privateKey: sk
+  };
+}
+
+const pair0 = getKeyPair(hd, path, 0);
+const pair1 = getKeyPair(hd, path, 1);
+const pair2 = getKeyPair(hd, path, 2);
 
 const ac0 = ethUtil.addHexPrefix(pair0.address.toString('hex'));
 const ac1 = ethUtil.addHexPrefix(pair1.address.toString('hex'));

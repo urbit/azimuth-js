@@ -5,7 +5,6 @@
 
 'use strict';
 
-const accounts = require('./accounts');
 const check = require('./check');
 const conditionalSR = require('./conditionalSR');
 const ecliptic = require('./ecliptic');
@@ -22,8 +21,6 @@ const claims = require('./claims');
 const initContracts = contracts.initContracts;
 const initContractsPartial = contracts.initContractsPartial;
 
-const getKeyPair = accounts.getKeyPair;
-
 module.exports = {
   check,
   conditionalSR,
@@ -38,6 +35,5 @@ module.exports = {
   contracts,
   initContracts,
   initContractsPartial,
-  getKeyPair,
   chainDetails
 }
